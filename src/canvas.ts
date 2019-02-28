@@ -61,13 +61,7 @@ export default class Canvas {
     this.time.diff = time - this.time.prev;
     this.time.prev = time;
 
-    this.ctx.fillStyle = "#222222";
-
-    try {
-      this.renderLayers();
-    } catch (err) {
-      throw err;
-    }
+    this.renderLayers();
   }
 
   renderLayers() {
@@ -104,7 +98,6 @@ export default class Canvas {
   }
 
   clear() {
-    this.ctx.fillStyle = "#1b212b";
     this.ctx.fillRect(-1, -1, this.width + 1, this.height + 1);
   }
 }

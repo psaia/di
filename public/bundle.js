@@ -104,7 +104,6 @@ var Canvas = /** @class */ (function () {
         this.animId = requestAnimationFrame(this.play.bind(this));
         this.time.diff = time - this.time.prev;
         this.time.prev = time;
-        this.ctx.fillStyle = "#222222";
         try {
             this.renderLayers();
         }
@@ -139,7 +138,6 @@ var Canvas = /** @class */ (function () {
         this.renderLayers();
     };
     Canvas.prototype.clear = function () {
-        this.ctx.fillStyle = "#1b212b";
         this.ctx.fillRect(-1, -1, this.width + 1, this.height + 1);
     };
     return Canvas;
@@ -147,22 +145,51 @@ var Canvas = /** @class */ (function () {
 exports["default"] = Canvas;
 //# sourceMappingURL=canvas.js.map
 }
-  Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/di.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fdi$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fdi$2ejs.deps = {"./grid":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fgrid$2ejs,"./canvas":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fcanvas$2ejs,"./util":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2futil$2ejs,"./rect":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2frect$2ejs,"./dom":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fdom$2ejs}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fdi$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/di.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fdi$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
+  Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/di.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fdi$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fdi$2ejs.deps = {"./grid":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fgrid$2ejs,"./pubsub":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fpubsub$2ejs,"./util":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2futil$2ejs,"./canvas":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fcanvas$2ejs,"./rect":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2frect$2ejs,"./dom":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fdom$2ejs,"./types":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftypes$2ejs}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fdi$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/di.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fdi$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
 "use strict";
 exports.__esModule = true;
 var dom = require("./dom");
 var util = require("./util");
 var canvas_1 = require("./canvas");
+var types_1 = require("./types");
 var rect_1 = require("./rect");
 var grid_1 = require("./grid");
-var ActionType;
-(function (ActionType) {
-    ActionType[ActionType["MOVING"] = 1] = "MOVING";
-    ActionType[ActionType["CREATING"] = 2] = "CREATING";
-})(ActionType || (ActionType = {}));
+var pubsub_1 = require("./pubsub");
 var Di = /** @class */ (function () {
     function Di(parentEl) {
-        var canvas = new canvas_1["default"](dom.select(parentEl)).configure();
+        this.pubsub = new pubsub_1["default"]();
+        this.colorPalette = {
+            sidebarBg: "#000000",
+            sidebarColor: "#CCCCCC",
+            stageBg: "#151515",
+            stageColor: "#FFFFFF"
+        };
+        this.appContainer = dom.select(parentEl);
+        this.buildLayers();
+        this.buildStage();
+        this.paint();
+        this.render();
+    }
+    Di.prototype.buildLayers = function () {
+        this.sidebarContainer = dom.section("sidebar-container");
+        this.sidebarContainer.style.width = "200px";
+        this.appContainer.appendChild(this.sidebarContainer);
+    };
+    Di.prototype.buildStage = function () {
+        this.stageContainer = dom.section("stage-container");
+        this.stageContainer.style.height = "100%";
+        this.stageContainer.style.width = "100%";
+        this.canvas = new canvas_1["default"](this.stageContainer).configure();
+        this.appContainer.appendChild(this.stageContainer);
+    };
+    Di.prototype.paint = function () {
+        this.stageContainer.style.backgroundColor = this.colorPalette.stageBg;
+        this.stageContainer.style.color = this.colorPalette.stageColor;
+        this.sidebarContainer.style.backgroundColor = this.colorPalette.sidebarBg;
+        this.sidebarContainer.style.color = this.colorPalette.sidebarColor;
+    };
+    Di.prototype.render = function () {
+        var _this = this;
         var grid = new grid_1["default"]();
         var rects = [];
         var lastRect = function () { return rects[rects.length - 1]; };
@@ -170,8 +197,8 @@ var Di = /** @class */ (function () {
         var _activeRect;
         var clickedPt = util.pt();
         var mouseDown = false;
-        canvas.addLayer(grid);
-        grid.setSize(canvas.width, canvas.height);
+        this.canvas.addLayer(grid);
+        grid.setSize(this.canvas.width, this.canvas.height);
         var activeRect = function () {
             for (var i = 0, l = rects.length; i < l; i++) {
                 if (rect_1["default"].withinBound(grid.cursorPt, rects[i].pts)) {
@@ -180,41 +207,41 @@ var Di = /** @class */ (function () {
             }
         };
         var tmpPts;
-        canvas.evt.subscribe("mousemove", function (e) {
-            grid.setCursor(util.pt(e.x, e.y));
+        this.canvas.evt.subscribe("mousemove", function (e) {
+            grid.setCursor(util.pt(e.layerX, e.layerY));
             // If clicking into a square, move it. If not, create a new.
             if (mouseDown) {
-                if (rectAction === ActionType.CREATING) {
+                if (rectAction === types_1.ActionType.Creating) {
                     _activeRect.pts = [clickedPt, grid.closestPt];
                 }
-                else if (rectAction === ActionType.MOVING) {
+                else if (rectAction === types_1.ActionType.Moving) {
                     _activeRect.pts = util.subtract(util.subtract(grid.closestPt, [clickedPt])[0], tmpPts);
                 }
             }
         });
-        canvas.evt.subscribe("mousedown", function (e) {
+        this.canvas.evt.subscribe("mousedown", function (e) {
             mouseDown = true;
             clickedPt = grid.closestPt;
             _activeRect = activeRect();
             if (!_activeRect) {
-                rectAction = ActionType.CREATING;
+                rectAction = types_1.ActionType.Creating;
                 // Add a new grid on the stack.
                 _activeRect = new rect_1["default"](grid.grid);
-                canvas.addLayer(_activeRect);
+                _this.canvas.addLayer(_activeRect);
                 rects.push(_activeRect);
             }
             else {
                 tmpPts = util.clone(_activeRect.pts);
-                rectAction = ActionType.MOVING;
+                rectAction = types_1.ActionType.Moving;
             }
         });
-        canvas.evt.subscribe("mouseup", function (e) {
+        this.canvas.evt.subscribe("mouseup", function (e) {
             mouseDown = false;
         });
-        canvas.evt.subscribe("resize", function (e) {
-            grid.setSize(canvas.width, canvas.height);
+        this.canvas.evt.subscribe("resize", function (e) {
+            grid.setSize(_this.canvas.width, _this.canvas.height);
         });
-    }
+    };
     return Di;
 }());
 exports["default"] = Di;
@@ -239,6 +266,12 @@ function select(selector) {
     return document.querySelector(selector);
 }
 exports.select = select;
+function section(id) {
+    var s = document.createElement("section");
+    s.id = id;
+    return s;
+}
+exports.section = section;
 function attr(element, key, value) {
     if (typeof value === "undefined") {
         return element.getAttribute(key);
@@ -268,6 +301,7 @@ exports.__esModule = true;
 var Grid = /** @class */ (function () {
     function Grid() {
         this.density = 10;
+        this.gridColor = "#333";
         this.size = {
             width: 100,
             height: 100
@@ -296,11 +330,11 @@ var Grid = /** @class */ (function () {
                         ctx.beginPath();
                         if (Math.abs(this.cursorPt[1] - k) < buffer &&
                             Math.abs(this.cursorPt[0] - i) < buffer) {
-                            ctx.fillStyle = "#999999";
+                            ctx.fillStyle = "#ffffff";
                             this.closestPt = new Float32Array([i, k]);
                         }
                         else {
-                            ctx.fillStyle = "#333";
+                            ctx.fillStyle = this.gridColor;
                         }
                         ctx.arc(i, k, 1, 0, Math.PI * 2, true);
                         ctx.fill();
@@ -417,6 +451,22 @@ var Shape = /** @class */ (function () {
 }());
 exports["default"] = Shape;
 //# sourceMappingURL=shape.js.map
+}
+  Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/types.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftypes$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftypes$2ejs.deps = {}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftypes$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/types.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftypes$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
+"use strict";
+exports.__esModule = true;
+var ActionType;
+(function (ActionType) {
+    ActionType[ActionType["Moving"] = 0] = "Moving";
+    ActionType[ActionType["Creating"] = 1] = "Creating";
+})(ActionType = exports.ActionType || (exports.ActionType = {}));
+var LayerType;
+(function (LayerType) {
+    LayerType[LayerType["Rect"] = 0] = "Rect";
+    LayerType[LayerType["Line"] = 1] = "Line";
+    LayerType[LayerType["Text"] = 2] = "Text";
+})(LayerType = exports.LayerType || (exports.LayerType = {}));
+//# sourceMappingURL=types.js.map
 }
   Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/util.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2futil$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2futil$2ejs.deps = {}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2futil$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/util.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2futil$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
 "use strict";

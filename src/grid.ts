@@ -3,6 +3,7 @@ export default class Grid {
   public cursorPt: Float32Array;
   public closestPt: Float32Array;
   public grid: Float32Array[];
+  public gridColor: string = "#333";
 
   protected size: { width: number; height: number } = {
     width: 100,
@@ -40,10 +41,10 @@ export default class Grid {
               Math.abs(this.cursorPt[1] - k) < buffer &&
               Math.abs(this.cursorPt[0] - i) < buffer
             ) {
-              ctx.fillStyle = "#999999";
+              ctx.fillStyle = "#ffffff";
               this.closestPt = new Float32Array([i, k]);
             } else {
-              ctx.fillStyle = "#333";
+              ctx.fillStyle = this.gridColor;
             }
 
             ctx.arc(i, k, 1, 0, Math.PI * 2, true);

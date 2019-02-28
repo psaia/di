@@ -19,6 +19,12 @@ export function select(selector: string): HTMLElement {
   return document.querySelector(selector);
 }
 
+export function section(id: string): HTMLElement {
+  const s = document.createElement("section");
+  s.id = id;
+  return s;
+}
+
 export function attr(
   element: El,
   key: string,
