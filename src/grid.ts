@@ -1,57 +1,81 @@
-export default class Grid {
-  public density = 10;
-  public cursorPt: Float32Array;
-  public closestPt: Float32Array;
-  public grid: Float32Array[];
-  public gridColor: string = "#333";
+import { Point, Group } from "./types";
+import * as util from "./util";
 
-  protected size: { width: number; height: number } = {
+export default class Grid {
+  protected ctx: CanvasRenderingContext2D;
+  public density = 10;
+  public closestPt: Point;
+  public grid: Group;
+  public gridActiveColor: string = "white";
+  public gridColor: string = "white";
+  public cursorPt: Point;
+
+  private size: { width: number; height: number } = {
     width: 100,
     height: 100
   };
 
-  constructor() {
-    this.cursorPt = new Float32Array([0, 0]);
+  constructor(ctx: CanvasRenderingContext2D) {
+    this.ctx = ctx;
+    this.cursorPt = util.pt();
   }
 
   setSize(width: number, height: number) {
     this.size = { width, height };
+    this.render();
   }
 
-  setCursor(p: Float32Array) {
+  setCursor(p: Point) {
     this.cursorPt = p;
   }
 
-  render(ctx: CanvasRenderingContext2D) {
+  setColor(c: string) {
+    this.gridColor = c;
+  }
+
+  drawCross(center: Point) {
+    const size = 7;
+    const htSize = 7;
+
+    const rightTop = util.pt(center[0] - htSize, center[1] + htSize);
+    const leftBottom = util.pt(center[0] + htSize, center[1] - htSize);
+    const bounds = [rightTop, leftBottom];
+
+    this.ctx.beginPath();
+
+    // |
+    this.ctx.moveTo(center[0], center[1] - size);
+    this.ctx.lineTo(center[0], center[1] + size);
+    // --
+    this.ctx.moveTo(center[0] - size, center[1]);
+    this.ctx.lineTo(center[0] + size, center[1]);
+
+    if (util.withinBound(this.cursorPt, bounds)) {
+      this.closestPt = center;
+      this.ctx.strokeStyle = this.gridActiveColor;
+    } else {
+      this.ctx.strokeStyle = this.gridColor;
+    }
+
+    this.ctx.lineWidth = 1;
+    this.ctx.stroke();
+  }
+
+  render() {
     const grid = [];
+    const ctx = this.ctx;
 
     let w = this.size.width;
     let h = this.size.height;
-    const buffer = 5;
 
-    for (let i = 0; i < w; i++) {
-      if (i < buffer || i > w - buffer) continue;
-      if (i % this.density === 0) {
-        for (let k = 0; k < h; k++) {
-          if (k < buffer || k > h - buffer) continue;
-          if (k % this.density === 0) {
-            ctx.beginPath();
+    const padding = 20;
+    const margin = 15;
 
-            if (
-              Math.abs(this.cursorPt[1] - k) < buffer &&
-              Math.abs(this.cursorPt[0] - i) < buffer
-            ) {
-              ctx.fillStyle = "#ffffff";
-              this.closestPt = new Float32Array([i, k]);
-            } else {
-              ctx.fillStyle = this.gridColor;
-            }
-
-            ctx.arc(i, k, 1, 0, Math.PI * 2, true);
-            ctx.fill();
-            grid.push(new Float32Array([i, k]));
-          }
-        }
+    for (let x = padding; x < w - padding; x += margin) {
+      for (let y = padding; y < h - padding; y += margin) {
+        const p = util.pt(x, y);
+        this.drawCross(p);
+        grid.push(p);
       }
     }
 

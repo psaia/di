@@ -1,31 +1,92 @@
 import * as dom from "./dom";
+import * as util from "./util";
 import PubSub from "./pubsub";
+import Grid from "./grid";
+import Component from "./component";
+import { ColorPalette } from "./types";
 
-export default class Canvas {
+export default class Canvas extends Component {
   public evt: PubSub;
   public width: number = 0;
   public height: number = 0;
-  public _onmove;
-  protected canvas: HTMLCanvasElement;
-  protected container: HTMLElement;
+  public ctx: CanvasRenderingContext2D;
+  public canvas: HTMLCanvasElement;
+  public container: HTMLElement;
+  public grid: Grid;
   protected pixelScale = 1;
-  protected ctx: CanvasRenderingContext2D;
   protected time = { prev: 0, diff: 0 };
-  protected animId = -1;
-  protected layers: any = [];
+  protected shapes: any = [];
 
-  constructor(element: HTMLElement) {
-    this.evt = new PubSub();
-    this.container = element;
-    this.canvas = dom.canvas();
-    this.ctx = this.canvas.getContext("2d");
-    this.pixelScale = window.devicePixelRatio;
+  public addShape(layer) {
+    this.shapes.push(layer);
   }
 
-  configure() {
+  private listen(o: any, evt: string, fn: (e?: any) => void) {
+    this.evt.publish(evt, null);
+    o.addEventListener(evt, fn, false);
+  }
+
+  private play(time = 0) {
+    requestAnimationFrame(this.play.bind(this));
+
+    this.time.diff = time - this.time.prev;
+    this.time.prev = time;
+
+    this.renderShapes();
+  }
+
+  private renderShapes() {
+    this.ctx.clearRect(0, 0, this.width, this.height);
+    this.grid.render();
+
+    for (let i = 0, l = this.shapes.length; i < l; i++) {
+      this.shapes[i].render(this.colorPalette);
+    }
+  }
+
+  private resize() {
+    const { width, height } = dom.getDimensions(this.container);
+    this.width = width;
+    this.height = height;
+
+    this.grid.setSize(width, height);
+
+    this.canvas.setAttribute("width", String(width * this.pixelScale));
+    this.canvas.setAttribute("height", String(height * this.pixelScale));
+
+    this.canvas.width = width * this.pixelScale;
+    this.canvas.height = height * this.pixelScale;
+    this.canvas.style.width = `${Math.floor(width)}px`;
+    this.canvas.style.height = `${Math.floor(height)}px`;
+
+    if (this.pixelScale > 1) {
+      this.ctx.scale(this.pixelScale, this.pixelScale);
+      this.ctx.translate(0.5, 0.5);
+    }
+
+    this.renderShapes();
+  }
+
+  render() {
+    this.evt = new PubSub();
+
+    this.container = dom.section("app");
+    this.container.style.height = "100%";
+    this.container.style.width = "100%";
+    this.container.style.overflow = "hidden";
+    this.container.style.background = this.colorPalette.stageBg;
+
+    this.canvas = dom.canvas();
+    this.ctx = this.canvas.getContext("2d");
     this.container.appendChild(this.canvas);
 
+    this.pixelScale = window.devicePixelRatio;
+
+    this.grid = new Grid(this.ctx);
+    this.grid.setColor(this.colorPalette.gridColor);
+
     this.listen(this.canvas, "mousemove", e => {
+      this.grid.setCursor(util.pt(e.layerX, e.layerY));
       this.evt.publish("mousemove", e);
     });
 
@@ -42,62 +103,9 @@ export default class Canvas {
       this.evt.publish("resize", null);
     });
 
-    this.resize();
+    this.rendered(this.container);
+
     this.play();
-
-    return this;
-  }
-
-  private listen(o: any, evt: string, fn: (e?: any) => void) {
-    this.evt.publish(evt, null);
-    o.addEventListener(evt, fn, false);
-  }
-
-  setColor(c: string) {}
-
-  play(time = 0) {
-    this.animId = requestAnimationFrame(this.play.bind(this));
-
-    this.time.diff = time - this.time.prev;
-    this.time.prev = time;
-
-    this.renderLayers();
-  }
-
-  renderLayers() {
-    this.clear();
-    for (let i = 0, l = this.layers.length; i < l; i++) {
-      this.layers[i].render(this.ctx, this);
-    }
-  }
-
-  addLayer(layer) {
-    this.layers.push(layer);
-  }
-
-  resize() {
-    const { width, height } = dom.getDimensions(this.container);
-    const scaledHeight = height * this.pixelScale;
-    this.width = width;
-    this.height = height;
-
-    dom.attr(this.canvas, "width", width * this.pixelScale);
-    dom.attr(this.canvas, "height", height * this.pixelScale);
-
-    this.canvas.width = width * this.pixelScale;
-    this.canvas.height = height * this.pixelScale;
-    this.canvas.style.width = `${Math.floor(width)}px`;
-    this.canvas.style.height = `${Math.floor(height)}px`;
-
-    if (this.pixelScale > 1) {
-      this.ctx.scale(this.pixelScale, this.pixelScale);
-      this.ctx.translate(0.5, 0.5);
-    }
-
-    this.renderLayers();
-  }
-
-  clear() {
-    this.ctx.fillRect(-1, -1, this.width + 1, this.height + 1);
+    this.resize();
   }
 }

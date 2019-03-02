@@ -3,15 +3,17 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>Bastiond</title>
+  <title>di | Diagram Tool</title>
   <style>
-  html,body{padding:0;margin:0;height:100%}
+  html,body{padding:0;margin:0;height:100%;font-family:"Helvetica Neue", Helvetica, Arial, sans-serif;}
   #app{height:100%;display:flex;}
+  #app .layer-list {margin:0;padding:0;font-size:12px;list-style:none;}
+  #app .layer-list-item {padding:6px 5px 5px;border-bottom:1px solid #333}
   </style>
 </head>
 <body>
   <div id="app"></div>
   <script src="bundle.js"></script>
-  <script>(function(){ new Di("#app"); })()</script>
+  <script>(function(){ di("#app"); })()</script>
 </body>
 </html>

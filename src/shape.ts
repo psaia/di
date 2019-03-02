@@ -1,15 +1,16 @@
+import Canvas from "./canvas";
+import { ColorPalette, Group } from "./types";
+
 export default abstract class Shape {
-  pts: Float32Array[] = [];
-  grid: Float32Array[] = [];
-  animating: boolean = true;
-  filled: boolean = false;
-  color: string = "#FFFFFF";
+  public pts: Group = [];
+  protected canvas: Canvas;
+  protected animating: boolean = true;
 
-  abstract render(ctx: CanvasRenderingContext2D);
-
-  constructor(grid: Float32Array[]) {
-    this.grid = grid;
+  constructor(canvas: Canvas) {
+    this.canvas = canvas;
   }
+
+  abstract render(colorPalette: ColorPalette);
 
   stop() {
     this.animating = false;

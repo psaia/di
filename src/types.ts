@@ -1,10 +1,13 @@
 export type Point = Float32Array;
 
+export type RenderFn = (elements: HTMLElement) => void;
+
 export type Group = Float32Array[];
 
 export enum ActionType {
   Moving = 0,
-  Creating
+  Creating,
+  Resizing
 }
 
 export enum LayerType {
@@ -14,8 +17,12 @@ export enum LayerType {
 }
 
 export interface ColorPalette {
-  sidebarBg: string;
+  toolbarBg: string;
+  toolbarColor: string;
   stageBg: string;
-  sidebarColor: string;
   stageColor: string;
+  layersBg: string;
+  layersColor: string;
+  gridColor: string;
+  shapeColor: string;
 }

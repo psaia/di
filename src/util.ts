@@ -11,12 +11,30 @@ export function within(p: number, a: number, b: number): boolean {
   return p >= Math.min(a, b) && p <= Math.max(a, b);
 }
 
-export function add(a: Point, b: Group): Group {
-  return b.map(v => pt(v[0] + a[0], v[1] + a[1]));
+export function withinBound(pt: Point, rect: Group): boolean {
+  if (
+    !within(pt[0], rect[0][0], rect[1][0]) ||
+    !within(pt[1], rect[0][1], rect[1][1])
+  ) {
+    return false;
+  }
+  return true;
 }
 
-export function subtract(a: Point, b: Group): Group {
-  return b.map(v => pt(v[0] - a[0], v[1] - a[1]));
+export function add(a: Point, b: Point | Group): Point | Group {
+  if (b instanceof Array) {
+    return b.map(v => pt(v[0] + a[0], v[1] + a[1]));
+  } else if (b instanceof Float32Array) {
+    return pt(a[0] + b[0], a[1] + b[1]);
+  }
+}
+
+export function subtract(a: Point, b: Point | Group): Point | Group {
+  if (b instanceof Array) {
+    return b.map(v => pt(v[0] - a[0], v[1] - a[1]));
+  } else if (b instanceof Float32Array) {
+    return pt(a[0] - b[0], a[1] - b[1]);
+  }
 }
 
 export function clone(a: Group): Group {

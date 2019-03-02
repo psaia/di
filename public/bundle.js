@@ -55,29 +55,92 @@
     return require
   }
 
-  Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/canvas.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fcanvas$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fcanvas$2ejs.deps = {"./pubsub":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fpubsub$2ejs,"./dom":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fdom$2ejs}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fcanvas$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/canvas.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fcanvas$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
+  Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/canvas.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fcanvas$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fcanvas$2ejs.deps = {"./grid":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fgrid$2ejs,"./pubsub":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fpubsub$2ejs,"./component":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fcomponent$2ejs,"./util":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2futil$2ejs,"./dom":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fdom$2ejs}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fcanvas$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/canvas.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fcanvas$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
 "use strict";
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    }
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 exports.__esModule = true;
 var dom = require("./dom");
+var util = require("./util");
 var pubsub_1 = require("./pubsub");
-var Canvas = /** @class */ (function () {
-    function Canvas(element) {
-        this.width = 0;
-        this.height = 0;
-        this.pixelScale = 1;
-        this.time = { prev: 0, diff: 0 };
-        this.animId = -1;
-        this.layers = [];
+var grid_1 = require("./grid");
+var component_1 = require("./component");
+var Canvas = /** @class */ (function (_super) {
+    __extends(Canvas, _super);
+    function Canvas() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.width = 0;
+        _this.height = 0;
+        _this.pixelScale = 1;
+        _this.time = { prev: 0, diff: 0 };
+        _this.shapes = [];
+        return _this;
+    }
+    Canvas.prototype.addShape = function (layer) {
+        this.shapes.push(layer);
+    };
+    Canvas.prototype.listen = function (o, evt, fn) {
+        this.evt.publish(evt, null);
+        o.addEventListener(evt, fn, false);
+    };
+    Canvas.prototype.play = function (time) {
+        if (time === void 0) { time = 0; }
+        requestAnimationFrame(this.play.bind(this));
+        this.time.diff = time - this.time.prev;
+        this.time.prev = time;
+        this.renderShapes();
+    };
+    Canvas.prototype.renderShapes = function () {
+        this.ctx.clearRect(0, 0, this.width, this.height);
+        this.grid.render();
+        for (var i = 0, l = this.shapes.length; i < l; i++) {
+            this.shapes[i].render(this.colorPalette);
+        }
+    };
+    Canvas.prototype.resize = function () {
+        var _a = dom.getDimensions(this.container), width = _a.width, height = _a.height;
+        this.width = width;
+        this.height = height;
+        this.grid.setSize(width, height);
+        this.canvas.setAttribute("width", String(width * this.pixelScale));
+        this.canvas.setAttribute("height", String(height * this.pixelScale));
+        this.canvas.width = width * this.pixelScale;
+        this.canvas.height = height * this.pixelScale;
+        this.canvas.style.width = Math.floor(width) + "px";
+        this.canvas.style.height = Math.floor(height) + "px";
+        if (this.pixelScale > 1) {
+            this.ctx.scale(this.pixelScale, this.pixelScale);
+            this.ctx.translate(0.5, 0.5);
+        }
+        this.renderShapes();
+    };
+    Canvas.prototype.render = function () {
+        var _this = this;
         this.evt = new pubsub_1["default"]();
-        this.container = element;
+        this.container = dom.section("app");
+        this.container.style.height = "100%";
+        this.container.style.width = "100%";
+        this.container.style.overflow = "hidden";
+        this.container.style.background = this.colorPalette.stageBg;
         this.canvas = dom.canvas();
         this.ctx = this.canvas.getContext("2d");
-        this.pixelScale = window.devicePixelRatio;
-    }
-    Canvas.prototype.configure = function () {
-        var _this = this;
         this.container.appendChild(this.canvas);
+        this.pixelScale = window.devicePixelRatio;
+        this.grid = new grid_1["default"](this.ctx);
+        this.grid.setColor(this.colorPalette.gridColor);
         this.listen(this.canvas, "mousemove", function (e) {
+            _this.grid.setCursor(util.pt(e.layerX, e.layerY));
             _this.evt.publish("mousemove", e);
         });
         this.listen(this.canvas, "mousedown", function (e) {
@@ -90,170 +153,82 @@ var Canvas = /** @class */ (function () {
             _this.resize();
             _this.evt.publish("resize", null);
         });
-        this.resize();
+        this.rendered(this.container);
         this.play();
-        return this;
-    };
-    Canvas.prototype.listen = function (o, evt, fn) {
-        this.evt.publish(evt, null);
-        o.addEventListener(evt, fn, false);
-    };
-    Canvas.prototype.setColor = function (c) { };
-    Canvas.prototype.play = function (time) {
-        if (time === void 0) { time = 0; }
-        this.animId = requestAnimationFrame(this.play.bind(this));
-        this.time.diff = time - this.time.prev;
-        this.time.prev = time;
-        try {
-            this.renderLayers();
-        }
-        catch (err) {
-            throw err;
-        }
-    };
-    Canvas.prototype.renderLayers = function () {
-        this.clear();
-        for (var i = 0, l = this.layers.length; i < l; i++) {
-            this.layers[i].render(this.ctx, this);
-        }
-    };
-    Canvas.prototype.addLayer = function (layer) {
-        this.layers.push(layer);
-    };
-    Canvas.prototype.resize = function () {
-        var _a = dom.getDimensions(this.container), width = _a.width, height = _a.height;
-        var scaledHeight = height * this.pixelScale;
-        this.width = width;
-        this.height = height;
-        dom.attr(this.canvas, "width", width * this.pixelScale);
-        dom.attr(this.canvas, "height", height * this.pixelScale);
-        this.canvas.width = width * this.pixelScale;
-        this.canvas.height = height * this.pixelScale;
-        this.canvas.style.width = Math.floor(width) + "px";
-        this.canvas.style.height = Math.floor(height) + "px";
-        if (this.pixelScale > 1) {
-            this.ctx.scale(this.pixelScale, this.pixelScale);
-            this.ctx.translate(0.5, 0.5);
-        }
-        this.renderLayers();
-    };
-    Canvas.prototype.clear = function () {
-        this.ctx.fillRect(-1, -1, this.width + 1, this.height + 1);
+        this.resize();
     };
     return Canvas;
-}());
+}(component_1["default"]));
 exports["default"] = Canvas;
 //# sourceMappingURL=canvas.js.map
 }
-  Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/di.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fdi$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fdi$2ejs.deps = {"./grid":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fgrid$2ejs,"./pubsub":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fpubsub$2ejs,"./util":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2futil$2ejs,"./canvas":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fcanvas$2ejs,"./rect":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2frect$2ejs,"./dom":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fdom$2ejs,"./types":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftypes$2ejs}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fdi$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/di.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fdi$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
+  Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/component.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fcomponent$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fcomponent$2ejs.deps = {}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fcomponent$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/component.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fcomponent$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
+"use strict";
+exports.__esModule = true;
+var Component = /** @class */ (function () {
+    function Component(defaultPalette) {
+        this.setColorPalette(defaultPalette);
+    }
+    Component.prototype.onRender = function (fn) {
+        this.rendered = fn;
+    };
+    Component.prototype.setColorPalette = function (c) {
+        this.colorPalette = c;
+    };
+    return Component;
+}());
+exports["default"] = Component;
+//# sourceMappingURL=component.js.map
+}
+  Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/di.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fdi$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fdi$2ejs.deps = {"./layers":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2flayers$2ejs,"./toolbar":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftoolbar$2ejs,"./canvas":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fcanvas$2ejs,"./dom":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fdom$2ejs,"./interactions":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2finteractions$2ejs}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fdi$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/di.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fdi$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
 "use strict";
 exports.__esModule = true;
 var dom = require("./dom");
-var util = require("./util");
 var canvas_1 = require("./canvas");
-var types_1 = require("./types");
-var rect_1 = require("./rect");
-var grid_1 = require("./grid");
-var pubsub_1 = require("./pubsub");
-var Di = /** @class */ (function () {
-    function Di(parentEl) {
-        this.pubsub = new pubsub_1["default"]();
-        this.colorPalette = {
-            sidebarBg: "#000000",
-            sidebarColor: "#CCCCCC",
-            stageBg: "#151515",
-            stageColor: "#FFFFFF"
-        };
-        this.appContainer = dom.select(parentEl);
-        this.buildLayers();
-        this.buildStage();
-        this.paint();
-        this.render();
-    }
-    Di.prototype.buildLayers = function () {
-        this.sidebarContainer = dom.section("sidebar-container");
-        this.sidebarContainer.style.width = "200px";
-        this.appContainer.appendChild(this.sidebarContainer);
-    };
-    Di.prototype.buildStage = function () {
-        this.stageContainer = dom.section("stage-container");
-        this.stageContainer.style.height = "100%";
-        this.stageContainer.style.width = "100%";
-        this.canvas = new canvas_1["default"](this.stageContainer).configure();
-        this.appContainer.appendChild(this.stageContainer);
-    };
-    Di.prototype.paint = function () {
-        this.stageContainer.style.backgroundColor = this.colorPalette.stageBg;
-        this.stageContainer.style.color = this.colorPalette.stageColor;
-        this.sidebarContainer.style.backgroundColor = this.colorPalette.sidebarBg;
-        this.sidebarContainer.style.color = this.colorPalette.sidebarColor;
-    };
-    Di.prototype.render = function () {
-        var _this = this;
-        var grid = new grid_1["default"]();
-        var rects = [];
-        var lastRect = function () { return rects[rects.length - 1]; };
-        var rectAction;
-        var _activeRect;
-        var clickedPt = util.pt();
-        var mouseDown = false;
-        this.canvas.addLayer(grid);
-        grid.setSize(this.canvas.width, this.canvas.height);
-        var activeRect = function () {
-            for (var i = 0, l = rects.length; i < l; i++) {
-                if (rect_1["default"].withinBound(grid.cursorPt, rects[i].pts)) {
-                    return rects[i];
-                }
-            }
-        };
-        var tmpPts;
-        this.canvas.evt.subscribe("mousemove", function (e) {
-            grid.setCursor(util.pt(e.layerX, e.layerY));
-            // If clicking into a square, move it. If not, create a new.
-            if (mouseDown) {
-                if (rectAction === types_1.ActionType.Creating) {
-                    _activeRect.pts = [clickedPt, grid.closestPt];
-                }
-                else if (rectAction === types_1.ActionType.Moving) {
-                    _activeRect.pts = util.subtract(util.subtract(grid.closestPt, [clickedPt])[0], tmpPts);
-                }
-            }
-        });
-        this.canvas.evt.subscribe("mousedown", function (e) {
-            mouseDown = true;
-            clickedPt = grid.closestPt;
-            _activeRect = activeRect();
-            if (!_activeRect) {
-                rectAction = types_1.ActionType.Creating;
-                // Add a new grid on the stack.
-                _activeRect = new rect_1["default"](grid.grid);
-                _this.canvas.addLayer(_activeRect);
-                rects.push(_activeRect);
-            }
-            else {
-                tmpPts = util.clone(_activeRect.pts);
-                rectAction = types_1.ActionType.Moving;
-            }
-        });
-        this.canvas.evt.subscribe("mouseup", function (e) {
-            mouseDown = false;
-        });
-        this.canvas.evt.subscribe("resize", function (e) {
-            grid.setSize(_this.canvas.width, _this.canvas.height);
-        });
-    };
-    return Di;
-}());
-exports["default"] = Di;
-// Ghetto exposure.
+var layers_1 = require("./layers");
+var toolbar_1 = require("./toolbar");
+var interactions = require("./interactions");
 var w = window;
-w.Di = Di;
+w.di = di;
+var defaultPalette = {
+    layersBg: "#111",
+    layersColor: "white",
+    stageBg: "#000",
+    stageColor: "#fff",
+    gridColor: "#111",
+    shapeColor: "#ccc",
+    toolbarBg: "#690000",
+    toolbarColor: "#FFF"
+};
+function di(parentSelector) {
+    var parent = dom.select(parentSelector);
+    var toolbar = new toolbar_1["default"](defaultPalette);
+    var layers = new layers_1["default"](defaultPalette);
+    var canvas = new canvas_1["default"](defaultPalette);
+    var actions = new canvas_1["default"](defaultPalette);
+    toolbar.onRender(dom.renderer(parent));
+    layers.onRender(dom.renderer(parent));
+    canvas.onRender(dom.renderer(parent));
+    canvas.render();
+    toolbar.render();
+    layers.render();
+    interactions.configure(canvas, toolbar, layers);
+}
 //# sourceMappingURL=di.js.map
 }
   Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/dom.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fdom$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fdom$2ejs.deps = {}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fdom$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/dom.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fdom$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
 "use strict";
 exports.__esModule = true;
-var NS = "http://www.w3.org/2000/svg";
+var prefix = "di__";
+function renderer(c) {
+    var lastNode = section("-");
+    c.appendChild(lastNode);
+    return function (el) {
+        c.replaceChild(el, lastNode);
+        lastNode = el;
+    };
+}
+exports.renderer = renderer;
 function getDimensions(element) {
     var dim = element.getBoundingClientRect();
     return {
@@ -266,81 +241,96 @@ function select(selector) {
     return document.querySelector(selector);
 }
 exports.select = select;
-function section(id) {
+function section(className) {
     var s = document.createElement("section");
-    s.id = id;
+    s.className = prefix + className;
     return s;
 }
 exports.section = section;
-function attr(element, key, value) {
-    if (typeof value === "undefined") {
-        return element.getAttribute(key);
-    }
-    element.setAttribute(key, String(value));
-    return String(value);
+function ul(className) {
+    if (className === void 0) { className = ""; }
+    var ul = document.createElement("ul");
+    ul.className = prefix + className;
+    return ul;
 }
-exports.attr = attr;
-function circle(r, x, y) {
-    var el = document.createElementNS(NS, "circle");
-    attr(el, "r", String(r));
-    attr(el, "cx", String(x));
-    attr(el, "cy", String(y));
-    attr(el, "fill", "#333");
-    return el;
+exports.ul = ul;
+function li(className) {
+    if (className === void 0) { className = ""; }
+    var li = document.createElement("li");
+    li.className = prefix + className;
+    return li;
 }
-exports.circle = circle;
-function canvas() {
-    return document.createElement("canvas");
+exports.li = li;
+function canvas(className) {
+    if (className === void 0) { className = ""; }
+    var canvas = document.createElement("canvas");
+    canvas.className = prefix + className;
+    return canvas;
 }
 exports.canvas = canvas;
 //# sourceMappingURL=dom.js.map
 }
-  Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/grid.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fgrid$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fgrid$2ejs.deps = {}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fgrid$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/grid.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fgrid$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
+  Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/grid.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fgrid$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fgrid$2ejs.deps = {"./util":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2futil$2ejs}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fgrid$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/grid.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fgrid$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
 "use strict";
 exports.__esModule = true;
+var util = require("./util");
 var Grid = /** @class */ (function () {
-    function Grid() {
+    function Grid(ctx) {
         this.density = 10;
-        this.gridColor = "#333";
+        this.gridActiveColor = "white";
+        this.gridColor = "white";
         this.size = {
             width: 100,
             height: 100
         };
-        this.cursorPt = new Float32Array([0, 0]);
+        this.ctx = ctx;
+        this.cursorPt = util.pt();
     }
     Grid.prototype.setSize = function (width, height) {
         this.size = { width: width, height: height };
+        this.render();
     };
     Grid.prototype.setCursor = function (p) {
         this.cursorPt = p;
     };
-    Grid.prototype.render = function (ctx) {
+    Grid.prototype.setColor = function (c) {
+        this.gridColor = c;
+    };
+    Grid.prototype.drawCross = function (center) {
+        var size = 7;
+        var htSize = 7;
+        var rightTop = util.pt(center[0] - htSize, center[1] + htSize);
+        var leftBottom = util.pt(center[0] + htSize, center[1] - htSize);
+        var bounds = [rightTop, leftBottom];
+        this.ctx.beginPath();
+        // |
+        this.ctx.moveTo(center[0], center[1] - size);
+        this.ctx.lineTo(center[0], center[1] + size);
+        // --
+        this.ctx.moveTo(center[0] - size, center[1]);
+        this.ctx.lineTo(center[0] + size, center[1]);
+        if (util.withinBound(this.cursorPt, bounds)) {
+            this.closestPt = center;
+            this.ctx.strokeStyle = this.gridActiveColor;
+        }
+        else {
+            this.ctx.strokeStyle = this.gridColor;
+        }
+        this.ctx.lineWidth = 1;
+        this.ctx.stroke();
+    };
+    Grid.prototype.render = function () {
         var grid = [];
+        var ctx = this.ctx;
         var w = this.size.width;
         var h = this.size.height;
-        var buffer = 5;
-        for (var i = 0; i < w; i++) {
-            if (i < buffer || i > w - buffer)
-                continue;
-            if (i % this.density === 0) {
-                for (var k = 0; k < h; k++) {
-                    if (k < buffer || k > h - buffer)
-                        continue;
-                    if (k % this.density === 0) {
-                        ctx.beginPath();
-                        if (Math.abs(this.cursorPt[1] - k) < buffer &&
-                            Math.abs(this.cursorPt[0] - i) < buffer) {
-                            ctx.fillStyle = "#ffffff";
-                            this.closestPt = new Float32Array([i, k]);
-                        }
-                        else {
-                            ctx.fillStyle = this.gridColor;
-                        }
-                        ctx.arc(i, k, 1, 0, Math.PI * 2, true);
-                        ctx.fill();
-                        grid.push(new Float32Array([i, k]));
-                    }
-                }
+        var padding = 20;
+        var margin = 15;
+        for (var x = padding; x < w - padding; x += margin) {
+            for (var y = padding; y < h - padding; y += margin) {
+                var p = util.pt(x, y);
+                this.drawCross(p);
+                grid.push(p);
             }
         }
         this.grid = grid;
@@ -350,6 +340,141 @@ var Grid = /** @class */ (function () {
 }());
 exports["default"] = Grid;
 //# sourceMappingURL=grid.js.map
+}
+  Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/interactions.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2finteractions$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2finteractions$2ejs.deps = {"./util":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2futil$2ejs,"./rect":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2frect$2ejs,"./layer":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2flayer$2ejs,"./types":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftypes$2ejs}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2finteractions$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/interactions.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2finteractions$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
+"use strict";
+exports.__esModule = true;
+var layer_1 = require("./layer");
+var rect_1 = require("./rect");
+var util = require("./util");
+var types_1 = require("./types");
+function configure(canvas, toolbar, layers) {
+    var rects = [];
+    var lastRect = function () { return rects[rects.length - 1]; };
+    var rectAction;
+    var _activeShape;
+    var clickedPt = util.pt();
+    var mouseDown = false;
+    var activeRect = function () {
+        for (var i = 0, l = rects.length; i < l; i++) {
+            if (rects[i].pts.length > 1) {
+                if (util.withinBound(canvas.grid.cursorPt, rects[i].pts)) {
+                    return rects[i];
+                }
+            }
+        }
+    };
+    var addLayer = function (shape) {
+        var layer = new layer_1["default"]();
+        layer.humanName = "Rectangle";
+        layer.type = types_1.LayerType.Rect;
+        layer.shape = shape;
+        layers.addLayer(layer);
+        layers.render();
+    };
+    var tmpPts;
+    canvas.evt.subscribe("mousemove", function (e) {
+        // If clicking into a square, move it. If not, create a new.
+        if (mouseDown) {
+            if (rectAction === types_1.ActionType.Creating) {
+                _activeShape.pts = [clickedPt, canvas.grid.closestPt];
+            }
+            else if (rectAction === types_1.ActionType.Moving) {
+                _activeShape.pts = (util.add(util.subtract(canvas.grid.closestPt, clickedPt), tmpPts));
+            }
+        }
+    });
+    canvas.evt.subscribe("mousedown", function (e) {
+        mouseDown = true;
+        clickedPt = canvas.grid.closestPt;
+        _activeShape = activeRect();
+        if (_activeShape) {
+            tmpPts = util.clone(_activeShape.pts);
+            rectAction = types_1.ActionType.Moving;
+        }
+        else {
+            // Add a new grid on the stack.
+            _activeShape = new rect_1["default"](canvas);
+            canvas.addShape(_activeShape);
+            rects.push(_activeShape);
+            addLayer(_activeShape);
+            rectAction = types_1.ActionType.Creating;
+        }
+    });
+    canvas.evt.subscribe("mouseup", function (e) {
+        mouseDown = false;
+    });
+}
+exports.configure = configure;
+//# sourceMappingURL=interactions.js.map
+}
+  Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/layer.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2flayer$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2flayer$2ejs.deps = {}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2flayer$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/layer.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2flayer$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
+"use strict";
+exports.__esModule = true;
+// import Text from "./text";
+var Layer = /** @class */ (function () {
+    function Layer() {
+        this.humanName = "";
+    }
+    return Layer;
+}());
+exports["default"] = Layer;
+//# sourceMappingURL=layer.js.map
+}
+  Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/layers.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2flayers$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2flayers$2ejs.deps = {"./component":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fcomponent$2ejs,"./dom":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fdom$2ejs,"./types":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftypes$2ejs}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2flayers$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/layers.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2flayers$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
+"use strict";
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    }
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+exports.__esModule = true;
+var dom = require("./dom");
+var component_1 = require("./component");
+var types_1 = require("./types");
+var Layers = /** @class */ (function (_super) {
+    __extends(Layers, _super);
+    function Layers() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.layers = [];
+        return _this;
+    }
+    Layers.prototype.addLayer = function (layer) {
+        this.layers.push(layer);
+        this.render();
+    };
+    Layers.prototype.render = function () {
+        var _a;
+        var section = dom.section("layers");
+        var ul = dom.ul("layer-list");
+        section.style.width = "165px";
+        section.style.background = this.colorPalette.layersBg;
+        section.style.color = this.colorPalette.layersColor;
+        var countHashMap = (_a = {},
+            _a[types_1.LayerType.Rect] = 0,
+            _a[types_1.LayerType.Line] = 0,
+            _a[types_1.LayerType.Text] = 0,
+            _a);
+        this.layers.forEach(function (l) {
+            var li = dom.li("layer-list-item");
+            li.innerHTML = l.humanName + " " + ++countHashMap[l.type];
+            ul.appendChild(li);
+        });
+        section.appendChild(ul);
+        this.rendered(section);
+    };
+    return Layers;
+}(component_1["default"]));
+exports["default"] = Layers;
+//# sourceMappingURL=layers.js.map
 }
   Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/pubsub.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fpubsub$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fpubsub$2ejs.deps = {}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fpubsub$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/pubsub.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fpubsub$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
 "use strict";
@@ -375,7 +500,7 @@ var Pubsub = /** @class */ (function () {
 exports["default"] = Pubsub;
 //# sourceMappingURL=pubsub.js.map
 }
-  Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/rect.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2frect$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2frect$2ejs.deps = {"./util":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2futil$2ejs,"./shape":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fshape$2ejs}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2frect$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/rect.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2frect$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
+  Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/rect.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2frect$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2frect$2ejs.deps = {"./shape":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fshape$2ejs}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2frect$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/rect.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2frect$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -392,37 +517,24 @@ var __extends = (this && this.__extends) || (function () {
 })();
 exports.__esModule = true;
 var shape_1 = require("./shape");
-var util = require("./util");
 var Rect = /** @class */ (function (_super) {
     __extends(Rect, _super);
     function Rect() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
-    Rect.prototype.render = function (ctx) {
+    Rect.prototype.render = function (c) {
         if (!this.animating || this.pts.length < 2) {
             return;
         }
-        ctx.beginPath();
-        ctx.moveTo(this.pts[0][0], this.pts[0][1]);
-        ctx.lineTo(this.pts[0][0], this.pts[1][1]);
-        ctx.lineTo(this.pts[1][0], this.pts[1][1]);
-        ctx.lineTo(this.pts[1][0], this.pts[0][1]);
-        ctx.strokeStyle = this.color;
-        ctx.lineWidth = 2;
-        ctx.closePath();
-        if (this.filled) {
-            ctx.fill();
-        }
-        else {
-            ctx.stroke();
-        }
-    };
-    Rect.withinBound = function (pt, rect) {
-        if (!util.within(pt[0], rect[0][0], rect[1][0]) ||
-            !util.within(pt[1], rect[0][1], rect[1][1])) {
-            return false;
-        }
-        return true;
+        this.canvas.ctx.beginPath();
+        this.canvas.ctx.moveTo(this.pts[0][0], this.pts[0][1]);
+        this.canvas.ctx.lineTo(this.pts[0][0], this.pts[1][1]);
+        this.canvas.ctx.lineTo(this.pts[1][0], this.pts[1][1]);
+        this.canvas.ctx.lineTo(this.pts[1][0], this.pts[0][1]);
+        this.canvas.ctx.lineWidth = 1;
+        this.canvas.ctx.closePath();
+        this.canvas.ctx.strokeStyle = c.shapeColor;
+        this.canvas.ctx.stroke();
     };
     return Rect;
 }(shape_1["default"]));
@@ -433,13 +545,10 @@ exports["default"] = Rect;
 "use strict";
 exports.__esModule = true;
 var Shape = /** @class */ (function () {
-    function Shape(grid) {
+    function Shape(canvas) {
         this.pts = [];
-        this.grid = [];
         this.animating = true;
-        this.filled = false;
-        this.color = "#FFFFFF";
-        this.grid = grid;
+        this.canvas = canvas;
     }
     Shape.prototype.stop = function () {
         this.animating = false;
@@ -452,6 +561,42 @@ var Shape = /** @class */ (function () {
 exports["default"] = Shape;
 //# sourceMappingURL=shape.js.map
 }
+  Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/toolbar.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftoolbar$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftoolbar$2ejs.deps = {"./component":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fcomponent$2ejs,"./dom":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fdom$2ejs}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftoolbar$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/toolbar.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftoolbar$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
+"use strict";
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    }
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+exports.__esModule = true;
+var dom = require("./dom");
+var component_1 = require("./component");
+var Toolbar = /** @class */ (function (_super) {
+    __extends(Toolbar, _super);
+    function Toolbar() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.layers = [];
+        return _this;
+    }
+    Toolbar.prototype.render = function () {
+        var section = dom.section("toolbar-container");
+        section.style.width = "42px";
+        section.style.background = this.colorPalette.toolbarBg;
+        this.rendered(section);
+    };
+    return Toolbar;
+}(component_1["default"]));
+exports["default"] = Toolbar;
+//# sourceMappingURL=toolbar.js.map
+}
   Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/types.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftypes$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftypes$2ejs.deps = {}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftypes$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/types.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftypes$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
 "use strict";
 exports.__esModule = true;
@@ -459,6 +604,7 @@ var ActionType;
 (function (ActionType) {
     ActionType[ActionType["Moving"] = 0] = "Moving";
     ActionType[ActionType["Creating"] = 1] = "Creating";
+    ActionType[ActionType["Resizing"] = 2] = "Resizing";
 })(ActionType = exports.ActionType || (exports.ActionType = {}));
 var LayerType;
 (function (LayerType) {
@@ -482,12 +628,30 @@ function within(p, a, b) {
     return p >= Math.min(a, b) && p <= Math.max(a, b);
 }
 exports.within = within;
+function withinBound(pt, rect) {
+    if (!within(pt[0], rect[0][0], rect[1][0]) ||
+        !within(pt[1], rect[0][1], rect[1][1])) {
+        return false;
+    }
+    return true;
+}
+exports.withinBound = withinBound;
 function add(a, b) {
-    return b.map(function (v) { return pt(v[0] + a[0], v[1] + a[1]); });
+    if (b instanceof Array) {
+        return b.map(function (v) { return pt(v[0] + a[0], v[1] + a[1]); });
+    }
+    else if (b instanceof Float32Array) {
+        return pt(a[0] + b[0], a[1] + b[1]);
+    }
 }
 exports.add = add;
 function subtract(a, b) {
-    return b.map(function (v) { return pt(v[0] - a[0], v[1] - a[1]); });
+    if (b instanceof Array) {
+        return b.map(function (v) { return pt(v[0] - a[0], v[1] - a[1]); });
+    }
+    else if (b instanceof Float32Array) {
+        return pt(a[0] - b[0], a[1] - b[1]);
+    }
 }
 exports.subtract = subtract;
 function clone(a) {
