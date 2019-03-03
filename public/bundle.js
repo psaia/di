@@ -118,8 +118,8 @@ var Canvas = /** @class */ (function (_super) {
             this.shapes[i].render(this.colorPalette);
         }
     };
-    Canvas.prototype.resize = function () {
-        var _a = dom.getDimensions(this.container), width = _a.width, height = _a.height;
+    Canvas.prototype.resize = function (container) {
+        var _a = dom.getDimensions(container), width = _a.width, height = _a.height;
         this.width = width;
         this.height = height;
         this.grid.setSize(width, height);
@@ -137,14 +137,14 @@ var Canvas = /** @class */ (function (_super) {
     };
     Canvas.prototype.render = function () {
         var _this = this;
-        this.container = dom.section("app");
-        this.container.style.height = "100%";
-        this.container.style.width = "100%";
-        this.container.style.overflow = "hidden";
-        this.container.style.background = this.colorPalette.stageBg;
+        var container = dom.section("app");
+        container.style.height = "100%";
+        container.style.width = "100%";
+        container.style.overflow = "hidden";
+        container.style.background = this.colorPalette.stageBg;
         this.canvas = dom.canvas();
         this.ctx = this.canvas.getContext("2d");
-        this.container.appendChild(this.canvas);
+        container.appendChild(this.canvas);
         this.pixelScale = window.devicePixelRatio;
         this.grid = new grid_1["default"](this.ctx);
         this.grid.setColor(this.colorPalette.gridColor);
@@ -159,12 +159,12 @@ var Canvas = /** @class */ (function (_super) {
             _this.mouseUpFn(e);
         });
         this.listen(window, "resize", function () {
-            _this.resize();
+            _this.resize(container);
             _this.resizeFn();
         });
-        this.rendered(this.container);
+        this.rendered(container);
         this.play();
-        this.resize();
+        this.resize(container);
     };
     return Canvas;
 }(component_1["default"]));

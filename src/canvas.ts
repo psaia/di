@@ -9,15 +9,14 @@ export default class Canvas extends Component {
   public height: number = 0;
   public ctx: CanvasRenderingContext2D;
   public canvas: HTMLCanvasElement;
-  public container: HTMLElement;
   public grid: Grid;
   protected pixelScale = 1;
   protected time = { prev: 0, diff: 0 };
   protected shapes: any = [];
-  protected mouseDownFn;
-  protected mouseUpFn;
-  protected mouseMoveFn;
-  protected resizeFn;
+  protected mouseDownFn: (e?: any) => void;
+  protected mouseUpFn: (e?: any) => void;
+  protected mouseMoveFn: (e?: any) => void;
+  protected resizeFn: (e?: any) => void;
 
   public addShape(layer) {
     this.shapes.push(layer);
@@ -26,12 +25,15 @@ export default class Canvas extends Component {
   public onMouseDown(fn) {
     this.mouseDownFn = fn;
   }
+
   public onMouseUp(fn) {
     this.mouseUpFn = fn;
   }
+
   public onMouseMove(fn) {
     this.mouseMoveFn = fn;
   }
+
   public onResize(fn) {
     this.resizeFn = fn;
   }
@@ -58,8 +60,8 @@ export default class Canvas extends Component {
     }
   }
 
-  private resize() {
-    const { width, height } = dom.getDimensions(this.container);
+  private resize(container: HTMLElement) {
+    const { width, height } = dom.getDimensions(container);
     this.width = width;
     this.height = height;
 
@@ -82,15 +84,15 @@ export default class Canvas extends Component {
   }
 
   render() {
-    this.container = dom.section("app");
-    this.container.style.height = "100%";
-    this.container.style.width = "100%";
-    this.container.style.overflow = "hidden";
-    this.container.style.background = this.colorPalette.stageBg;
+    const container = dom.section("app");
+    container.style.height = "100%";
+    container.style.width = "100%";
+    container.style.overflow = "hidden";
+    container.style.background = this.colorPalette.stageBg;
 
     this.canvas = dom.canvas();
     this.ctx = this.canvas.getContext("2d");
-    this.container.appendChild(this.canvas);
+    container.appendChild(this.canvas);
 
     this.pixelScale = window.devicePixelRatio;
 
@@ -111,13 +113,13 @@ export default class Canvas extends Component {
     });
 
     this.listen(window, "resize", () => {
-      this.resize();
+      this.resize(container);
       this.resizeFn();
     });
 
-    this.rendered(this.container);
+    this.rendered(container);
 
     this.play();
-    this.resize();
+    this.resize(container);
   }
 }
