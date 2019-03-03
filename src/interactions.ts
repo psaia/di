@@ -7,74 +7,99 @@ import * as util from "./util";
 
 import { ActionType, Point, Group, LayerType } from "./types";
 
-function addLayer(layers: Layers, shape) {
+enum Area {
+  Corner = 0,
+  Center
+}
+
+interface Selection {
+  layer: Layer;
+  area: Area;
+}
+
+export function configure(canvas: Canvas, toolbar: Toolbar, layers: Layers) {
+  const state = new State(canvas);
+
+  canvas.onMouseMove((e: MouseEvent) => {
+    state.cursorPoint = canvas.grid.closestPt;
+  });
+
+  canvas.onMouseDown((e: MouseEvent) => {
+    state.mouseDown = true;
+    state.selection = what(canvas.grid.closestPt, layers);
+    if (state.selection) {
+      state.pinnedPts = util.clone(state.selection.layer.shape.pts);
+    } else {
+      // const addLayer(
+    }
+    console.log(state.selection);
+    state.pinnerCursorPoint = canvas.grid.closestPt;
+    state.process();
+  });
+
+  canvas.onMouseUp((e: MouseEvent) => {
+    state.mouseDown = false;
+    state.process();
+  });
+}
+
+function addLayer(layers: Layers, shape): Layer {
   const layer = new Layer();
   layer.humanName = "Rectangle";
   layer.type = LayerType.Rect;
   layer.shape = shape;
-
   layers.addLayer(layer);
   layers.render();
+
+  return layer;
 }
 
-export function configure(canvas: Canvas, toolbar: Toolbar, layers: Layers) {
-  const rects: Rect[] = [];
-  const lastRect = () => rects[rects.length - 1];
+function what(cursor: Point, layers: Layers): Selection | null {
+  const list = layers.getLayers();
 
-  let rectAction: ActionType;
-  let _activeShape: Rect;
-  let clickedPt: Point = util.pt();
-  let mouseDown = false;
+  for (let i = 0, l = list.length; i < l; i++) {
+    const layer = list[i];
+    const shape = list[i].shape;
 
-  const activeRect = () => {
-    for (let i = 0, l = rects.length; i < l; i++) {
-      if (rects[i].pts.length > 1) {
-        if (util.withinBound(canvas.grid.cursorPt, rects[i].pts)) {
-          return rects[i];
-        }
+    if (shape.pts.length > 1) {
+      if (util.withinBound(cursor, shape.pts)) {
+        return {
+          layer,
+          area: Area.Corner
+        };
       }
     }
-  };
+  }
+}
 
-  let tmpPts;
+class State {
+  public cursorPoint: Point;
+  public pinnerCursorPoint: Point;
+  public mouseDown: boolean;
+  public selection: Selection | null;
+  public pinnedPts: Group | null;
 
-  canvas.evt.subscribe("mousemove", (e: MouseEvent) => {
-    // If clicking into a square, move it. If not, create a new.
-    if (mouseDown) {
-      if (rectAction === ActionType.Creating) {
-        _activeShape.pts = [clickedPt, canvas.grid.closestPt];
-      } else if (rectAction === ActionType.Moving) {
-        _activeShape.pts = <Group>(
+  protected canvas: Canvas;
+
+  constructor(canvas: Canvas) {
+    this.canvas = canvas;
+  }
+
+  public process() {
+    if (this.mouseDown && this.selection) {
+      if (this.selection.area === Area.Corner) {
+        this.selection.layer.shape.pts = [
+          this.pinnerCursorPoint,
+          this.cursorPoint
+        ];
+      } else if (this.selection.area === Area.Center) {
+        this.selection.layer.shape.pts = <Group>(
           util.add(
-            <Point>util.subtract(canvas.grid.closestPt, clickedPt),
-            tmpPts
+            <Point>util.subtract(this.cursorPoint, this.pinnerCursorPoint),
+            this.pinnedPts
           )
         );
       }
     }
-  });
-
-  canvas.evt.subscribe("mousedown", (e: MouseEvent) => {
-    mouseDown = true;
-    clickedPt = canvas.grid.closestPt;
-
-    _activeShape = activeRect();
-
-    if (_activeShape) {
-      tmpPts = util.clone(_activeShape.pts);
-      rectAction = ActionType.Moving;
-    } else {
-      // Add a new grid on the stack.
-      _activeShape = new Rect(canvas);
-      canvas.addShape(_activeShape);
-      rects.push(_activeShape);
-      addLayer(layers, _activeShape);
-
-      rectAction = ActionType.Creating;
-    }
-  });
-
-  canvas.evt.subscribe("mouseup", (e: MouseEvent) => {
-    mouseDown = false;
-  });
+  }
 }

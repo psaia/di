@@ -11,6 +11,10 @@ export default class Layers extends Component {
     this.render();
   }
 
+  public getLayers(): Layer[] {
+    return this.layers;
+  }
+
   render() {
     const section = dom.section("layers");
     const ul = dom.ul("layer-list");

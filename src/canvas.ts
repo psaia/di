@@ -1,12 +1,10 @@
 import * as dom from "./dom";
 import * as util from "./util";
-import PubSub from "./pubsub";
 import Grid from "./grid";
 import Component from "./component";
 import { ColorPalette } from "./types";
 
 export default class Canvas extends Component {
-  public evt: PubSub;
   public width: number = 0;
   public height: number = 0;
   public ctx: CanvasRenderingContext2D;
@@ -16,13 +14,29 @@ export default class Canvas extends Component {
   protected pixelScale = 1;
   protected time = { prev: 0, diff: 0 };
   protected shapes: any = [];
+  protected mouseDownFn;
+  protected mouseUpFn;
+  protected mouseMoveFn;
+  protected resizeFn;
 
   public addShape(layer) {
     this.shapes.push(layer);
   }
 
+  public onMouseDown(fn) {
+    this.mouseDownFn = fn;
+  }
+  public onMouseUp(fn) {
+    this.mouseUpFn = fn;
+  }
+  public onMouseMove(fn) {
+    this.mouseMoveFn = fn;
+  }
+  public onResize(fn) {
+    this.resizeFn = fn;
+  }
+
   private listen(o: any, evt: string, fn: (e?: any) => void) {
-    this.evt.publish(evt, null);
     o.addEventListener(evt, fn, false);
   }
 
@@ -68,8 +82,6 @@ export default class Canvas extends Component {
   }
 
   render() {
-    this.evt = new PubSub();
-
     this.container = dom.section("app");
     this.container.style.height = "100%";
     this.container.style.width = "100%";
@@ -87,20 +99,20 @@ export default class Canvas extends Component {
 
     this.listen(this.canvas, "mousemove", e => {
       this.grid.setCursor(util.pt(e.layerX, e.layerY));
-      this.evt.publish("mousemove", e);
+      this.mouseMoveFn(e);
     });
 
     this.listen(this.canvas, "mousedown", e => {
-      this.evt.publish("mousedown", e);
+      this.mouseDownFn(e);
     });
 
     this.listen(this.canvas, "mouseup", e => {
-      this.evt.publish("mouseup", e);
+      this.mouseUpFn(e);
     });
 
     this.listen(window, "resize", () => {
       this.resize();
-      this.evt.publish("resize", null);
+      this.resizeFn();
     });
 
     this.rendered(this.container);
