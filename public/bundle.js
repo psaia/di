@@ -193,10 +193,46 @@ var Component = /** @class */ (function () {
 exports["default"] = Component;
 //# sourceMappingURL=component.js.map
 }
-  Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/di.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fdi$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fdi$2ejs.deps = {"./layers":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2flayers$2ejs,"./toolbar":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftoolbar$2ejs,"./canvas":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fcanvas$2ejs,"./dom":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fdom$2ejs,"./interactions":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2finteractions$2ejs}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fdi$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/di.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fdi$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
+  Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/controldrawer.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fcontroldrawer$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fcontroldrawer$2ejs.deps = {"./component":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fcomponent$2ejs,"./dom":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fdom$2ejs}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fcontroldrawer$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/controldrawer.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fcontroldrawer$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
+"use strict";
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    }
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+exports.__esModule = true;
+var dom = require("./dom");
+var component_1 = require("./component");
+var ControlDrawer = /** @class */ (function (_super) {
+    __extends(ControlDrawer, _super);
+    function ControlDrawer() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    ControlDrawer.prototype.render = function () {
+        var section = dom.section("controldrawer");
+        section.style.width = "42px";
+        section.style.background = this.colorPalette.controldrawerBg;
+        section.style.color = this.colorPalette.controldrawerColor;
+        this.rendered(section);
+    };
+    return ControlDrawer;
+}(component_1["default"]));
+exports["default"] = ControlDrawer;
+//# sourceMappingURL=controldrawer.js.map
+}
+  Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/di.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fdi$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fdi$2ejs.deps = {"./controldrawer":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fcontroldrawer$2ejs,"./layers":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2flayers$2ejs,"./toolbar":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftoolbar$2ejs,"./canvas":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fcanvas$2ejs,"./dom":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fdom$2ejs,"./interactions":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2finteractions$2ejs}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fdi$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/di.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fdi$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
 "use strict";
 exports.__esModule = true;
 var dom = require("./dom");
+var controldrawer_1 = require("./controldrawer");
 var canvas_1 = require("./canvas");
 var layers_1 = require("./layers");
 var toolbar_1 = require("./toolbar");
@@ -210,22 +246,26 @@ var defaultPalette = {
     stageColor: "#fff",
     gridColor: "#111",
     shapeColor: "#ccc",
-    toolbarBg: "#690000",
-    toolbarColor: "#FFF"
+    toolbarBg: "#FFF",
+    toolbarColor: "#FFF",
+    controldrawerBg: "#690000",
+    controldrawerColor: "#FFF"
 };
 function di(parentSelector) {
     var parent = dom.select(parentSelector);
+    var controldrawer = new controldrawer_1["default"](defaultPalette);
     var toolbar = new toolbar_1["default"](defaultPalette);
     var layers = new layers_1["default"](defaultPalette);
     var canvas = new canvas_1["default"](defaultPalette);
-    var actions = new canvas_1["default"](defaultPalette);
-    toolbar.onRender(dom.renderer(parent));
+    controldrawer.onRender(dom.renderer(parent));
     layers.onRender(dom.renderer(parent));
     canvas.onRender(dom.renderer(parent));
+    toolbar.onRender(dom.renderer(parent));
     canvas.render();
     toolbar.render();
     layers.render();
-    interactions.configure(canvas, toolbar, layers);
+    controldrawer.render();
+    interactions.configure({ canvas: canvas, toolbar: toolbar, layers: layers, controldrawer: controldrawer });
 }
 //# sourceMappingURL=di.js.map
 }
@@ -365,33 +405,15 @@ var Area;
     Area[Area["Corner"] = 0] = "Corner";
     Area[Area["Center"] = 1] = "Center";
 })(Area || (Area = {}));
-var QUICK_CLICK_MS = 200;
-function configure(canvas, toolbar, layers) {
-    var state = new State(canvas);
-    canvas.onMouseMove(function (e) {
-        state.cursorPoint = canvas.grid.closestPt;
-    });
-    canvas.onMouseDown(function (e) {
-        state.downAt = new Date().getTime();
-        state.mouseDown = true;
-        state.selection = what(canvas.grid.closestPt, layers);
-        if (state.selection) {
-            state.pinnedPts = util.clone(state.selection.layer.shape.pts);
-        }
-        else {
-            // const addLayer(
-        }
-        console.log(state.selection);
-        state.pinnerCursorPoint = canvas.grid.closestPt;
-        state.process();
-    });
-    canvas.onMouseUp(function (e) {
-        if (new Date().getTime() - state.downAt < QUICK_CLICK_MS) {
-            console.log("quick click");
-        }
-        state.mouseDown = false;
-        state.process();
-    });
+var State = /** @class */ (function () {
+    function State() {
+    }
+    return State;
+}());
+function configure(os) {
+    var state = new State();
+    var system = new System(os, state);
+    system.connect();
 }
 exports.configure = configure;
 function addLayer(layers, shape) {
@@ -418,24 +440,54 @@ function what(cursor, layers) {
         }
     }
 }
-var State = /** @class */ (function () {
-    function State(canvas) {
-        this.canvas = canvas;
+var QUICK_CLICK_MS = 200;
+var System = /** @class */ (function () {
+    function System(os, state) {
+        this.state = state;
+        this.os = os;
     }
-    State.prototype.process = function () {
-        if (this.mouseDown && this.selection) {
-            if (this.selection.area === Area.Corner) {
-                this.selection.layer.shape.pts = [
-                    this.pinnerCursorPoint,
-                    this.cursorPoint
-                ];
-            }
-            else if (this.selection.area === Area.Center) {
-                this.selection.layer.shape.pts = (util.add(util.subtract(this.cursorPoint, this.pinnerCursorPoint), this.pinnedPts));
-            }
+    System.prototype.connect = function () {
+        this.os.canvas.onMouseDown(this.handleMouseDown.bind(this));
+        this.os.canvas.onMouseUp(this.handleMouseUp.bind(this));
+        this.os.canvas.onMouseMove(this.handleMouseMove.bind(this));
+    };
+    System.prototype.handleMouseUp = function (e) {
+        this.state.mouseDown = false;
+        if (new Date().getTime() - this.state.downAt < QUICK_CLICK_MS) {
+            this.os.toolbar.show(this.os.canvas.grid.cursorPt);
         }
     };
-    return State;
+    System.prototype.handleMouseDown = function (e) {
+        this.state.mouseDown = true;
+        this.state.downAt = new Date().getTime();
+        // state.mouseDown = true;
+        // state.selection = what(canvas.grid.closestPt, layers);
+        // if (state.selection) {
+        //   state.pinnedPts = util.clone(state.selection.layer.shape.pts);
+        // } else {
+        //   // const addLayer(
+        // }
+        // console.log(state.selection);
+        // state.pinnerCursorPoint = canvas.grid.closestPt;
+        // state.process();
+    };
+    System.prototype.handleMouseMove = function (e) {
+        // if (this.mouseDown && this.selection) {
+        //   if (this.selection.area === Area.Corner) {
+        //     this.selection.layer.shape.pts = [
+        //       this.pinnerCursorPoint,
+        //       this.cursorPoint
+        //     ];
+        //   } else if (this.selection.area === Area.Center) {
+        //     this.selection.layer.shape.pts = <Group>(
+        //       util.add(
+        //         <Point>util.subtract(this.cursorPoint, this.pinnerCursorPoint),
+        //         this.pinnedPts
+        //       )
+        //     );
+        //   }
+    };
+    return System;
 }());
 //# sourceMappingURL=interactions.js.map
 }
@@ -531,15 +583,33 @@ var component_1 = require("./component");
 var Toolbar = /** @class */ (function (_super) {
     __extends(Toolbar, _super);
     function Toolbar() {
-        var _this = _super !== null && _super.apply(this, arguments) || this;
-        _this.layers = [];
-        return _this;
+        return _super !== null && _super.apply(this, arguments) || this;
     }
     Toolbar.prototype.render = function () {
-        var section = dom.section("toolbar-container");
-        section.style.width = "42px";
-        section.style.background = this.colorPalette.toolbarBg;
-        this.rendered(section);
+        var width = 42;
+        var el = dom.section("toolbar");
+        el.style.width = width + "px";
+        el.style.background = this.colorPalette.toolbarBg;
+        el.style.position = "absolute";
+        if (this.showing) {
+            el.style.display = "absolute";
+            el.style.left = this.position[0] - width / 2 + "px";
+            el.style.top = this.position[1] + "px";
+            el.innerHTML = "IAMTOOLBAR";
+        }
+        else {
+            el.style.display = "none";
+        }
+        this.rendered(el);
+    };
+    Toolbar.prototype.show = function (pos) {
+        this.showing = true;
+        this.position = pos;
+        this.render();
+    };
+    Toolbar.prototype.hide = function () {
+        this.showing = false;
+        this.render();
     };
     return Toolbar;
 }(component_1["default"]));

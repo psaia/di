@@ -2,6 +2,7 @@ import Canvas from "./canvas";
 import Layers from "./layers";
 import Layer from "./layer";
 import Toolbar from "./toolbar";
+import ControlDrawer from "./controldrawer";
 import Rect from "./rect";
 import * as util from "./util";
 
@@ -17,36 +18,27 @@ interface Selection {
   area: Area;
 }
 
-const QUICK_CLICK_MS = 200;
+interface OS {
+  toolbar: Toolbar;
+  canvas: Canvas;
+  layers: Layers;
+  controldrawer: ControlDrawer;
+}
 
-export function configure(canvas: Canvas, toolbar: Toolbar, layers: Layers) {
-  const state = new State(canvas);
+class State {
+  public cursorPoint: Point;
+  public pinnerCursorPoint: Point;
+  public mouseDown: boolean;
+  public selection: Selection | null;
+  public pinnedPts: Group | null;
+  public downAt: number;
+  protected canvas: Canvas;
+}
 
-  canvas.onMouseMove((e: MouseEvent) => {
-    state.cursorPoint = canvas.grid.closestPt;
-  });
-
-  canvas.onMouseDown((e: MouseEvent) => {
-    state.downAt = new Date().getTime();
-    state.mouseDown = true;
-    state.selection = what(canvas.grid.closestPt, layers);
-    if (state.selection) {
-      state.pinnedPts = util.clone(state.selection.layer.shape.pts);
-    } else {
-      // const addLayer(
-    }
-    console.log(state.selection);
-    state.pinnerCursorPoint = canvas.grid.closestPt;
-    state.process();
-  });
-
-  canvas.onMouseUp((e: MouseEvent) => {
-    if (new Date().getTime() - state.downAt < QUICK_CLICK_MS) {
-      console.log("quick click");
-    }
-    state.mouseDown = false;
-    state.process();
-  });
+export function configure(os: OS): void {
+  const state = new State();
+  const system = new System(os, state);
+  system.connect();
 }
 
 function addLayer(layers: Layers, shape): Layer {
@@ -78,35 +70,55 @@ function what(cursor: Point, layers: Layers): Selection | null {
   }
 }
 
-class State {
-  public cursorPoint: Point;
-  public pinnerCursorPoint: Point;
-  public mouseDown: boolean;
-  public selection: Selection | null;
-  public pinnedPts: Group | null;
-  public downAt: number;
+const QUICK_CLICK_MS = 200;
 
-  protected canvas: Canvas;
-
-  constructor(canvas: Canvas) {
-    this.canvas = canvas;
+class System {
+  private state: State;
+  private os: OS;
+  constructor(os: OS, state: State) {
+    this.state = state;
+    this.os = os;
+  }
+  public connect() {
+    this.os.canvas.onMouseDown(this.handleMouseDown.bind(this));
+    this.os.canvas.onMouseUp(this.handleMouseUp.bind(this));
+    this.os.canvas.onMouseMove(this.handleMouseMove.bind(this));
+  }
+  private handleMouseUp(e: MouseEvent) {
+    this.state.mouseDown = false;
+    if (new Date().getTime() - this.state.downAt < QUICK_CLICK_MS) {
+      this.os.toolbar.show(this.os.canvas.grid.cursorPt);
+    }
   }
 
-  public process() {
-    if (this.mouseDown && this.selection) {
-      if (this.selection.area === Area.Corner) {
-        this.selection.layer.shape.pts = [
-          this.pinnerCursorPoint,
-          this.cursorPoint
-        ];
-      } else if (this.selection.area === Area.Center) {
-        this.selection.layer.shape.pts = <Group>(
-          util.add(
-            <Point>util.subtract(this.cursorPoint, this.pinnerCursorPoint),
-            this.pinnedPts
-          )
-        );
-      }
-    }
+  private handleMouseDown(e: MouseEvent) {
+    this.state.mouseDown = true;
+    this.state.downAt = new Date().getTime();
+    // state.mouseDown = true;
+    // state.selection = what(canvas.grid.closestPt, layers);
+    // if (state.selection) {
+    //   state.pinnedPts = util.clone(state.selection.layer.shape.pts);
+    // } else {
+    //   // const addLayer(
+    // }
+    // console.log(state.selection);
+    // state.pinnerCursorPoint = canvas.grid.closestPt;
+    // state.process();
+  }
+  private handleMouseMove(e: MouseEvent) {
+    // if (this.mouseDown && this.selection) {
+    //   if (this.selection.area === Area.Corner) {
+    //     this.selection.layer.shape.pts = [
+    //       this.pinnerCursorPoint,
+    //       this.cursorPoint
+    //     ];
+    //   } else if (this.selection.area === Area.Center) {
+    //     this.selection.layer.shape.pts = <Group>(
+    //       util.add(
+    //         <Point>util.subtract(this.cursorPoint, this.pinnerCursorPoint),
+    //         this.pinnedPts
+    //       )
+    //     );
+    //   }
   }
 }

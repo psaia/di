@@ -1,4 +1,5 @@
 import * as dom from "./dom";
+import ControlDrawer from "./controldrawer";
 import Canvas from "./canvas";
 import Layers from "./layers";
 import Toolbar from "./toolbar";
@@ -14,24 +15,28 @@ const defaultPalette = {
   stageColor: "#fff",
   gridColor: "#111",
   shapeColor: "#ccc",
-  toolbarBg: "#690000",
-  toolbarColor: "#FFF"
+  toolbarBg: "#FFF",
+  toolbarColor: "#FFF",
+  controldrawerBg: "#690000",
+  controldrawerColor: "#FFF"
 };
 
 function di(parentSelector: string) {
   const parent = dom.select(parentSelector);
+  const controldrawer = new ControlDrawer(defaultPalette);
   const toolbar = new Toolbar(defaultPalette);
   const layers = new Layers(defaultPalette);
   const canvas = new Canvas(defaultPalette);
-  const actions = new Canvas(defaultPalette);
 
-  toolbar.onRender(dom.renderer(parent));
+  controldrawer.onRender(dom.renderer(parent));
   layers.onRender(dom.renderer(parent));
   canvas.onRender(dom.renderer(parent));
+  toolbar.onRender(dom.renderer(parent));
 
   canvas.render();
   toolbar.render();
   layers.render();
+  controldrawer.render();
 
-  interactions.configure(canvas, toolbar, layers);
+  interactions.configure({ canvas, toolbar, layers, controldrawer });
 }

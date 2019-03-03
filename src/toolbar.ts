@@ -1,16 +1,36 @@
 import * as dom from "./dom";
 import Layer from "./layer";
 import Component from "./component";
-import { LayerType, ColorPalette, RenderFn } from "./types";
+import { Point, LayerType, ColorPalette, RenderFn } from "./types";
 
 export default class Toolbar extends Component {
-  protected layers: Layer[] = [];
-
+  showing: boolean;
+  position: Point;
   render() {
-    const section = dom.section("toolbar-container");
-    section.style.width = "42px";
-    section.style.background = this.colorPalette.toolbarBg;
+    const width = 42;
+    const el = dom.section("toolbar");
+    el.style.width = `${width}px`;
+    el.style.background = this.colorPalette.toolbarBg;
+    el.style.position = "absolute";
 
-    this.rendered(section);
+    if (this.showing) {
+      el.style.display = "absolute";
+      el.style.left = `${this.position[0] - width / 2}px`;
+      el.style.top = `${this.position[1]}px`;
+      el.innerHTML = "IAMTOOLBAR";
+    } else {
+      el.style.display = "none";
+    }
+
+    this.rendered(el);
+  }
+  show(pos: Point) {
+    this.showing = true;
+    this.position = pos;
+    this.render();
+  }
+  hide() {
+    this.showing = false;
+    this.render();
   }
 }

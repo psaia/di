@@ -1,3 +1,4 @@
+
 export type Point = Float32Array;
 
 export type ElementLike = Element | HTMLElement | HTMLCanvasElement;
@@ -19,6 +20,8 @@ export enum LayerType {
 }
 
 export interface ColorPalette {
+  controldrawerBg: string;
+  controldrawerColor: string;
   toolbarBg: string;
   toolbarColor: string;
   stageBg: string;
