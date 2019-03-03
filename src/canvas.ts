@@ -11,7 +11,6 @@ export default class Canvas extends Component {
   public canvas: HTMLCanvasElement;
   public grid: Grid;
   protected pixelScale = 1;
-  protected time = { prev: 0, diff: 0 };
   protected shapes: any = [];
   protected mouseDownFn: (e?: any) => void;
   protected mouseUpFn: (e?: any) => void;
@@ -42,23 +41,16 @@ export default class Canvas extends Component {
     o.addEventListener(evt, fn, false);
   }
 
-  private play(time = 0) {
-    requestAnimationFrame(this.play.bind(this));
+  private play = (time = 0) => {
+    requestAnimationFrame(this.play);
 
-    this.time.diff = time - this.time.prev;
-    this.time.prev = time;
-
-    this.renderShapes();
-  }
-
-  private renderShapes() {
     this.ctx.clearRect(0, 0, this.width, this.height);
     this.grid.render();
 
     for (let i = 0, l = this.shapes.length; i < l; i++) {
       this.shapes[i].render(this.colorPalette);
     }
-  }
+  };
 
   private resize(container: HTMLElement) {
     const { width, height } = dom.getDimensions(container);
@@ -79,8 +71,34 @@ export default class Canvas extends Component {
       this.ctx.scale(this.pixelScale, this.pixelScale);
       this.ctx.translate(0.5, 0.5);
     }
+  }
 
-    this.renderShapes();
+  private registerListeners(container: HTMLElement) {
+    this.listen(this.canvas, "mousemove", e => {
+      this.grid.setCursor(util.pt(e.layerX, e.layerY));
+      if (this.mouseMoveFn) {
+        this.mouseMoveFn(e);
+      }
+    });
+
+    this.listen(this.canvas, "mousedown", e => {
+      if (this.mouseDownFn) {
+        this.mouseDownFn(e);
+      }
+    });
+
+    this.listen(this.canvas, "mouseup", e => {
+      if (this.mouseUpFn) {
+        this.mouseUpFn(e);
+      }
+    });
+
+    this.listen(window, "resize", () => {
+      this.resize(container);
+      if (this.resizeFn) {
+        this.resizeFn();
+      }
+    });
   }
 
   render() {
@@ -99,26 +117,8 @@ export default class Canvas extends Component {
     this.grid = new Grid(this.ctx);
     this.grid.setColor(this.colorPalette.gridColor);
 
-    this.listen(this.canvas, "mousemove", e => {
-      this.grid.setCursor(util.pt(e.layerX, e.layerY));
-      this.mouseMoveFn(e);
-    });
-
-    this.listen(this.canvas, "mousedown", e => {
-      this.mouseDownFn(e);
-    });
-
-    this.listen(this.canvas, "mouseup", e => {
-      this.mouseUpFn(e);
-    });
-
-    this.listen(window, "resize", () => {
-      this.resize(container);
-      this.resizeFn();
-    });
-
+    this.registerListeners(container);
     this.rendered(container);
-
     this.play();
     this.resize(container);
   }

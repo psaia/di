@@ -17,6 +17,8 @@ interface Selection {
   area: Area;
 }
 
+const QUICK_CLICK_MS = 200;
+
 export function configure(canvas: Canvas, toolbar: Toolbar, layers: Layers) {
   const state = new State(canvas);
 
@@ -25,6 +27,7 @@ export function configure(canvas: Canvas, toolbar: Toolbar, layers: Layers) {
   });
 
   canvas.onMouseDown((e: MouseEvent) => {
+    state.downAt = new Date().getTime();
     state.mouseDown = true;
     state.selection = what(canvas.grid.closestPt, layers);
     if (state.selection) {
@@ -38,6 +41,9 @@ export function configure(canvas: Canvas, toolbar: Toolbar, layers: Layers) {
   });
 
   canvas.onMouseUp((e: MouseEvent) => {
+    if (new Date().getTime() - state.downAt < QUICK_CLICK_MS) {
+      console.log("quick click");
+    }
     state.mouseDown = false;
     state.process();
   });
@@ -78,6 +84,7 @@ class State {
   public mouseDown: boolean;
   public selection: Selection | null;
   public pinnedPts: Group | null;
+  public downAt: number;
 
   protected canvas: Canvas;
 

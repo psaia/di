@@ -82,8 +82,16 @@ var Canvas = /** @class */ (function (_super) {
         _this.width = 0;
         _this.height = 0;
         _this.pixelScale = 1;
-        _this.time = { prev: 0, diff: 0 };
         _this.shapes = [];
+        _this.play = function (time) {
+            if (time === void 0) { time = 0; }
+            requestAnimationFrame(_this.play);
+            _this.ctx.clearRect(0, 0, _this.width, _this.height);
+            _this.grid.render();
+            for (var i = 0, l = _this.shapes.length; i < l; i++) {
+                _this.shapes[i].render(_this.colorPalette);
+            }
+        };
         return _this;
     }
     Canvas.prototype.addShape = function (layer) {
@@ -104,20 +112,6 @@ var Canvas = /** @class */ (function (_super) {
     Canvas.prototype.listen = function (o, evt, fn) {
         o.addEventListener(evt, fn, false);
     };
-    Canvas.prototype.play = function (time) {
-        if (time === void 0) { time = 0; }
-        requestAnimationFrame(this.play.bind(this));
-        this.time.diff = time - this.time.prev;
-        this.time.prev = time;
-        this.renderShapes();
-    };
-    Canvas.prototype.renderShapes = function () {
-        this.ctx.clearRect(0, 0, this.width, this.height);
-        this.grid.render();
-        for (var i = 0, l = this.shapes.length; i < l; i++) {
-            this.shapes[i].render(this.colorPalette);
-        }
-    };
     Canvas.prototype.resize = function (container) {
         var _a = dom.getDimensions(container), width = _a.width, height = _a.height;
         this.width = width;
@@ -133,10 +127,33 @@ var Canvas = /** @class */ (function (_super) {
             this.ctx.scale(this.pixelScale, this.pixelScale);
             this.ctx.translate(0.5, 0.5);
         }
-        this.renderShapes();
+    };
+    Canvas.prototype.registerListeners = function (container) {
+        var _this = this;
+        this.listen(this.canvas, "mousemove", function (e) {
+            _this.grid.setCursor(util.pt(e.layerX, e.layerY));
+            if (_this.mouseMoveFn) {
+                _this.mouseMoveFn(e);
+            }
+        });
+        this.listen(this.canvas, "mousedown", function (e) {
+            if (_this.mouseDownFn) {
+                _this.mouseDownFn(e);
+            }
+        });
+        this.listen(this.canvas, "mouseup", function (e) {
+            if (_this.mouseUpFn) {
+                _this.mouseUpFn(e);
+            }
+        });
+        this.listen(window, "resize", function () {
+            _this.resize(container);
+            if (_this.resizeFn) {
+                _this.resizeFn();
+            }
+        });
     };
     Canvas.prototype.render = function () {
-        var _this = this;
         var container = dom.section("app");
         container.style.height = "100%";
         container.style.width = "100%";
@@ -148,20 +165,7 @@ var Canvas = /** @class */ (function (_super) {
         this.pixelScale = window.devicePixelRatio;
         this.grid = new grid_1["default"](this.ctx);
         this.grid.setColor(this.colorPalette.gridColor);
-        this.listen(this.canvas, "mousemove", function (e) {
-            _this.grid.setCursor(util.pt(e.layerX, e.layerY));
-            _this.mouseMoveFn(e);
-        });
-        this.listen(this.canvas, "mousedown", function (e) {
-            _this.mouseDownFn(e);
-        });
-        this.listen(this.canvas, "mouseup", function (e) {
-            _this.mouseUpFn(e);
-        });
-        this.listen(window, "resize", function () {
-            _this.resize(container);
-            _this.resizeFn();
-        });
+        this.registerListeners(container);
         this.rendered(container);
         this.play();
         this.resize(container);
@@ -361,12 +365,14 @@ var Area;
     Area[Area["Corner"] = 0] = "Corner";
     Area[Area["Center"] = 1] = "Center";
 })(Area || (Area = {}));
+var QUICK_CLICK_MS = 200;
 function configure(canvas, toolbar, layers) {
     var state = new State(canvas);
     canvas.onMouseMove(function (e) {
         state.cursorPoint = canvas.grid.closestPt;
     });
     canvas.onMouseDown(function (e) {
+        state.downAt = new Date().getTime();
         state.mouseDown = true;
         state.selection = what(canvas.grid.closestPt, layers);
         if (state.selection) {
@@ -380,6 +386,9 @@ function configure(canvas, toolbar, layers) {
         state.process();
     });
     canvas.onMouseUp(function (e) {
+        if (new Date().getTime() - state.downAt < QUICK_CLICK_MS) {
+            console.log("quick click");
+        }
         state.mouseDown = false;
         state.process();
     });
