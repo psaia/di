@@ -8,11 +8,11 @@ export default abstract class Component {
     this.setColorPalette(defaultPalette);
   }
 
-  onRender(fn: RenderFn) {
+  public onRender(fn: RenderFn) {
     this.rendered = fn;
   }
 
-  setColorPalette(c: ColorPalette) {
+  public setColorPalette(c: ColorPalette) {
     this.colorPalette = c;
   }
 

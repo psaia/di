@@ -1,15 +1,12 @@
-export interface Dimension {
-  width: number;
-  height: number;
-}
+import { Dimension, ElementLike, RenderFn } from "./types";
 
 const prefix = "di__";
 
-export function renderer(c: Element | HTMLElement | HTMLCanvasElement) {
-  let lastNode: any = section("-");
+export function renderer(c: ElementLike): RenderFn {
+  let lastNode: ElementLike = section("-");
   c.appendChild(lastNode);
 
-  return function<T extends Element>(el: T): void {
+  return function(el: ElementLike): void {
     c.replaceChild(el, lastNode);
     lastNode = el;
   };

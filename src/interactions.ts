@@ -7,6 +7,16 @@ import * as util from "./util";
 
 import { ActionType, Point, Group, LayerType } from "./types";
 
+function addLayer(layers: Layers, shape) {
+  const layer = new Layer();
+  layer.humanName = "Rectangle";
+  layer.type = LayerType.Rect;
+  layer.shape = shape;
+
+  layers.addLayer(layer);
+  layers.render();
+}
+
 export function configure(canvas: Canvas, toolbar: Toolbar, layers: Layers) {
   const rects: Rect[] = [];
   const lastRect = () => rects[rects.length - 1];
@@ -24,16 +34,6 @@ export function configure(canvas: Canvas, toolbar: Toolbar, layers: Layers) {
         }
       }
     }
-  };
-
-  const addLayer = shape => {
-    const layer = new Layer();
-    layer.humanName = "Rectangle";
-    layer.type = LayerType.Rect;
-    layer.shape = shape;
-
-    layers.addLayer(layer);
-    layers.render();
   };
 
   let tmpPts;
@@ -68,7 +68,7 @@ export function configure(canvas: Canvas, toolbar: Toolbar, layers: Layers) {
       _activeShape = new Rect(canvas);
       canvas.addShape(_activeShape);
       rects.push(_activeShape);
-      addLayer(_activeShape);
+      addLayer(layers, _activeShape);
 
       rectAction = ActionType.Creating;
     }

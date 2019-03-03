@@ -1,6 +1,8 @@
 export type Point = Float32Array;
 
-export type RenderFn = (elements: HTMLElement) => void;
+export type ElementLike = Element | HTMLElement | HTMLCanvasElement;
+
+export type RenderFn = (elements: ElementLike) => void;
 
 export type Group = Float32Array[];
 
@@ -25,4 +27,9 @@ export interface ColorPalette {
   layersColor: string;
   gridColor: string;
   shapeColor: string;
+}
+
+export interface Dimension {
+  width: number;
+  height: number;
 }

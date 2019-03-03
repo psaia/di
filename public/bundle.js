@@ -348,6 +348,14 @@ var layer_1 = require("./layer");
 var rect_1 = require("./rect");
 var util = require("./util");
 var types_1 = require("./types");
+function addLayer(layers, shape) {
+    var layer = new layer_1["default"]();
+    layer.humanName = "Rectangle";
+    layer.type = types_1.LayerType.Rect;
+    layer.shape = shape;
+    layers.addLayer(layer);
+    layers.render();
+}
 function configure(canvas, toolbar, layers) {
     var rects = [];
     var lastRect = function () { return rects[rects.length - 1]; };
@@ -363,14 +371,6 @@ function configure(canvas, toolbar, layers) {
                 }
             }
         }
-    };
-    var addLayer = function (shape) {
-        var layer = new layer_1["default"]();
-        layer.humanName = "Rectangle";
-        layer.type = types_1.LayerType.Rect;
-        layer.shape = shape;
-        layers.addLayer(layer);
-        layers.render();
     };
     var tmpPts;
     canvas.evt.subscribe("mousemove", function (e) {
@@ -397,7 +397,7 @@ function configure(canvas, toolbar, layers) {
             _activeShape = new rect_1["default"](canvas);
             canvas.addShape(_activeShape);
             rects.push(_activeShape);
-            addLayer(_activeShape);
+            addLayer(layers, _activeShape);
             rectAction = types_1.ActionType.Creating;
         }
     });
