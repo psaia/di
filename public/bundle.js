@@ -468,13 +468,15 @@ var MarqueeEngine = /** @class */ (function (_super) {
     }
     MarqueeEngine.prototype.start = function (c, s) {
         this.shape = new marquee_1["default"]();
-        this.shape.pts = [s.pinnerCursorPoint, s.cursorPoint];
+        this.shape.pts = [s.pinnedCursorPoint, s.cursorPoint];
         this.initialPts = util.clone(this.shape.pts);
         c.addShape(this.shape);
     };
-    MarqueeEngine.prototype.stop = function () { };
+    MarqueeEngine.prototype.stop = function () {
+        this.shape.stop();
+    };
     MarqueeEngine.prototype.run = function (s) {
-        this.shape.pts = (util.add(util.subtract(s.cursorPoint, s.pinnerCursorPoint), this.initialPts));
+        this.shape.pts = [s.pinnedCursorPoint, s.cursorPoint];
     };
     return MarqueeEngine;
 }(Engine));
@@ -537,7 +539,7 @@ var Shell = /** @class */ (function () {
     Shell.prototype.handleMouseDown = function (e) {
         this.os.toolbar.hide();
         this.state.downAt = new Date().getTime();
-        this.state.pinnerCursorPoint = this.os.canvas.grid.closestPt;
+        this.state.pinnedCursorPoint = this.os.canvas.grid.closestPt;
         this.state.cursorPoint = this.os.canvas.grid.closestPt;
         if (this.state.mode === types_1.Mode.Marquee) {
             this.activity = new MarqueeEngine();
@@ -649,7 +651,6 @@ var Marquee = /** @class */ (function (_super) {
         if (!this.animating || this.pts.length < 2) {
             return;
         }
-        console.log("drawing", this.pts);
         ctx.beginPath();
         ctx.moveTo(this.pts[0][0], this.pts[0][1]);
         ctx.lineTo(this.pts[0][0], this.pts[1][1]);

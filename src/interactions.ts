@@ -35,9 +35,7 @@ export function configure(os: OS): void {
 class State {
   public mode: Mode;
   public cursorPoint: Point;
-  public pinnerCursorPoint: Point;
-  public selection: Selection | null;
-  public pinnedPts: Group | null;
+  public pinnedCursorPoint: Point;
   public downAt: number;
   protected canvas: Canvas;
 }
@@ -53,18 +51,16 @@ class MarqueeEngine extends Engine {
   initialPts: Group;
   start(c: Canvas, s: State) {
     this.shape = new Marquee();
-    this.shape.pts = [s.pinnerCursorPoint, s.cursorPoint];
+    this.shape.pts = [s.pinnedCursorPoint, s.cursorPoint];
     this.initialPts = util.clone(this.shape.pts);
     c.addShape(this.shape);
   }
-  stop() {}
+  stop() {
+    this.shape.stop();
+    // NOW REMOVE IT.
+  }
   run(s: State) {
-    this.shape.pts = <Group>(
-      util.add(
-        <Point>util.subtract(s.cursorPoint, s.pinnerCursorPoint),
-        this.initialPts
-      )
-    );
+    this.shape.pts = [s.pinnedCursorPoint, s.cursorPoint];
   }
 }
 
@@ -134,7 +130,7 @@ class Shell {
   private handleMouseDown(e: MouseEvent) {
     this.os.toolbar.hide();
     this.state.downAt = new Date().getTime();
-    this.state.pinnerCursorPoint = this.os.canvas.grid.closestPt;
+    this.state.pinnedCursorPoint = this.os.canvas.grid.closestPt;
     this.state.cursorPoint = this.os.canvas.grid.closestPt;
 
     if (this.state.mode === Mode.Marquee) {
