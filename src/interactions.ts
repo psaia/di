@@ -4,9 +4,10 @@ import Layer from "./layer";
 import Toolbar from "./toolbar";
 import ControlDrawer from "./controldrawer";
 import Rect from "./rect";
+import Marquee from "./marquee";
 import * as util from "./util";
 
-import { ActionType, Point, Group, LayerType } from "./types";
+import { Mode, ActionType, Point, Group, LayerType } from "./types";
 
 enum Area {
   Corner = 0,
@@ -25,100 +26,137 @@ interface OS {
   controldrawer: ControlDrawer;
 }
 
+export function configure(os: OS): void {
+  const state = new State();
+  const shell = new Shell(os, state);
+  shell.dombind();
+}
+
 class State {
+  public mode: Mode;
   public cursorPoint: Point;
   public pinnerCursorPoint: Point;
-  public mouseDown: boolean;
   public selection: Selection | null;
   public pinnedPts: Group | null;
   public downAt: number;
   protected canvas: Canvas;
 }
 
-export function configure(os: OS): void {
-  const state = new State();
-  const system = new System(os, state);
-  system.connect();
+abstract class Engine {
+  abstract start(c: Canvas, s: State);
+  abstract stop();
+  abstract run(s: State);
 }
 
-function addLayer(layers: Layers, shape): Layer {
-  const layer = new Layer();
-  layer.humanName = "Rectangle";
-  layer.type = LayerType.Rect;
-  layer.shape = shape;
-  layers.addLayer(layer);
-  layers.render();
-
-  return layer;
-}
-
-function what(cursor: Point, layers: Layers): Selection | null {
-  const list = layers.getLayers();
-
-  for (let i = 0, l = list.length; i < l; i++) {
-    const layer = list[i];
-    const shape = list[i].shape;
-
-    if (shape.pts.length > 1) {
-      if (util.withinBound(cursor, shape.pts)) {
-        return {
-          layer,
-          area: Area.Corner
-        };
-      }
-    }
+class MarqueeEngine extends Engine {
+  shape: Marquee;
+  initialPts: Group;
+  start(c: Canvas, s: State) {
+    this.shape = new Marquee();
+    this.shape.pts = [s.pinnerCursorPoint, s.cursorPoint];
+    this.initialPts = util.clone(this.shape.pts);
+    c.addShape(this.shape);
+  }
+  stop() {}
+  run(s: State) {
+    this.shape.pts = <Group>(
+      util.add(
+        <Point>util.subtract(s.cursorPoint, s.pinnerCursorPoint),
+        this.initialPts
+      )
+    );
   }
 }
 
+// function addLayer(layers: Layers, shape): Layer {
+//   const layer = new Layer();
+//   layer.humanName = "Rectangle";
+//   layer.type = LayerType.Rect;
+//   layer.shape = shape;
+//   layers.addLayer(layer);
+//   layers.render();
+//
+//   return layer;
+// }
+
+// function what(cursor: Point, layers: Layers): Selection | null {
+//   const list = layers.getLayers();
+//
+//   for (let i = 0, l = list.length; i < l; i++) {
+//     const layer = list[i];
+//     const shape = list[i].shape;
+//
+//     if (shape.pts.length > 1) {
+//       if (util.withinBound(cursor, shape.pts)) {
+//         return {
+//           layer,
+//           area: Area.Corner
+//         };
+//       }
+//     }
+//   }
+// }
+
+// class RectangleEngine extends Engine {
+//   start(c: Canvas, s: State) {
+//     const shape = new Marquee(c);
+//     const layer = new Layer();
+//     layer.humanName = "Rectangle";
+//     layer.type = LayerType.Rect;
+//     layer.shape = shape;
+//
+//     s.selection = what(canvas.grid.closestPt, layers);
+//     this.initialPts = util.clone(s.selection.layer.shape.pts);
+//   }
+//   stop() {}
+// }
+
 const QUICK_CLICK_MS = 200;
 
-class System {
+class Shell {
+  private activity: null | MarqueeEngine;
   private state: State;
   private os: OS;
   constructor(os: OS, state: State) {
     this.state = state;
     this.os = os;
   }
-  public connect() {
+  public dombind() {
     this.os.canvas.onMouseDown(this.handleMouseDown.bind(this));
     this.os.canvas.onMouseUp(this.handleMouseUp.bind(this));
     this.os.canvas.onMouseMove(this.handleMouseMove.bind(this));
+    this.os.toolbar.onModeChange = this.handleChangeMode.bind(this);
   }
-  private handleMouseUp(e: MouseEvent) {
-    this.state.mouseDown = false;
-    if (new Date().getTime() - this.state.downAt < QUICK_CLICK_MS) {
-      this.os.toolbar.show(this.os.canvas.grid.cursorPt);
+  private handleChangeMode(m: Mode) {
+    this.state.mode = m;
+    this.os.toolbar.hide();
+  }
+  private handleMouseDown(e: MouseEvent) {
+    this.os.toolbar.hide();
+    this.state.downAt = new Date().getTime();
+    this.state.pinnerCursorPoint = this.os.canvas.grid.closestPt;
+    this.state.cursorPoint = this.os.canvas.grid.closestPt;
+
+    if (this.state.mode === Mode.Marquee) {
+      this.activity = new MarqueeEngine();
+      this.activity.start(this.os.canvas, this.state);
     }
   }
-
-  private handleMouseDown(e: MouseEvent) {
-    this.state.mouseDown = true;
-    this.state.downAt = new Date().getTime();
-    // state.mouseDown = true;
-    // state.selection = what(canvas.grid.closestPt, layers);
-    // if (state.selection) {
-    //   state.pinnedPts = util.clone(state.selection.layer.shape.pts);
-    // } else {
-    //   // const addLayer(
-    // }
-    // console.log(state.selection);
-    // state.pinnerCursorPoint = canvas.grid.closestPt;
-    // state.process();
+  private handleMouseUp(e: MouseEvent) {
+    if (new Date().getTime() - this.state.downAt < QUICK_CLICK_MS) {
+      this.os.toolbar.show(this.os.canvas.grid.closestPt);
+    } else {
+      if (this.activity) {
+        this.activity.stop();
+        this.activity = null;
+      }
+    }
   }
   private handleMouseMove(e: MouseEvent) {
-    // if (this.mouseDown && this.selection) {
-    //   if (this.selection.area === Area.Corner) {
-    //     this.selection.layer.shape.pts = [
-    //       this.pinnerCursorPoint,
-    //       this.cursorPoint
-    //     ];
-    //   } else if (this.selection.area === Area.Center) {
-    //     this.selection.layer.shape.pts = <Group>(
-    //       util.add(
-    //         <Point>util.subtract(this.cursorPoint, this.pinnerCursorPoint),
-    //         this.pinnedPts
-    //       )
-    //     );
-    //   }
+    this.state.cursorPoint = this.os.canvas.grid.closestPt;
+
+    if (this.activity) {
+      this.activity.run(this.state);
+    }
   }
 }

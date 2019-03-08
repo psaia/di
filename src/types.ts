@@ -1,4 +1,3 @@
-
 export type Point = Float32Array;
 
 export type ElementLike = Element | HTMLElement | HTMLCanvasElement;
@@ -15,6 +14,13 @@ export enum ActionType {
 
 export enum LayerType {
   Rect = 0,
+  Line,
+  Text
+}
+
+export enum Mode {
+  Marquee = 0,
+  Rectangle,
   Line,
   Text
 }

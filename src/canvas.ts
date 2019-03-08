@@ -48,7 +48,7 @@ export default class Canvas extends Component {
     this.grid.render();
 
     for (let i = 0, l = this.shapes.length; i < l; i++) {
-      this.shapes[i].render(this.colorPalette);
+      this.shapes[i].render(this.ctx, this.colorPalette);
     }
   };
 
@@ -105,6 +105,7 @@ export default class Canvas extends Component {
     const container = dom.section("app");
     container.style.height = "100%";
     container.style.width = "100%";
+    container.style.display = "relative";
     container.style.overflow = "hidden";
     container.style.background = this.colorPalette.stageBg;
 

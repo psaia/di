@@ -89,7 +89,7 @@ var Canvas = /** @class */ (function (_super) {
             _this.ctx.clearRect(0, 0, _this.width, _this.height);
             _this.grid.render();
             for (var i = 0, l = _this.shapes.length; i < l; i++) {
-                _this.shapes[i].render(_this.colorPalette);
+                _this.shapes[i].render(_this.ctx, _this.colorPalette);
             }
         };
         return _this;
@@ -157,6 +157,7 @@ var Canvas = /** @class */ (function (_super) {
         var container = dom.section("app");
         container.style.height = "100%";
         container.style.width = "100%";
+        container.style.display = "relative";
         container.style.overflow = "hidden";
         container.style.background = this.colorPalette.stageBg;
         this.canvas = dom.canvas();
@@ -282,8 +283,20 @@ function renderer(c) {
     };
 }
 exports.renderer = renderer;
-function getDimensions(element) {
-    var dim = element.getBoundingClientRect();
+function getDimensions(element, inject) {
+    if (inject === void 0) { inject = false; }
+    var dim;
+    if (inject) {
+        var clone = element.cloneNode(true);
+        clone.style.display = "block";
+        clone.style.visibility = "hidden";
+        document.body.appendChild(clone);
+        dim = clone.getBoundingClientRect();
+        document.body.removeChild(clone);
+    }
+    else {
+        dim = element.getBoundingClientRect();
+    }
     return {
         height: dim.height,
         width: dim.width
@@ -314,6 +327,20 @@ function li(className) {
     return li;
 }
 exports.li = li;
+function button(className) {
+    if (className === void 0) { className = ""; }
+    var button = document.createElement("button");
+    button.className = prefix + className;
+    return button;
+}
+exports.button = button;
+function a(className) {
+    if (className === void 0) { className = ""; }
+    var a = document.createElement("a");
+    a.className = prefix + className;
+    return a;
+}
+exports.a = a;
 function canvas(className) {
     if (className === void 0) { className = ""; }
     var canvas = document.createElement("canvas");
@@ -394,10 +421,23 @@ var Grid = /** @class */ (function () {
 exports["default"] = Grid;
 //# sourceMappingURL=grid.js.map
 }
-  Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/interactions.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2finteractions$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2finteractions$2ejs.deps = {"./util":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2futil$2ejs,"./layer":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2flayer$2ejs,"./types":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftypes$2ejs}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2finteractions$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/interactions.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2finteractions$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
+  Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/interactions.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2finteractions$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2finteractions$2ejs.deps = {"./util":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2futil$2ejs,"./types":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftypes$2ejs,"./marquee":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fmarquee$2ejs}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2finteractions$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/interactions.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2finteractions$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
 "use strict";
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    }
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 exports.__esModule = true;
-var layer_1 = require("./layer");
+var marquee_1 = require("./marquee");
 var util = require("./util");
 var types_1 = require("./types");
 var Area;
@@ -405,104 +445,125 @@ var Area;
     Area[Area["Corner"] = 0] = "Corner";
     Area[Area["Center"] = 1] = "Center";
 })(Area || (Area = {}));
+function configure(os) {
+    var state = new State();
+    var shell = new Shell(os, state);
+    shell.dombind();
+}
+exports.configure = configure;
 var State = /** @class */ (function () {
     function State() {
     }
     return State;
 }());
-function configure(os) {
-    var state = new State();
-    var system = new System(os, state);
-    system.connect();
-}
-exports.configure = configure;
-function addLayer(layers, shape) {
-    var layer = new layer_1["default"]();
-    layer.humanName = "Rectangle";
-    layer.type = types_1.LayerType.Rect;
-    layer.shape = shape;
-    layers.addLayer(layer);
-    layers.render();
-    return layer;
-}
-function what(cursor, layers) {
-    var list = layers.getLayers();
-    for (var i = 0, l = list.length; i < l; i++) {
-        var layer = list[i];
-        var shape = list[i].shape;
-        if (shape.pts.length > 1) {
-            if (util.withinBound(cursor, shape.pts)) {
-                return {
-                    layer: layer,
-                    area: Area.Corner
-                };
-            }
-        }
+var Engine = /** @class */ (function () {
+    function Engine() {
     }
-}
+    return Engine;
+}());
+var MarqueeEngine = /** @class */ (function (_super) {
+    __extends(MarqueeEngine, _super);
+    function MarqueeEngine() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    MarqueeEngine.prototype.start = function (c, s) {
+        this.shape = new marquee_1["default"]();
+        this.shape.pts = [s.pinnerCursorPoint, s.cursorPoint];
+        this.initialPts = util.clone(this.shape.pts);
+        c.addShape(this.shape);
+    };
+    MarqueeEngine.prototype.stop = function () { };
+    MarqueeEngine.prototype.run = function (s) {
+        this.shape.pts = (util.add(util.subtract(s.cursorPoint, s.pinnerCursorPoint), this.initialPts));
+    };
+    return MarqueeEngine;
+}(Engine));
+// function addLayer(layers: Layers, shape): Layer {
+//   const layer = new Layer();
+//   layer.humanName = "Rectangle";
+//   layer.type = LayerType.Rect;
+//   layer.shape = shape;
+//   layers.addLayer(layer);
+//   layers.render();
+//
+//   return layer;
+// }
+// function what(cursor: Point, layers: Layers): Selection | null {
+//   const list = layers.getLayers();
+//
+//   for (let i = 0, l = list.length; i < l; i++) {
+//     const layer = list[i];
+//     const shape = list[i].shape;
+//
+//     if (shape.pts.length > 1) {
+//       if (util.withinBound(cursor, shape.pts)) {
+//         return {
+//           layer,
+//           area: Area.Corner
+//         };
+//       }
+//     }
+//   }
+// }
+// class RectangleEngine extends Engine {
+//   start(c: Canvas, s: State) {
+//     const shape = new Marquee(c);
+//     const layer = new Layer();
+//     layer.humanName = "Rectangle";
+//     layer.type = LayerType.Rect;
+//     layer.shape = shape;
+//
+//     s.selection = what(canvas.grid.closestPt, layers);
+//     this.initialPts = util.clone(s.selection.layer.shape.pts);
+//   }
+//   stop() {}
+// }
 var QUICK_CLICK_MS = 200;
-var System = /** @class */ (function () {
-    function System(os, state) {
+var Shell = /** @class */ (function () {
+    function Shell(os, state) {
         this.state = state;
         this.os = os;
     }
-    System.prototype.connect = function () {
+    Shell.prototype.dombind = function () {
         this.os.canvas.onMouseDown(this.handleMouseDown.bind(this));
         this.os.canvas.onMouseUp(this.handleMouseUp.bind(this));
         this.os.canvas.onMouseMove(this.handleMouseMove.bind(this));
+        this.os.toolbar.onModeChange = this.handleChangeMode.bind(this);
     };
-    System.prototype.handleMouseUp = function (e) {
-        this.state.mouseDown = false;
-        if (new Date().getTime() - this.state.downAt < QUICK_CLICK_MS) {
-            this.os.toolbar.show(this.os.canvas.grid.cursorPt);
+    Shell.prototype.handleChangeMode = function (m) {
+        this.state.mode = m;
+        this.os.toolbar.hide();
+    };
+    Shell.prototype.handleMouseDown = function (e) {
+        this.os.toolbar.hide();
+        this.state.downAt = new Date().getTime();
+        this.state.pinnerCursorPoint = this.os.canvas.grid.closestPt;
+        this.state.cursorPoint = this.os.canvas.grid.closestPt;
+        if (this.state.mode === types_1.Mode.Marquee) {
+            this.activity = new MarqueeEngine();
+            this.activity.start(this.os.canvas, this.state);
         }
     };
-    System.prototype.handleMouseDown = function (e) {
-        this.state.mouseDown = true;
-        this.state.downAt = new Date().getTime();
-        // state.mouseDown = true;
-        // state.selection = what(canvas.grid.closestPt, layers);
-        // if (state.selection) {
-        //   state.pinnedPts = util.clone(state.selection.layer.shape.pts);
-        // } else {
-        //   // const addLayer(
-        // }
-        // console.log(state.selection);
-        // state.pinnerCursorPoint = canvas.grid.closestPt;
-        // state.process();
+    Shell.prototype.handleMouseUp = function (e) {
+        if (new Date().getTime() - this.state.downAt < QUICK_CLICK_MS) {
+            this.os.toolbar.show(this.os.canvas.grid.closestPt);
+        }
+        else {
+            if (this.activity) {
+                this.activity.stop();
+                this.activity = null;
+            }
+        }
     };
-    System.prototype.handleMouseMove = function (e) {
-        // if (this.mouseDown && this.selection) {
-        //   if (this.selection.area === Area.Corner) {
-        //     this.selection.layer.shape.pts = [
-        //       this.pinnerCursorPoint,
-        //       this.cursorPoint
-        //     ];
-        //   } else if (this.selection.area === Area.Center) {
-        //     this.selection.layer.shape.pts = <Group>(
-        //       util.add(
-        //         <Point>util.subtract(this.cursorPoint, this.pinnerCursorPoint),
-        //         this.pinnedPts
-        //       )
-        //     );
-        //   }
+    Shell.prototype.handleMouseMove = function (e) {
+        this.state.cursorPoint = this.os.canvas.grid.closestPt;
+        if (this.activity) {
+            this.activity.run(this.state);
+        }
     };
-    return System;
+    return Shell;
 }());
 //# sourceMappingURL=interactions.js.map
-}
-  Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/layer.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2flayer$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2flayer$2ejs.deps = {}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2flayer$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/layer.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2flayer$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
-"use strict";
-exports.__esModule = true;
-// import Text from "./text";
-var Layer = /** @class */ (function () {
-    function Layer() {
-        this.humanName = "";
-    }
-    return Layer;
-}());
-exports["default"] = Layer;
-//# sourceMappingURL=layer.js.map
 }
   Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/layers.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2flayers$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2flayers$2ejs.deps = {"./component":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fcomponent$2ejs,"./dom":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fdom$2ejs,"./types":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftypes$2ejs}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2flayers$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/layers.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2flayers$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
 "use strict";
@@ -562,7 +623,69 @@ var Layers = /** @class */ (function (_super) {
 exports["default"] = Layers;
 //# sourceMappingURL=layers.js.map
 }
-  Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/toolbar.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftoolbar$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftoolbar$2ejs.deps = {"./component":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fcomponent$2ejs,"./dom":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fdom$2ejs}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftoolbar$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/toolbar.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftoolbar$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
+  Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/marquee.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fmarquee$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fmarquee$2ejs.deps = {"./shape":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fshape$2ejs}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fmarquee$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/marquee.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fmarquee$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
+"use strict";
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    }
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+exports.__esModule = true;
+var shape_1 = require("./shape");
+var Marquee = /** @class */ (function (_super) {
+    __extends(Marquee, _super);
+    function Marquee() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    Marquee.prototype.render = function (ctx, colors) {
+        if (!this.animating || this.pts.length < 2) {
+            return;
+        }
+        console.log("drawing", this.pts);
+        ctx.beginPath();
+        ctx.moveTo(this.pts[0][0], this.pts[0][1]);
+        ctx.lineTo(this.pts[0][0], this.pts[1][1]);
+        ctx.lineTo(this.pts[1][0], this.pts[1][1]);
+        ctx.lineTo(this.pts[1][0], this.pts[0][1]);
+        ctx.lineWidth = 1;
+        ctx.closePath();
+        ctx.strokeStyle = "#ffffff";
+        // this.canvas.ctx.strokeStyle = c.shapeColor;
+        ctx.stroke();
+    };
+    return Marquee;
+}(shape_1["default"]));
+exports["default"] = Marquee;
+//# sourceMappingURL=marquee.js.map
+}
+  Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/shape.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fshape$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fshape$2ejs.deps = {}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fshape$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/shape.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fshape$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
+"use strict";
+exports.__esModule = true;
+var Shape = /** @class */ (function () {
+    function Shape() {
+        this.pts = [];
+        this.animating = true;
+    }
+    Shape.prototype.stop = function () {
+        this.animating = false;
+    };
+    Shape.prototype.play = function () {
+        this.animating = true;
+    };
+    return Shape;
+}());
+exports["default"] = Shape;
+//# sourceMappingURL=shape.js.map
+}
+  Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/toolbar.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftoolbar$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftoolbar$2ejs.deps = {"./component":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fcomponent$2ejs,"./dom":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fdom$2ejs,"./types":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftypes$2ejs}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftoolbar$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/toolbar.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftoolbar$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -580,22 +703,42 @@ var __extends = (this && this.__extends) || (function () {
 exports.__esModule = true;
 var dom = require("./dom");
 var component_1 = require("./component");
+var types_1 = require("./types");
+var LEFT_MARGIN = 180;
 var Toolbar = /** @class */ (function (_super) {
     __extends(Toolbar, _super);
     function Toolbar() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
+    Toolbar.prototype.handleClickEvent = function (m) {
+        var _this = this;
+        return function () {
+            _this.mode = types_1.Mode.Marquee;
+            // this.mode = this.mode === m ? Mode.Marquee : m;
+            _this.onModeChange(_this.mode);
+        };
+    };
     Toolbar.prototype.render = function () {
-        var width = 42;
         var el = dom.section("toolbar");
-        el.style.width = width + "px";
+        var rectButton = dom.button();
+        var lineButton = dom.button();
+        var textButton = dom.button();
+        rectButton.style.backgroundImage = "url(" + icons.rectangleDark + ")";
+        lineButton.style.backgroundImage = "url(" + icons.lineDark + ")";
+        textButton.style.backgroundImage = "url(" + icons.textDark + ")";
         el.style.background = this.colorPalette.toolbarBg;
         el.style.position = "absolute";
+        rectButton.addEventListener("click", this.handleClickEvent(types_1.Mode.Rectangle));
+        lineButton.addEventListener("click", this.handleClickEvent(types_1.Mode.Line));
+        textButton.addEventListener("click", this.handleClickEvent(types_1.Mode.Text));
+        el.appendChild(rectButton);
+        el.appendChild(lineButton);
+        el.appendChild(textButton);
         if (this.showing) {
             el.style.display = "absolute";
-            el.style.left = this.position[0] - width / 2 + "px";
-            el.style.top = this.position[1] + "px";
-            el.innerHTML = "IAMTOOLBAR";
+            var d = dom.getDimensions(el, true);
+            el.style.left = LEFT_MARGIN + this.position[0] - d.width / 2 + "px";
+            el.style.top = this.position[1] - d.height - 26 + "px";
         }
         else {
             el.style.display = "none";
@@ -614,6 +757,11 @@ var Toolbar = /** @class */ (function (_super) {
     return Toolbar;
 }(component_1["default"]));
 exports["default"] = Toolbar;
+var icons = {
+    textDark: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAgCAYAAAAmG5mqAAAACXBIWXMAABYlAAAWJQFJUiTwAAAAbklEQVQ4je2UwQ2AIBAEF0MBdrKWoJVrCWwndoCB4EMBkT/zu2M3Fz5jvPfowYYsyRnA0ug5SadNQwjvWeTJBuCYsnWD4h9IxqUk837rvjAKo1BhFEahQvQSyfWP+ST1m+92q0vu/CJkyqqsAuACdNIeCAV1+NEAAAAASUVORK5CYII=",
+    lineDark: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAkCAYAAADhAJiYAAAABGdBTUEAALGPC/xhBQAAAf9JREFUWAntlztOw0AQhmOLInJJC3dIUiaipKEmUCKEEC0dDTWHQIpSUPI4AdS2qJyEM9BC5wrF/IMYa2PvY5x4kyaWrH3Nznyefz2yW63tZc9AYF/2u9rpdPbyPD9GlP3ZbHZD0Xb8hqx6Z4ggCE4BM4AFJeWaLdcCRBAAGALghCHQMkOOtRceeAMqQwBAezwAE0+n008vQFIIDk4tQB/V8coZWgZCAViQi+aXAloRouApy1ULqCmIggYdAD2pYyeQDwgFAMcnf1bGf12tZL1e72g+n99iwwC39u0oO6o71slFPkKdo3a7/Y75CLcXGIqpk4vmtUBJknxFUXSITSkZebi0clEcLRAt+IQyyWUF8gllkssJ5AnKKJcIqGkom1xioCahbHLVAmoIyipXbSDaEMfxN57yg/p1L5dc5E9bqU2BqGp3u90R2jOTjW3eJRftNdahsmMF5oLXwjB8QBBp8XTKJQbSwQBknKbpubSiS+QSAZlgJpPJJYLk0ooO28qnBmdaba2SuWDYkQBKJJc1Q1IYCZRULiNQXRgXlFQuLdCyMBYosVzkY+EDbFUYhqK23+/vZln2hm6G/64Ddc3WLw51kzAUkA86atWdDaC8VmQIH/T3gLpiA+g+5leb59bRFhnCk7wC4oeCbgqm8sD42xj+Z6rIXMVoO7HhDPwC/Y58qqnpGUQAAAAASUVORK5CYII=",
+    rectangleDark: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAC4AAAAiCAYAAAAge+tMAAAABGdBTUEAALGPC/xhBQAAAKpJREFUWAntl0EOgCAQA8HwHv7/Dj6k4dAEe+JAYKv1sgoEdodaQq613ml4Wmt5+ExR+68xSaX3opRszxUKkCWeUQHIs8bRfjpynrLEZTTOSpAlflq6/1v/dUpGLv87rsKV8N8bdRdkXcU+HlVSzmsVAfv4KpKz8xT7+CyqRePs44tAepqwBOzju7fGPr6dOC+Ik5RvQmjH+N39WBdR9gZ0dXJMD1VFjrLEH/xAUETson4YAAAAAElFTkSuQmCC"
+};
 //# sourceMappingURL=toolbar.js.map
 }
   Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/types.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftypes$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftypes$2ejs.deps = {}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftypes$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/types.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftypes$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
@@ -631,6 +779,13 @@ var LayerType;
     LayerType[LayerType["Line"] = 1] = "Line";
     LayerType[LayerType["Text"] = 2] = "Text";
 })(LayerType = exports.LayerType || (exports.LayerType = {}));
+var Mode;
+(function (Mode) {
+    Mode[Mode["Marquee"] = 0] = "Marquee";
+    Mode[Mode["Rectangle"] = 1] = "Rectangle";
+    Mode[Mode["Line"] = 2] = "Line";
+    Mode[Mode["Text"] = 3] = "Text";
+})(Mode = exports.Mode || (exports.Mode = {}));
 //# sourceMappingURL=types.js.map
 }
   Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/util.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2futil$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2futil$2ejs.deps = {}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2futil$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/util.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2futil$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
