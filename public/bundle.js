@@ -396,6 +396,7 @@ var Grid = /** @class */ (function () {
         else {
             this.ctx.strokeStyle = this.gridColor;
         }
+        this.ctx.setLineDash([0, 0]);
         this.ctx.lineWidth = 1;
         this.ctx.stroke();
     };
@@ -474,6 +475,7 @@ var MarqueeEngine = /** @class */ (function (_super) {
     };
     MarqueeEngine.prototype.stop = function () {
         this.shape.stop();
+        // NOW REMOVE IT.
     };
     MarqueeEngine.prototype.run = function (s) {
         this.shape.pts = [s.pinnedCursorPoint, s.cursorPoint];
@@ -656,6 +658,7 @@ var Marquee = /** @class */ (function (_super) {
         ctx.lineTo(this.pts[0][0], this.pts[1][1]);
         ctx.lineTo(this.pts[1][0], this.pts[1][1]);
         ctx.lineTo(this.pts[1][0], this.pts[0][1]);
+        ctx.setLineDash([5, 5]);
         ctx.lineWidth = 1;
         ctx.closePath();
         ctx.strokeStyle = "#ffffff";

@@ -13,6 +13,7 @@ export default class Marquee extends Shape {
     ctx.lineTo(this.pts[0][0], this.pts[1][1]);
     ctx.lineTo(this.pts[1][0], this.pts[1][1]);
     ctx.lineTo(this.pts[1][0], this.pts[0][1]);
+    ctx.setLineDash([5, 5]);
     ctx.lineWidth = 1;
     ctx.closePath();
     ctx.strokeStyle = "#ffffff";

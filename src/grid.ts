@@ -56,6 +56,7 @@ export default class Grid {
     } else {
       this.ctx.strokeStyle = this.gridColor;
     }
+    this.ctx.setLineDash([0, 0]);
 
     this.ctx.lineWidth = 1;
     this.ctx.stroke();
