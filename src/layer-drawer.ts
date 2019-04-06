@@ -3,7 +3,7 @@ import Layer from "./layer";
 import Component from "./component";
 import { LayerType, RenderFn } from "./types";
 
-export default class Layers extends Component {
+export default class LayerDrawer extends Component {
   protected layers: Layer[] = [];
 
   public addLayer(layer: Layer) {

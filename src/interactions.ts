@@ -1,8 +1,8 @@
 import Canvas from "./canvas";
-import Layers from "./layers";
+import LayerDrawer from "./layer-drawer";
 import Layer from "./layer";
 import Toolbar from "./toolbar";
-import ControlDrawer from "./controldrawer";
+import ControlDrawer from "./control-drawer";
 import Rect from "./rect";
 import Marquee from "./marquee";
 import * as util from "./util";
@@ -22,7 +22,7 @@ interface Selection {
 interface OS {
   toolbar: Toolbar;
   canvas: Canvas;
-  layers: Layers;
+  layers: LayerDrawer;
   controldrawer: ControlDrawer;
 }
 
