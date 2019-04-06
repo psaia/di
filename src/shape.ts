@@ -2,6 +2,7 @@ import Canvas from "./canvas";
 import { ColorPalette, Group } from "./types";
 
 export default abstract class Shape {
+  public uid: string;
   public pts: Group = [];
   protected animating: boolean = true;
 

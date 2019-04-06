@@ -70,6 +70,16 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
+var __values = (this && this.__values) || function (o) {
+    var m = typeof Symbol === "function" && o[Symbol.iterator], i = 0;
+    if (m) return m.call(o);
+    return {
+        next: function () {
+            if (o && i >= o.length) o = void 0;
+            return { value: o && o[i++], done: !o };
+        }
+    };
+};
 exports.__esModule = true;
 var dom = require("./dom");
 var util = require("./util");
@@ -82,20 +92,34 @@ var Canvas = /** @class */ (function (_super) {
         _this.width = 0;
         _this.height = 0;
         _this.pixelScale = 1;
-        _this.shapes = [];
+        _this.shapes = new Set();
         _this.play = function (time) {
             if (time === void 0) { time = 0; }
+            var e_1, _a;
             requestAnimationFrame(_this.play);
             _this.ctx.clearRect(0, 0, _this.width, _this.height);
             _this.grid.render();
-            for (var i = 0, l = _this.shapes.length; i < l; i++) {
-                _this.shapes[i].render(_this.ctx, _this.colorPalette);
+            try {
+                for (var _b = __values(_this.shapes), _c = _b.next(); !_c.done; _c = _b.next()) {
+                    var s = _c.value;
+                    s.render(_this.ctx, _this.colorPalette);
+                }
+            }
+            catch (e_1_1) { e_1 = { error: e_1_1 }; }
+            finally {
+                try {
+                    if (_c && !_c.done && (_a = _b["return"])) _a.call(_b);
+                }
+                finally { if (e_1) throw e_1.error; }
             }
         };
         return _this;
     }
-    Canvas.prototype.addShape = function (layer) {
-        this.shapes.push(layer);
+    Canvas.prototype.addShape = function (shape) {
+        this.shapes.add(shape);
+    };
+    Canvas.prototype.removeShape = function (shape) {
+        this.shapes["delete"](shape);
     };
     Canvas.prototype.onMouseDown = function (fn) {
         this.mouseDownFn = fn;
@@ -247,7 +271,7 @@ var defaultPalette = {
     stageColor: "#fff",
     gridColor: "#111",
     shapeColor: "#ccc",
-    toolbarBg: "#FFF",
+    toolbarBg: "#000",
     toolbarColor: "#FFF",
     controldrawerBg: "#690000",
     controldrawerColor: "#FFF"
@@ -260,8 +284,8 @@ function di(parentSelector) {
     var canvas = new canvas_1["default"](defaultPalette);
     controldrawer.onRender(dom.renderer(parent));
     layers.onRender(dom.renderer(parent));
-    canvas.onRender(dom.renderer(parent));
     toolbar.onRender(dom.renderer(parent));
+    canvas.onRender(dom.renderer(parent));
     canvas.render();
     toolbar.render();
     layers.render();
@@ -391,7 +415,7 @@ var Grid = /** @class */ (function () {
         this.ctx.lineTo(center[0] + size, center[1]);
         if (util.withinBound(this.cursorPt, bounds)) {
             this.closestPt = center;
-            this.ctx.strokeStyle = this.gridActiveColor;
+            // this.ctx.strokeStyle = this.gridActiveColor;
         }
         else {
             this.ctx.strokeStyle = this.gridColor;
@@ -457,31 +481,32 @@ var State = /** @class */ (function () {
     }
     return State;
 }());
-var Engine = /** @class */ (function () {
-    function Engine() {
+var LifeCycle = /** @class */ (function () {
+    function LifeCycle() {
     }
-    return Engine;
+    return LifeCycle;
 }());
-var MarqueeEngine = /** @class */ (function (_super) {
-    __extends(MarqueeEngine, _super);
-    function MarqueeEngine() {
+var MarqueeLifeCycle = /** @class */ (function (_super) {
+    __extends(MarqueeLifeCycle, _super);
+    function MarqueeLifeCycle() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
-    MarqueeEngine.prototype.start = function (c, s) {
+    MarqueeLifeCycle.prototype.start = function (c, s) {
         this.shape = new marquee_1["default"]();
         this.shape.pts = [s.pinnedCursorPoint, s.cursorPoint];
+        this.shape.uid = crypto.getRandomValues(new Uint32Array(4)).join("-");
         this.initialPts = util.clone(this.shape.pts);
         c.addShape(this.shape);
     };
-    MarqueeEngine.prototype.stop = function () {
+    MarqueeLifeCycle.prototype.stop = function (c) {
         this.shape.stop();
-        // NOW REMOVE IT.
+        c.removeShape(this.shape);
     };
-    MarqueeEngine.prototype.run = function (s) {
+    MarqueeLifeCycle.prototype.run = function (s) {
         this.shape.pts = [s.pinnedCursorPoint, s.cursorPoint];
     };
-    return MarqueeEngine;
-}(Engine));
+    return MarqueeLifeCycle;
+}(LifeCycle));
 // function addLayer(layers: Layers, shape): Layer {
 //   const layer = new Layer();
 //   layer.humanName = "Rectangle";
@@ -509,7 +534,7 @@ var MarqueeEngine = /** @class */ (function (_super) {
 //     }
 //   }
 // }
-// class RectangleEngine extends Engine {
+// class RectangleLifeCycle extends LifeCycle {
 //   start(c: Canvas, s: State) {
 //     const shape = new Marquee(c);
 //     const layer = new Layer();
@@ -536,27 +561,20 @@ var Shell = /** @class */ (function () {
     };
     Shell.prototype.handleChangeMode = function (m) {
         this.state.mode = m;
-        this.os.toolbar.hide();
     };
     Shell.prototype.handleMouseDown = function (e) {
-        this.os.toolbar.hide();
         this.state.downAt = new Date().getTime();
         this.state.pinnedCursorPoint = this.os.canvas.grid.closestPt;
         this.state.cursorPoint = this.os.canvas.grid.closestPt;
         if (this.state.mode === types_1.Mode.Marquee) {
-            this.activity = new MarqueeEngine();
+            this.activity = new MarqueeLifeCycle();
             this.activity.start(this.os.canvas, this.state);
         }
     };
     Shell.prototype.handleMouseUp = function (e) {
-        if (new Date().getTime() - this.state.downAt < QUICK_CLICK_MS) {
-            this.os.toolbar.show(this.os.canvas.grid.closestPt);
-        }
-        else {
-            if (this.activity) {
-                this.activity.stop();
-                this.activity = null;
-            }
+        if (this.activity) {
+            this.activity.stop(this.os.canvas);
+            this.activity = null;
         }
     };
     Shell.prototype.handleMouseMove = function (e) {
@@ -708,7 +726,6 @@ exports.__esModule = true;
 var dom = require("./dom");
 var component_1 = require("./component");
 var types_1 = require("./types");
-var LEFT_MARGIN = 180;
 var Toolbar = /** @class */ (function (_super) {
     __extends(Toolbar, _super);
     function Toolbar() {
@@ -724,47 +741,33 @@ var Toolbar = /** @class */ (function (_super) {
     };
     Toolbar.prototype.render = function () {
         var el = dom.section("toolbar");
+        var marqueeButton = dom.button();
         var rectButton = dom.button();
         var lineButton = dom.button();
         var textButton = dom.button();
+        marqueeButton.style.backgroundImage = "url(" + icons.marqueeDark + ")";
         rectButton.style.backgroundImage = "url(" + icons.rectangleDark + ")";
         lineButton.style.backgroundImage = "url(" + icons.lineDark + ")";
         textButton.style.backgroundImage = "url(" + icons.textDark + ")";
         el.style.background = this.colorPalette.toolbarBg;
-        el.style.position = "absolute";
+        marqueeButton.addEventListener("click", this.handleClickEvent(types_1.Mode.Marquee));
         rectButton.addEventListener("click", this.handleClickEvent(types_1.Mode.Rectangle));
         lineButton.addEventListener("click", this.handleClickEvent(types_1.Mode.Line));
         textButton.addEventListener("click", this.handleClickEvent(types_1.Mode.Text));
+        el.appendChild(marqueeButton);
         el.appendChild(rectButton);
         el.appendChild(lineButton);
         el.appendChild(textButton);
-        if (this.showing) {
-            el.style.display = "absolute";
-            var d = dom.getDimensions(el, true);
-            el.style.left = LEFT_MARGIN + this.position[0] - d.width / 2 + "px";
-            el.style.top = this.position[1] - d.height - 26 + "px";
-        }
-        else {
-            el.style.display = "none";
-        }
         this.rendered(el);
-    };
-    Toolbar.prototype.show = function (pos) {
-        this.showing = true;
-        this.position = pos;
-        this.render();
-    };
-    Toolbar.prototype.hide = function () {
-        this.showing = false;
-        this.render();
     };
     return Toolbar;
 }(component_1["default"]));
 exports["default"] = Toolbar;
 var icons = {
     textDark: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAgCAYAAAAmG5mqAAAACXBIWXMAABYlAAAWJQFJUiTwAAAAbklEQVQ4je2UwQ2AIBAEF0MBdrKWoJVrCWwndoCB4EMBkT/zu2M3Fz5jvPfowYYsyRnA0ug5SadNQwjvWeTJBuCYsnWD4h9IxqUk837rvjAKo1BhFEahQvQSyfWP+ST1m+92q0vu/CJkyqqsAuACdNIeCAV1+NEAAAAASUVORK5CYII=",
-    lineDark: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAkCAYAAADhAJiYAAAABGdBTUEAALGPC/xhBQAAAf9JREFUWAntlztOw0AQhmOLInJJC3dIUiaipKEmUCKEEC0dDTWHQIpSUPI4AdS2qJyEM9BC5wrF/IMYa2PvY5x4kyaWrH3Nznyefz2yW63tZc9AYF/2u9rpdPbyPD9GlP3ZbHZD0Xb8hqx6Z4ggCE4BM4AFJeWaLdcCRBAAGALghCHQMkOOtRceeAMqQwBAezwAE0+n008vQFIIDk4tQB/V8coZWgZCAViQi+aXAloRouApy1ULqCmIggYdAD2pYyeQDwgFAMcnf1bGf12tZL1e72g+n99iwwC39u0oO6o71slFPkKdo3a7/Y75CLcXGIqpk4vmtUBJknxFUXSITSkZebi0clEcLRAt+IQyyWUF8gllkssJ5AnKKJcIqGkom1xioCahbHLVAmoIyipXbSDaEMfxN57yg/p1L5dc5E9bqU2BqGp3u90R2jOTjW3eJRftNdahsmMF5oLXwjB8QBBp8XTKJQbSwQBknKbpubSiS+QSAZlgJpPJJYLk0ooO28qnBmdaba2SuWDYkQBKJJc1Q1IYCZRULiNQXRgXlFQuLdCyMBYosVzkY+EDbFUYhqK23+/vZln2hm6G/64Ddc3WLw51kzAUkA86atWdDaC8VmQIH/T3gLpiA+g+5leb59bRFhnCk7wC4oeCbgqm8sD42xj+Z6rIXMVoO7HhDPwC/Y58qqnpGUQAAAAASUVORK5CYII=",
-    rectangleDark: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAC4AAAAiCAYAAAAge+tMAAAABGdBTUEAALGPC/xhBQAAAKpJREFUWAntl0EOgCAQA8HwHv7/Dj6k4dAEe+JAYKv1sgoEdodaQq613ml4Wmt5+ExR+68xSaX3opRszxUKkCWeUQHIs8bRfjpynrLEZTTOSpAlflq6/1v/dUpGLv87rsKV8N8bdRdkXcU+HlVSzmsVAfv4KpKz8xT7+CyqRePs44tAepqwBOzju7fGPr6dOC+Ik5RvQmjH+N39WBdR9gZ0dXJMD1VFjrLEH/xAUETson4YAAAAAElFTkSuQmCC"
+    lineDark: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGAAAABcCAYAAACRILDuAAAACXBIWXMAABYlAAAWJQFJUiTwAAACrElEQVR4nO2c0XHbMBAF32Xyn3QQl+ASUkI6iEtIKSnB7sQlxB3YHdgVXIYJNaINigBJUAfcvZ3BD0jZM7smKEGWRFVB7PhE97YwgDEMYAwDGMMAxjCAMQxgDAMYwwDGMIAxDGAMA1RARH6IyL2IvK79aZ+TGVLEIB3AaXwZH/PEAAdyQfqUx2QmAwNkKJA+hQFqsFL6lD/JTAYGGNkh/cSLqj4nsxlCB6ggfcrq5QcRA1SWPmX18oOgV8Ag/mcyu59NV0DIN+WHF02VI7yp6tdktoCQr4RV9Q7AQ3JgO5uWH0TeiqgcYdPyg+h7QRUjbA7Af8yqcE9QVUkmC+Fu6P4rYfUG3BQGGBkjvCQH8mxefsAAZ8Zl6FtyIA8D7GXnPWDzU1AwwKL8kuVo0wbclNABFuQ/qOpNwY151/KDyAEy8ocbcsmzo13LD8ZfEm4AGOTrzLifc7Fw/u3c+WsG5Z/HrPyFx73OnccAC2NG4mksyr8Q4XHunLUjzD2gZM3P8eGesPsGjChvyNSQf2I4X+Tf1k+VAO4342rKPwLXS1Dr8uE5QA/y4TVAL/LhMUBP8uEtQG/y4SlAj/LhJUCv8uEhQM/y0XuA3uWj5wAe5KPXAF7ko8cAnuSjtwDe5KOnAB7lo5cAXuWjhwCe5aP1AN7lo+UAEeSj1QBR5KPFAJHko7UA0eSjpQAR5aOVAFHlo4UAkeXDOkB0+bAMQPn/MQlA+WeuHoDy33PVAJSfcrUAlD/PVQJQ/mUOD0D5yxwagPLzHBaA8ss4JADll1M9AOWvo2oAEflN+euofQUMf/1vH+Yof4GqAVR1+PKK75MIlJ/hkM8Ji8gtgDtV/ZUcJO9def+gduuE/8YsaxjAGAYwhgGMYQBjGMAYBjCGAYxhAGMYwBgGMIYBLAHwF4/RU4hJQEIfAAAAAElFTkSuQmCC",
+    rectangleDark: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAC4AAAAiCAYAAAAge+tMAAAABGdBTUEAALGPC/xhBQAAAIZJREFUWAnt2LENgGAIhFExzsP+c7CQJpZUV1xQks9Ocz+SBzZGZt7Hwutc2PPbMo1PT+7qL6yq6M/+cN+/RVZleiqIIy4KsCoilC2GuI1SLIS4CGWLIW6jFAshLkLZYojbKMVCiItQthjiNkqxEOIilC2GuI1SLBT9D5F47vMYqzI9grXiDy7JB1eT5yRbAAAAAElFTkSuQmCC",
+    marqueeDark: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAC4AAAAiCAYAAAAge+tMAAAABGdBTUEAALGPC/xhBQAAAKpJREFUWAntl0EOgCAQA8HwHv7/Dj6k4dAEe+JAYKv1sgoEdodaQq613ml4Wmt5+ExR+68xSaX3opRszxUKkCWeUQHIs8bRfjpynrLEZTTOSpAlflq6/1v/dUpGLv87rsKV8N8bdRdkXcU+HlVSzmsVAfv4KpKz8xT7+CyqRePs44tAepqwBOzju7fGPr6dOC+Ik5RvQmjH+N39WBdR9gZ0dXJMD1VFjrLEH/xAUETson4YAAAAAElFTkSuQmCC"
 };
 //# sourceMappingURL=toolbar.js.map
 }

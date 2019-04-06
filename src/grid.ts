@@ -52,7 +52,7 @@ export default class Grid {
 
     if (util.withinBound(this.cursorPt, bounds)) {
       this.closestPt = center;
-      this.ctx.strokeStyle = this.gridActiveColor;
+      // this.ctx.strokeStyle = this.gridActiveColor;
     } else {
       this.ctx.strokeStyle = this.gridColor;
     }

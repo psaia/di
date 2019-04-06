@@ -5,7 +5,6 @@ import Component from "./component";
 export default class ControlDrawer extends Component {
   render() {
     const section = dom.section("controldrawer");
-    section.style.width = "42px";
     section.style.background = this.colorPalette.controldrawerBg;
     section.style.color = this.colorPalette.controldrawerColor;
 

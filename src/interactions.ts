@@ -40,24 +40,25 @@ class State {
   protected canvas: Canvas;
 }
 
-abstract class Engine {
+abstract class LifeCycle {
   abstract start(c: Canvas, s: State);
-  abstract stop();
+  abstract stop(c: Canvas);
   abstract run(s: State);
 }
 
-class MarqueeEngine extends Engine {
+class MarqueeLifeCycle extends LifeCycle {
   shape: Marquee;
   initialPts: Group;
   start(c: Canvas, s: State) {
     this.shape = new Marquee();
     this.shape.pts = [s.pinnedCursorPoint, s.cursorPoint];
+    this.shape.uid = crypto.getRandomValues(new Uint32Array(4)).join("-");
     this.initialPts = util.clone(this.shape.pts);
     c.addShape(this.shape);
   }
-  stop() {
+  stop(c: Canvas) {
     this.shape.stop();
-    // NOW REMOVE IT.
+    c.removeShape(this.shape);
   }
   run(s: State) {
     this.shape.pts = [s.pinnedCursorPoint, s.cursorPoint];
@@ -93,7 +94,7 @@ class MarqueeEngine extends Engine {
 //   }
 // }
 
-// class RectangleEngine extends Engine {
+// class RectangleLifeCycle extends LifeCycle {
 //   start(c: Canvas, s: State) {
 //     const shape = new Marquee(c);
 //     const layer = new Layer();
@@ -110,7 +111,7 @@ class MarqueeEngine extends Engine {
 const QUICK_CLICK_MS = 200;
 
 class Shell {
-  private activity: null | MarqueeEngine;
+  private activity: null | MarqueeLifeCycle;
   private state: State;
   private os: OS;
   constructor(os: OS, state: State) {
@@ -125,27 +126,21 @@ class Shell {
   }
   private handleChangeMode(m: Mode) {
     this.state.mode = m;
-    this.os.toolbar.hide();
   }
   private handleMouseDown(e: MouseEvent) {
-    this.os.toolbar.hide();
     this.state.downAt = new Date().getTime();
     this.state.pinnedCursorPoint = this.os.canvas.grid.closestPt;
     this.state.cursorPoint = this.os.canvas.grid.closestPt;
 
     if (this.state.mode === Mode.Marquee) {
-      this.activity = new MarqueeEngine();
+      this.activity = new MarqueeLifeCycle();
       this.activity.start(this.os.canvas, this.state);
     }
   }
   private handleMouseUp(e: MouseEvent) {
-    if (new Date().getTime() - this.state.downAt < QUICK_CLICK_MS) {
-      this.os.toolbar.show(this.os.canvas.grid.closestPt);
-    } else {
-      if (this.activity) {
-        this.activity.stop();
-        this.activity = null;
-      }
+    if (this.activity) {
+      this.activity.stop(this.os.canvas);
+      this.activity = null;
     }
   }
   private handleMouseMove(e: MouseEvent) {

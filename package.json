@@ -1,8 +1,8 @@
 {
-  "name": "whateverthefuck",
+  "name": "di",
   "version": "1.0.0",
   "description": "",
-  "main": "app.js",
+  "main": "lib/di.js",
   "scripts": {
     "test": "mocha --require ts-node/register src/**/*_test.ts"
   },

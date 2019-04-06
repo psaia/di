@@ -1,6 +1,7 @@
 import * as dom from "./dom";
 import * as util from "./util";
 import Grid from "./grid";
+import Shape from "./shape";
 import Component from "./component";
 import { ColorPalette } from "./types";
 
@@ -11,14 +12,18 @@ export default class Canvas extends Component {
   public canvas: HTMLCanvasElement;
   public grid: Grid;
   protected pixelScale = 1;
-  protected shapes: any = [];
+  protected shapes: Set<Shape> = new Set();
   protected mouseDownFn: (e?: any) => void;
   protected mouseUpFn: (e?: any) => void;
   protected mouseMoveFn: (e?: any) => void;
   protected resizeFn: (e?: any) => void;
 
-  public addShape(layer) {
-    this.shapes.push(layer);
+  public addShape(shape) {
+    this.shapes.add(shape);
+  }
+
+  public removeShape(shape) {
+    this.shapes.delete(shape);
   }
 
   public onMouseDown(fn) {
@@ -47,9 +52,7 @@ export default class Canvas extends Component {
     this.ctx.clearRect(0, 0, this.width, this.height);
     this.grid.render();
 
-    for (let i = 0, l = this.shapes.length; i < l; i++) {
-      this.shapes[i].render(this.ctx, this.colorPalette);
-    }
+    for (let s of this.shapes) s.render(this.ctx, this.colorPalette);
   };
 
   private resize(container: HTMLElement) {
