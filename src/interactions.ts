@@ -1,13 +1,22 @@
 import Canvas from "./canvas";
 import LayerDrawer from "./layer-drawer";
 import Layer from "./layer";
-import Toolbar from "./toolbar";
+import Toolbar from "./toolbar-drawer";
 import ControlDrawer from "./control-drawer";
-import Rect from "./rect";
-import Marquee from "./marquee";
 import * as util from "./util";
+import State from "./state";
+import MarqueeLifeCycle from "./marquee-lifecycle";
+import RectLifeCycle from "./marquee-lifecycle";
+import LineLifeCycle from "./line-lifecycle";
 
-import { Mode, ActionType, Point, Group, LayerType } from "./types";
+import {
+  ColorPalette,
+  Mode,
+  ActionType,
+  Point,
+  Group,
+  LayerType
+} from "./types";
 
 enum Area {
   Corner = 0,
@@ -20,6 +29,7 @@ interface Selection {
 }
 
 interface OS {
+  colors: ColorPalette;
   toolbar: Toolbar;
   canvas: Canvas;
   layers: LayerDrawer;
@@ -28,41 +38,8 @@ interface OS {
 
 export function configure(os: OS): void {
   const state = new State();
-  const shell = new Shell(os, state);
+  const shell = new Operator(os, state);
   shell.dombind();
-}
-
-class State {
-  public mode: Mode;
-  public cursorPoint: Point;
-  public pinnedCursorPoint: Point;
-  public downAt: number;
-  protected canvas: Canvas;
-}
-
-abstract class LifeCycle {
-  abstract start(c: Canvas, s: State);
-  abstract stop(c: Canvas);
-  abstract run(s: State);
-}
-
-class MarqueeLifeCycle extends LifeCycle {
-  shape: Marquee;
-  initialPts: Group;
-  start(c: Canvas, s: State) {
-    this.shape = new Marquee();
-    this.shape.pts = [s.pinnedCursorPoint, s.cursorPoint];
-    this.shape.uid = crypto.getRandomValues(new Uint32Array(4)).join("-");
-    this.initialPts = util.clone(this.shape.pts);
-    c.addShape(this.shape);
-  }
-  stop(c: Canvas) {
-    this.shape.stop();
-    c.removeShape(this.shape);
-  }
-  run(s: State) {
-    this.shape.pts = [s.pinnedCursorPoint, s.cursorPoint];
-  }
 }
 
 // function addLayer(layers: Layers, shape): Layer {
@@ -108,10 +85,8 @@ class MarqueeLifeCycle extends LifeCycle {
 //   stop() {}
 // }
 
-const QUICK_CLICK_MS = 200;
-
-class Shell {
-  private activity: null | MarqueeLifeCycle;
+class Operator {
+  private activity: null | MarqueeLifeCycle | RectLifeCycle | LineLifeCycle;
   private state: State;
   private os: OS;
   constructor(os: OS, state: State) {
@@ -132,10 +107,19 @@ class Shell {
     this.state.pinnedCursorPoint = this.os.canvas.grid.closestPt;
     this.state.cursorPoint = this.os.canvas.grid.closestPt;
 
-    if (this.state.mode === Mode.Marquee) {
-      this.activity = new MarqueeLifeCycle();
-      this.activity.start(this.os.canvas, this.state);
+    switch (this.state.mode) {
+      case Mode.Marquee:
+        this.activity = new MarqueeLifeCycle();
+        break;
+      case Mode.Rectangle:
+        this.activity = new RectLifeCycle();
+        break;
+      case Mode.Line:
+        this.activity = new LineLifeCycle();
+        break;
     }
+    this.activity.colors = this.os.colors;
+    this.activity.start(this.os.canvas, this.state);
   }
   private handleMouseUp(e: MouseEvent) {
     if (this.activity) {

@@ -3,21 +3,20 @@ import { Point, Group } from "./types";
 import * as util from "./util";
 
 export default class Marquee extends Shape {
-  render(ctx, colors) {
+  render() {
     if (!this.animating || this.pts.length < 2) {
       return;
     }
 
-    ctx.beginPath();
-    ctx.moveTo(this.pts[0][0], this.pts[0][1]);
-    ctx.lineTo(this.pts[0][0], this.pts[1][1]);
-    ctx.lineTo(this.pts[1][0], this.pts[1][1]);
-    ctx.lineTo(this.pts[1][0], this.pts[0][1]);
-    ctx.setLineDash([5, 5]);
-    ctx.lineWidth = 1;
-    ctx.closePath();
-    ctx.strokeStyle = "#ffffff";
-    // this.canvas.ctx.strokeStyle = c.shapeColor;
-    ctx.stroke();
+    this.ctx.beginPath();
+    this.ctx.moveTo(this.pts[0][0], this.pts[0][1]);
+    this.ctx.lineTo(this.pts[0][0], this.pts[1][1]);
+    this.ctx.lineTo(this.pts[1][0], this.pts[1][1]);
+    this.ctx.lineTo(this.pts[1][0], this.pts[0][1]);
+    this.ctx.setLineDash([5, 5]);
+    this.ctx.lineWidth = 1;
+    this.ctx.closePath();
+    this.ctx.strokeStyle = this.colors.shapeColor;
+    this.ctx.stroke();
   }
 }

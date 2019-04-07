@@ -102,7 +102,7 @@ var Canvas = /** @class */ (function (_super) {
             try {
                 for (var _b = __values(_this.shapes), _c = _b.next(); !_c.done; _c = _b.next()) {
                     var s = _c.value;
-                    s.render(_this.ctx, _this.colorPalette);
+                    s.render();
                 }
             }
             catch (e_1_1) { e_1 = { error: e_1_1 }; }
@@ -218,7 +218,7 @@ var Component = /** @class */ (function () {
 exports["default"] = Component;
 //# sourceMappingURL=component.js.map
 }
-  Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/controldrawer.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fcontroldrawer$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fcontroldrawer$2ejs.deps = {"./component":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fcomponent$2ejs,"./dom":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fdom$2ejs}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fcontroldrawer$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/controldrawer.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fcontroldrawer$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
+  Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/control-drawer.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fcontrol$2ddrawer$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fcontrol$2ddrawer$2ejs.deps = {"./component":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fcomponent$2ejs,"./dom":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fdom$2ejs}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fcontrol$2ddrawer$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/control-drawer.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fcontrol$2ddrawer$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -243,7 +243,6 @@ var ControlDrawer = /** @class */ (function (_super) {
     }
     ControlDrawer.prototype.render = function () {
         var section = dom.section("controldrawer");
-        section.style.width = "42px";
         section.style.background = this.colorPalette.controldrawerBg;
         section.style.color = this.colorPalette.controldrawerColor;
         this.rendered(section);
@@ -251,47 +250,41 @@ var ControlDrawer = /** @class */ (function (_super) {
     return ControlDrawer;
 }(component_1["default"]));
 exports["default"] = ControlDrawer;
-//# sourceMappingURL=controldrawer.js.map
+//# sourceMappingURL=control-drawer.js.map
 }
-  Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/di.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fdi$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fdi$2ejs.deps = {"./controldrawer":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fcontroldrawer$2ejs,"./layers":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2flayers$2ejs,"./toolbar":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftoolbar$2ejs,"./canvas":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fcanvas$2ejs,"./dom":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fdom$2ejs,"./interactions":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2finteractions$2ejs}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fdi$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/di.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fdi$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
+  Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/di.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fdi$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fdi$2ejs.deps = {"./palettes":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fpalettes$2ejs,"./layer-drawer":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2flayer$2ddrawer$2ejs,"./canvas":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fcanvas$2ejs,"./control-drawer":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fcontrol$2ddrawer$2ejs,"./toolbar-drawer":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftoolbar$2ddrawer$2ejs,"./dom":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fdom$2ejs,"./interactions":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2finteractions$2ejs}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fdi$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/di.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fdi$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
 "use strict";
 exports.__esModule = true;
 var dom = require("./dom");
-var controldrawer_1 = require("./controldrawer");
+var control_drawer_1 = require("./control-drawer");
+var layer_drawer_1 = require("./layer-drawer");
+var toolbar_drawer_1 = require("./toolbar-drawer");
 var canvas_1 = require("./canvas");
-var layers_1 = require("./layers");
-var toolbar_1 = require("./toolbar");
+var palettes = require("./palettes");
 var interactions = require("./interactions");
-var w = window;
-w.di = di;
-var defaultPalette = {
-    layersBg: "#111",
-    layersColor: "white",
-    stageBg: "#000",
-    stageColor: "#fff",
-    gridColor: "#111",
-    shapeColor: "#ccc",
-    toolbarBg: "#000",
-    toolbarColor: "#FFF",
-    controldrawerBg: "#690000",
-    controldrawerColor: "#FFF"
-};
 function di(parentSelector) {
     var parent = dom.select(parentSelector);
-    var controldrawer = new controldrawer_1["default"](defaultPalette);
-    var toolbar = new toolbar_1["default"](defaultPalette);
-    var layers = new layers_1["default"](defaultPalette);
-    var canvas = new canvas_1["default"](defaultPalette);
+    var controldrawer = new control_drawer_1["default"](palettes.DEFAULT);
+    var toolbar = new toolbar_drawer_1["default"](palettes.DEFAULT);
+    var layers = new layer_drawer_1["default"](palettes.DEFAULT);
+    var canvas = new canvas_1["default"](palettes.DEFAULT);
     controldrawer.onRender(dom.renderer(parent));
     layers.onRender(dom.renderer(parent));
     toolbar.onRender(dom.renderer(parent));
     canvas.onRender(dom.renderer(parent));
-    canvas.render();
     toolbar.render();
     layers.render();
     controldrawer.render();
-    interactions.configure({ canvas: canvas, toolbar: toolbar, layers: layers, controldrawer: controldrawer });
+    canvas.render();
+    interactions.configure({
+        colors: palettes.DEFAULT,
+        canvas: canvas,
+        toolbar: toolbar,
+        layers: layers,
+        controldrawer: controldrawer
+    });
 }
+window.di = di;
 //# sourceMappingURL=di.js.map
 }
   Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/dom.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fdom$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fdom$2ejs.deps = {}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fdom$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/dom.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fdom$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
@@ -400,9 +393,11 @@ var Grid = /** @class */ (function () {
     Grid.prototype.setColor = function (c) {
         this.gridColor = c;
     };
-    Grid.prototype.drawCross = function (center) {
-        var size = 7;
-        var htSize = 7;
+    Grid.prototype.drawCell = function (center) {
+        var size = 9;
+        // Here a bounds object is created to be used to determine if the mouse is
+        // within a certain cell. It is essentially the bounds of one cell.
+        var htSize = size;
         var rightTop = util.pt(center[0] - htSize, center[1] + htSize);
         var leftBottom = util.pt(center[0] + htSize, center[1] - htSize);
         var bounds = [rightTop, leftBottom];
@@ -429,12 +424,12 @@ var Grid = /** @class */ (function () {
         var ctx = this.ctx;
         var w = this.size.width;
         var h = this.size.height;
-        var padding = 20;
+        var padding = 25;
         var margin = 15;
         for (var x = padding; x < w - padding; x += margin) {
             for (var y = padding; y < h - padding; y += margin) {
                 var p = util.pt(x, y);
-                this.drawCross(p);
+                this.drawCell(p);
                 grid.push(p);
             }
         }
@@ -446,24 +441,13 @@ var Grid = /** @class */ (function () {
 exports["default"] = Grid;
 //# sourceMappingURL=grid.js.map
 }
-  Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/interactions.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2finteractions$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2finteractions$2ejs.deps = {"./util":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2futil$2ejs,"./types":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftypes$2ejs,"./marquee":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fmarquee$2ejs}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2finteractions$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/interactions.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2finteractions$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
+  Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/interactions.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2finteractions$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2finteractions$2ejs.deps = {"./marquee-lifecycle":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fmarquee$2dlifecycle$2ejs,"./line-lifecycle":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fline$2dlifecycle$2ejs,"./state":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fstate$2ejs,"./types":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftypes$2ejs}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2finteractions$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/interactions.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2finteractions$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
 "use strict";
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    }
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 exports.__esModule = true;
-var marquee_1 = require("./marquee");
-var util = require("./util");
+var state_1 = require("./state");
+var marquee_lifecycle_1 = require("./marquee-lifecycle");
+var marquee_lifecycle_2 = require("./marquee-lifecycle");
+var line_lifecycle_1 = require("./line-lifecycle");
 var types_1 = require("./types");
 var Area;
 (function (Area) {
@@ -471,42 +455,11 @@ var Area;
     Area[Area["Center"] = 1] = "Center";
 })(Area || (Area = {}));
 function configure(os) {
-    var state = new State();
-    var shell = new Shell(os, state);
+    var state = new state_1["default"]();
+    var shell = new Operator(os, state);
     shell.dombind();
 }
 exports.configure = configure;
-var State = /** @class */ (function () {
-    function State() {
-    }
-    return State;
-}());
-var LifeCycle = /** @class */ (function () {
-    function LifeCycle() {
-    }
-    return LifeCycle;
-}());
-var MarqueeLifeCycle = /** @class */ (function (_super) {
-    __extends(MarqueeLifeCycle, _super);
-    function MarqueeLifeCycle() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    MarqueeLifeCycle.prototype.start = function (c, s) {
-        this.shape = new marquee_1["default"]();
-        this.shape.pts = [s.pinnedCursorPoint, s.cursorPoint];
-        this.shape.uid = crypto.getRandomValues(new Uint32Array(4)).join("-");
-        this.initialPts = util.clone(this.shape.pts);
-        c.addShape(this.shape);
-    };
-    MarqueeLifeCycle.prototype.stop = function (c) {
-        this.shape.stop();
-        c.removeShape(this.shape);
-    };
-    MarqueeLifeCycle.prototype.run = function (s) {
-        this.shape.pts = [s.pinnedCursorPoint, s.cursorPoint];
-    };
-    return MarqueeLifeCycle;
-}(LifeCycle));
 // function addLayer(layers: Layers, shape): Layer {
 //   const layer = new Layer();
 //   layer.humanName = "Rectangle";
@@ -547,47 +500,55 @@ var MarqueeLifeCycle = /** @class */ (function (_super) {
 //   }
 //   stop() {}
 // }
-var QUICK_CLICK_MS = 200;
-var Shell = /** @class */ (function () {
-    function Shell(os, state) {
+var Operator = /** @class */ (function () {
+    function Operator(os, state) {
         this.state = state;
         this.os = os;
     }
-    Shell.prototype.dombind = function () {
+    Operator.prototype.dombind = function () {
         this.os.canvas.onMouseDown(this.handleMouseDown.bind(this));
         this.os.canvas.onMouseUp(this.handleMouseUp.bind(this));
         this.os.canvas.onMouseMove(this.handleMouseMove.bind(this));
         this.os.toolbar.onModeChange = this.handleChangeMode.bind(this);
     };
-    Shell.prototype.handleChangeMode = function (m) {
+    Operator.prototype.handleChangeMode = function (m) {
         this.state.mode = m;
     };
-    Shell.prototype.handleMouseDown = function (e) {
+    Operator.prototype.handleMouseDown = function (e) {
         this.state.downAt = new Date().getTime();
         this.state.pinnedCursorPoint = this.os.canvas.grid.closestPt;
         this.state.cursorPoint = this.os.canvas.grid.closestPt;
-        if (this.state.mode === types_1.Mode.Marquee) {
-            this.activity = new MarqueeLifeCycle();
-            this.activity.start(this.os.canvas, this.state);
+        switch (this.state.mode) {
+            case types_1.Mode.Marquee:
+                this.activity = new marquee_lifecycle_1["default"]();
+                break;
+            case types_1.Mode.Rectangle:
+                this.activity = new marquee_lifecycle_2["default"]();
+                break;
+            case types_1.Mode.Line:
+                this.activity = new line_lifecycle_1["default"]();
+                break;
         }
+        this.activity.colors = this.os.colors;
+        this.activity.start(this.os.canvas, this.state);
     };
-    Shell.prototype.handleMouseUp = function (e) {
+    Operator.prototype.handleMouseUp = function (e) {
         if (this.activity) {
             this.activity.stop(this.os.canvas);
             this.activity = null;
         }
     };
-    Shell.prototype.handleMouseMove = function (e) {
+    Operator.prototype.handleMouseMove = function (e) {
         this.state.cursorPoint = this.os.canvas.grid.closestPt;
         if (this.activity) {
             this.activity.run(this.state);
         }
     };
-    return Shell;
+    return Operator;
 }());
 //# sourceMappingURL=interactions.js.map
 }
-  Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/layers.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2flayers$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2flayers$2ejs.deps = {"./component":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fcomponent$2ejs,"./dom":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fdom$2ejs,"./types":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftypes$2ejs}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2flayers$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/layers.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2flayers$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
+  Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/layer-drawer.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2flayer$2ddrawer$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2flayer$2ddrawer$2ejs.deps = {"./component":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fcomponent$2ejs,"./dom":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fdom$2ejs,"./types":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftypes$2ejs}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2flayer$2ddrawer$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/layer-drawer.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2flayer$2ddrawer$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -606,21 +567,21 @@ exports.__esModule = true;
 var dom = require("./dom");
 var component_1 = require("./component");
 var types_1 = require("./types");
-var Layers = /** @class */ (function (_super) {
-    __extends(Layers, _super);
-    function Layers() {
+var LayerDrawer = /** @class */ (function (_super) {
+    __extends(LayerDrawer, _super);
+    function LayerDrawer() {
         var _this = _super !== null && _super.apply(this, arguments) || this;
         _this.layers = [];
         return _this;
     }
-    Layers.prototype.addLayer = function (layer) {
+    LayerDrawer.prototype.addLayer = function (layer) {
         this.layers.push(layer);
         this.render();
     };
-    Layers.prototype.getLayers = function () {
+    LayerDrawer.prototype.getLayers = function () {
         return this.layers;
     };
-    Layers.prototype.render = function () {
+    LayerDrawer.prototype.render = function () {
         var _a;
         var section = dom.section("layers");
         var ul = dom.ul("layer-list");
@@ -640,10 +601,150 @@ var Layers = /** @class */ (function (_super) {
         section.appendChild(ul);
         this.rendered(section);
     };
-    return Layers;
+    return LayerDrawer;
 }(component_1["default"]));
-exports["default"] = Layers;
-//# sourceMappingURL=layers.js.map
+exports["default"] = LayerDrawer;
+//# sourceMappingURL=layer-drawer.js.map
+}
+  Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/lifecycle.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2flifecycle$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2flifecycle$2ejs.deps = {}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2flifecycle$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/lifecycle.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2flifecycle$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
+"use strict";
+exports.__esModule = true;
+var LifeCycle = /** @class */ (function () {
+    function LifeCycle() {
+    }
+    return LifeCycle;
+}());
+exports["default"] = LifeCycle;
+//# sourceMappingURL=lifecycle.js.map
+}
+  Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/line-lifecycle.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fline$2dlifecycle$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fline$2dlifecycle$2ejs.deps = {"./lifecycle":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2flifecycle$2ejs,"./line":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fline$2ejs,"./util":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2futil$2ejs}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fline$2dlifecycle$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/line-lifecycle.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fline$2dlifecycle$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
+"use strict";
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    }
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+exports.__esModule = true;
+var line_1 = require("./line");
+var lifecycle_1 = require("./lifecycle");
+var util = require("./util");
+var LineLifeCycle = /** @class */ (function (_super) {
+    __extends(LineLifeCycle, _super);
+    function LineLifeCycle() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    LineLifeCycle.prototype.start = function (c, s) {
+        this.shape = new line_1["default"]();
+        this.shape.ctx = c.ctx;
+        this.shape.pts = [s.pinnedCursorPoint, s.cursorPoint];
+        this.shape.uid = crypto.getRandomValues(new Uint32Array(4)).join("-");
+        this.shape.colors = this.colors;
+        this.initialPts = util.clone(this.shape.pts);
+        c.addShape(this.shape);
+    };
+    LineLifeCycle.prototype.stop = function (c) {
+        this.shape.stop();
+        c.removeShape(this.shape);
+    };
+    LineLifeCycle.prototype.run = function (s) {
+        this.shape.pts = [s.pinnedCursorPoint, s.cursorPoint];
+    };
+    return LineLifeCycle;
+}(lifecycle_1["default"]));
+exports["default"] = LineLifeCycle;
+//# sourceMappingURL=line-lifecycle.js.map
+}
+  Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/line.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fline$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fline$2ejs.deps = {"./shape":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fshape$2ejs}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fline$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/line.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fline$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
+"use strict";
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    }
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+exports.__esModule = true;
+var shape_1 = require("./shape");
+var Line = /** @class */ (function (_super) {
+    __extends(Line, _super);
+    function Line() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    Line.prototype.render = function () {
+        if (this.pts.length < 2) {
+            return;
+        }
+        this.ctx.beginPath();
+        this.ctx.moveTo(this.pts[0][0], this.pts[0][1]);
+        for (var i = 1, len = this.pts.length; i < len; i++) {
+            this.ctx.lineTo(this.pts[i][0], this.pts[i][1]);
+        }
+        this.ctx.strokeStyle = this.colors.shapeColor;
+        this.ctx.stroke();
+    };
+    return Line;
+}(shape_1["default"]));
+exports["default"] = Line;
+//# sourceMappingURL=line.js.map
+}
+  Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/marquee-lifecycle.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fmarquee$2dlifecycle$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fmarquee$2dlifecycle$2ejs.deps = {"./lifecycle":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2flifecycle$2ejs,"./util":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2futil$2ejs,"./marquee":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fmarquee$2ejs}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fmarquee$2dlifecycle$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/marquee-lifecycle.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fmarquee$2dlifecycle$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
+"use strict";
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    }
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+exports.__esModule = true;
+var marquee_1 = require("./marquee");
+var lifecycle_1 = require("./lifecycle");
+var util = require("./util");
+var MarqueeLifeCycle = /** @class */ (function (_super) {
+    __extends(MarqueeLifeCycle, _super);
+    function MarqueeLifeCycle() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    MarqueeLifeCycle.prototype.start = function (c, s) {
+        this.shape = new marquee_1["default"]();
+        this.shape.pts = [s.pinnedCursorPoint, s.cursorPoint];
+        this.shape.uid = crypto.getRandomValues(new Uint32Array(4)).join("-");
+        this.shape.colors = this.colors;
+        this.shape.ctx = c.ctx;
+        this.initialPts = util.clone(this.shape.pts);
+        c.addShape(this.shape);
+    };
+    MarqueeLifeCycle.prototype.stop = function (c) {
+        this.shape.stop();
+        c.removeShape(this.shape);
+    };
+    MarqueeLifeCycle.prototype.run = function (s) {
+        this.shape.pts = [s.pinnedCursorPoint, s.cursorPoint];
+    };
+    return MarqueeLifeCycle;
+}(lifecycle_1["default"]));
+exports["default"] = MarqueeLifeCycle;
+//# sourceMappingURL=marquee-lifecycle.js.map
 }
   Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/marquee.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fmarquee$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fmarquee$2ejs.deps = {"./shape":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fshape$2ejs}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fmarquee$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/marquee.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fmarquee$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
 "use strict";
@@ -667,26 +768,47 @@ var Marquee = /** @class */ (function (_super) {
     function Marquee() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
-    Marquee.prototype.render = function (ctx, colors) {
+    Marquee.prototype.render = function () {
         if (!this.animating || this.pts.length < 2) {
             return;
         }
-        ctx.beginPath();
-        ctx.moveTo(this.pts[0][0], this.pts[0][1]);
-        ctx.lineTo(this.pts[0][0], this.pts[1][1]);
-        ctx.lineTo(this.pts[1][0], this.pts[1][1]);
-        ctx.lineTo(this.pts[1][0], this.pts[0][1]);
-        ctx.setLineDash([5, 5]);
-        ctx.lineWidth = 1;
-        ctx.closePath();
-        ctx.strokeStyle = "#ffffff";
-        // this.canvas.ctx.strokeStyle = c.shapeColor;
-        ctx.stroke();
+        this.ctx.beginPath();
+        this.ctx.moveTo(this.pts[0][0], this.pts[0][1]);
+        this.ctx.lineTo(this.pts[0][0], this.pts[1][1]);
+        this.ctx.lineTo(this.pts[1][0], this.pts[1][1]);
+        this.ctx.lineTo(this.pts[1][0], this.pts[0][1]);
+        this.ctx.setLineDash([5, 5]);
+        this.ctx.lineWidth = 1;
+        this.ctx.closePath();
+        this.ctx.strokeStyle = this.colors.shapeColor;
+        this.ctx.stroke();
     };
     return Marquee;
 }(shape_1["default"]));
 exports["default"] = Marquee;
 //# sourceMappingURL=marquee.js.map
+}
+  Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/palettes.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fpalettes$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fpalettes$2ejs.deps = {}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fpalettes$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/palettes.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fpalettes$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
+"use strict";
+exports.__esModule = true;
+// Default palette based on: https://colorhunt.co/palette/2763
+exports.DARK = {
+    stageBg: "#222831",
+    stageColor: "#ffffff",
+    gridColor: "#393E46",
+    shapeColor: "#ffffff",
+    // The primary toolbar at the top.
+    toolbarBg: "#393e46",
+    toolbarColor: "#FFFFFF",
+    // The layer palette.
+    layersBg: "#00ADB5",
+    layersColor: "#FFFFFF",
+    // The far left drawer.
+    controldrawerBg: "#EEEEEE",
+    controldrawerColor: "#222831"
+};
+exports.DEFAULT = exports.DARK;
+//# sourceMappingURL=palettes.js.map
 }
   Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/shape.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fshape$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fshape$2ejs.deps = {}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fshape$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/shape.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fshape$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
 "use strict";
@@ -707,7 +829,18 @@ var Shape = /** @class */ (function () {
 exports["default"] = Shape;
 //# sourceMappingURL=shape.js.map
 }
-  Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/toolbar.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftoolbar$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftoolbar$2ejs.deps = {"./component":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fcomponent$2ejs,"./dom":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fdom$2ejs,"./types":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftypes$2ejs}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftoolbar$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/toolbar.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftoolbar$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
+  Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/state.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fstate$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fstate$2ejs.deps = {}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fstate$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/state.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fstate$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
+"use strict";
+exports.__esModule = true;
+var State = /** @class */ (function () {
+    function State() {
+    }
+    return State;
+}());
+exports["default"] = State;
+//# sourceMappingURL=state.js.map
+}
+  Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/toolbar-drawer.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftoolbar$2ddrawer$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftoolbar$2ddrawer$2ejs.deps = {"./component":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fcomponent$2ejs,"./dom":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fdom$2ejs,"./types":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftypes$2ejs}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftoolbar$2ddrawer$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/toolbar-drawer.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftoolbar$2ddrawer$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -726,29 +859,32 @@ exports.__esModule = true;
 var dom = require("./dom");
 var component_1 = require("./component");
 var types_1 = require("./types");
-var Toolbar = /** @class */ (function (_super) {
-    __extends(Toolbar, _super);
-    function Toolbar() {
+var ToolbarDrawer = /** @class */ (function (_super) {
+    __extends(ToolbarDrawer, _super);
+    function ToolbarDrawer() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
-    Toolbar.prototype.handleClickEvent = function (m) {
+    ToolbarDrawer.prototype.handleClickEvent = function (m) {
         var _this = this;
         return function () {
-            _this.mode = types_1.Mode.Marquee;
-            // this.mode = this.mode === m ? Mode.Marquee : m;
+            _this.mode = m;
             _this.onModeChange(_this.mode);
         };
     };
-    Toolbar.prototype.render = function () {
+    ToolbarDrawer.prototype.render = function () {
         var el = dom.section("toolbar");
         var marqueeButton = dom.button();
         var rectButton = dom.button();
         var lineButton = dom.button();
         var textButton = dom.button();
-        marqueeButton.style.backgroundImage = "url(" + icons.marqueeDark + ")";
-        rectButton.style.backgroundImage = "url(" + icons.rectangleDark + ")";
-        lineButton.style.backgroundImage = "url(" + icons.lineDark + ")";
-        textButton.style.backgroundImage = "url(" + icons.textDark + ")";
+        marqueeButton.innerHTML = "marquee";
+        rectButton.innerHTML = "rect";
+        lineButton.innerHTML = "line";
+        textButton.innerHTML = "text";
+        // marqueeButton.style.backgroundImage = `url(${icons.marqueeLight})`;
+        // rectButton.style.backgroundImage = `url(${icons.rectangleDark})`;
+        // lineButton.style.backgroundImage = `url(${icons.lineDark})`;
+        // textButton.style.backgroundImage = `url(${icons.textDark})`;
         el.style.background = this.colorPalette.toolbarBg;
         marqueeButton.addEventListener("click", this.handleClickEvent(types_1.Mode.Marquee));
         rectButton.addEventListener("click", this.handleClickEvent(types_1.Mode.Rectangle));
@@ -760,16 +896,28 @@ var Toolbar = /** @class */ (function (_super) {
         el.appendChild(textButton);
         this.rendered(el);
     };
-    return Toolbar;
+    return ToolbarDrawer;
 }(component_1["default"]));
-exports["default"] = Toolbar;
-var icons = {
-    textDark: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAgCAYAAAAmG5mqAAAACXBIWXMAABYlAAAWJQFJUiTwAAAAbklEQVQ4je2UwQ2AIBAEF0MBdrKWoJVrCWwndoCB4EMBkT/zu2M3Fz5jvPfowYYsyRnA0ug5SadNQwjvWeTJBuCYsnWD4h9IxqUk837rvjAKo1BhFEahQvQSyfWP+ST1m+92q0vu/CJkyqqsAuACdNIeCAV1+NEAAAAASUVORK5CYII=",
-    lineDark: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGAAAABcCAYAAACRILDuAAAACXBIWXMAABYlAAAWJQFJUiTwAAACrElEQVR4nO2c0XHbMBAF32Xyn3QQl+ASUkI6iEtIKSnB7sQlxB3YHdgVXIYJNaINigBJUAfcvZ3BD0jZM7smKEGWRFVB7PhE97YwgDEMYAwDGMMAxjCAMQxgDAMYwwDGMIAxDGAMA1RARH6IyL2IvK79aZ+TGVLEIB3AaXwZH/PEAAdyQfqUx2QmAwNkKJA+hQFqsFL6lD/JTAYGGNkh/cSLqj4nsxlCB6ggfcrq5QcRA1SWPmX18oOgV8Ag/mcyu59NV0DIN+WHF02VI7yp6tdktoCQr4RV9Q7AQ3JgO5uWH0TeiqgcYdPyg+h7QRUjbA7Af8yqcE9QVUkmC+Fu6P4rYfUG3BQGGBkjvCQH8mxefsAAZ8Zl6FtyIA8D7GXnPWDzU1AwwKL8kuVo0wbclNABFuQ/qOpNwY151/KDyAEy8ocbcsmzo13LD8ZfEm4AGOTrzLifc7Fw/u3c+WsG5Z/HrPyFx73OnccAC2NG4mksyr8Q4XHunLUjzD2gZM3P8eGesPsGjChvyNSQf2I4X+Tf1k+VAO4342rKPwLXS1Dr8uE5QA/y4TVAL/LhMUBP8uEtQG/y4SlAj/LhJUCv8uEhQM/y0XuA3uWj5wAe5KPXAF7ko8cAnuSjtwDe5KOnAB7lo5cAXuWjhwCe5aP1AN7lo+UAEeSj1QBR5KPFAJHko7UA0eSjpQAR5aOVAFHlo4UAkeXDOkB0+bAMQPn/MQlA+WeuHoDy33PVAJSfcrUAlD/PVQJQ/mUOD0D5yxwagPLzHBaA8ss4JADll1M9AOWvo2oAEflN+euofQUMf/1vH+Yof4GqAVR1+PKK75MIlJ/hkM8Ji8gtgDtV/ZUcJO9def+gduuE/8YsaxjAGAYwhgGMYQBjGMAYBjCGAYxhAGMYwBgGMIYBLAHwF4/RU4hJQEIfAAAAAElFTkSuQmCC",
-    rectangleDark: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAC4AAAAiCAYAAAAge+tMAAAABGdBTUEAALGPC/xhBQAAAIZJREFUWAnt2LENgGAIhFExzsP+c7CQJpZUV1xQks9Ocz+SBzZGZt7Hwutc2PPbMo1PT+7qL6yq6M/+cN+/RVZleiqIIy4KsCoilC2GuI1SLIS4CGWLIW6jFAshLkLZYojbKMVCiItQthjiNkqxEOIilC2GuI1SLBT9D5F47vMYqzI9grXiDy7JB1eT5yRbAAAAAElFTkSuQmCC",
-    marqueeDark: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAC4AAAAiCAYAAAAge+tMAAAABGdBTUEAALGPC/xhBQAAAKpJREFUWAntl0EOgCAQA8HwHv7/Dj6k4dAEe+JAYKv1sgoEdodaQq613ml4Wmt5+ExR+68xSaX3opRszxUKkCWeUQHIs8bRfjpynrLEZTTOSpAlflq6/1v/dUpGLv87rsKV8N8bdRdkXcU+HlVSzmsVAfv4KpKz8xT7+CyqRePs44tAepqwBOzju7fGPr6dOC+Ik5RvQmjH+N39WBdR9gZ0dXJMD1VFjrLEH/xAUETson4YAAAAAElFTkSuQmCC"
-};
-//# sourceMappingURL=toolbar.js.map
+exports["default"] = ToolbarDrawer;
+// const icons = {
+//   textLight:
+//     "iVBORw0KGgoAAAANSUhEUgAAABYAAAAeCAYAAAAo5+5WAAAABGdBTUEAALGPC/xhBQAAAMFJREFUSA1j/A8EDNQHDUzUNxNiIt0MlgXax48F/0PyWRUWeZCe6UhqGFiQOUD2J0ZGxk9oYgxo8fADh5pfyProFhTIllLEBgXFRCQTULyDJM6IxMbFPIgkcQKJjZsJDOM/oHCGgkLcKhEyQy+MR10Mj73RoBgNCngIwBmjqWIIBwV6ZQqqOAWB/uGD+wnCQK5BBIFq5JHlgZXrQ2Q+VjZQUye0piCW+oPNIJolN4ygANr+HYg/YHMFDrG/OMRpIwwAOl1jHCODvn8AAAAASUVORK5CYII=",
+//   selectLight:
+//     "iVBORw0KGgoAAAANSUhEUgAAACAAAAAeCAYAAABNChwpAAAABGdBTUEAALGPC/xhBQAAAlhJREFUSA29lk9IVFEUxt8kYUgltsiNDCW4SMiVBFELNxJCEAjZroW0Eheia/+s3Og2qDYRgYJuNdxNtIoW4qJooW5aaKGUEJSg9vx94716e86bO+/x3nzwec+95zvnOw7v3ZlCGIZvgyBYh4uFQuEra33BACPQ4jPBBLxVtykwa4UHMAo7TGfuw+C8ZNw3WT9GJ2GvYSZhPsPQeAAKv2AjLMIxWJ9hMLoE96Dw2P3I2ddnGIxeyh0suQO4Mbn8hqH5PbkDPZDXXeNKMZrsh6HpBhRGKpnGnaF3h/lX7nD2p/YHmJoJU7caZ+Y7p17DjEI9wMmGoeCmU3TbZ+bL08sOs0vsQm/bo4r1JD4Y5UxFQYJD+tyBJdNPyz6chddi25B8BoUt2BArrJKgrgMuQIsjgjewWKXsJIWoGf6FwgNvgSNAr2v9OXSv9nfsuxyZP6RgHgpzfnUQoLsMp+BvaPGJoKeW+nMaCvtMlz+sV88JnAPy/fCH0WtZh//dpo68tpAGDXAbCoNxVeRa4E+JwHc4BC/G6ROd00hPq/A+rpCc1XwjvhKnS3VOwy4o6DK5EW2iM6jXSngazWeyp/FauX0Yjkcbcj5nctJciOYz2dNYV6qg34ynYN8N7TXbe5rIOsBE7/UhFO7a/sQlHYAVe5bbisly2SoMX8iE+KHZ63ZLdsGkmRKTJ8ZQr1sT/GL2r9P0S1yDmftzzX4auqDaEjdLW4DZK/Nf22U6ba9Udbjet86sO7Dq9ZzKxFeE6aYZYtinzSWPub7t9EWTzV2fdEqM22F/0jqf/hhHAq5AGWttgQAAAABJRU5ErkJggg==",
+//   rectLight:
+//     "iVBORw0KGgoAAAANSUhEUgAAACgAAAAcCAYAAAATFf3WAAAABGdBTUEAALGPC/xhBQAAAJ1JREFUWAntl7ENgDAQAwlCgpoKwT4MwmLMwUBITAE8FSdKFySFUzlKLFv3aZKuWFWZa00pLXWZ3d5WzSurM/SBfQ7ZRWjPYBY8AunEw791vLY5MjfmFj9iF+S4FG2CCjV6TJA0FG2CCjV6TJA0FG2CCjV6TJA0FG2CCjV6TJA0FG2CCjV6+Ksb4le18zCDbr+ZLPiMe/xeyL0v/g3eJSUQX+Hu6UAAAAAASUVORK5CYII=",
+//   lineLight:
+//     "iVBORw0KGgoAAAANSUhEUgAAABoAAAAcCAYAAAB/E6/TAAAABGdBTUEAALGPC/xhBQAAAYRJREFUSA21lk8rRFEYh91JpNCQRIqUImWhLEiKZmMhKSmzsbGxYWHDxsLOUuyUL8AHYKksRikLNc2UUlKTkhCRv8fz6t46nWaaHPd96+mcc+99n9+9M90zE1QoljGmE/0sjMQeg7wFliADUe1VxpGELYlnGtIwBgmw68ReeM0JmYS36NZLjENecrcJ+XaJADksN1Ht9nitEQWwC8Xq/x+bfVckJCBXJGlTrnO/NLv3r/N1GnrgwWnMOGv/JU+xGj7JMWMDHIZrGTr8zVYnosVQespYL6cYa+AICtal/lNE8/AN59Bom1jXwYp9zGuOJA1fkIdmL0m5JsRT8AGX0Fbueq/ziMdBXsJrkE0z/kI8Ci9wA93xJ2BEPAhPcAd9WiH9yO/hEQa0QnqR38IzDGuFdCEvwCuktELakV/BO0xohbQiv4BPmNEKaUKeBdla5rRCksjPQGpBK6QWefTPZVkrJNrW5UnWtEKqkB9IArWhEiJS5Pu/EcZsqYWEQfK7sgOBZtAPqmfXRATkc3kAAAAASUVORK5CYII=",
+//   textDark:
+//     "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAgCAYAAAAmG5mqAAAACXBIWXMAABYlAAAWJQFJUiTwAAAAbklEQVQ4je2UwQ2AIBAEF0MBdrKWoJVrCWwndoCB4EMBkT/zu2M3Fz5jvPfowYYsyRnA0ug5SadNQwjvWeTJBuCYsnWD4h9IxqUk837rvjAKo1BhFEahQvQSyfWP+ST1m+92q0vu/CJkyqqsAuACdNIeCAV1+NEAAAAASUVORK5CYII=",
+//   lineDark:
+//     "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGAAAABcCAYAAACRILDuAAAACXBIWXMAABYlAAAWJQFJUiTwAAACrElEQVR4nO2c0XHbMBAF32Xyn3QQl+ASUkI6iEtIKSnB7sQlxB3YHdgVXIYJNaINigBJUAfcvZ3BD0jZM7smKEGWRFVB7PhE97YwgDEMYAwDGMMAxjCAMQxgDAMYwwDGMIAxDGAMA1RARH6IyL2IvK79aZ+TGVLEIB3AaXwZH/PEAAdyQfqUx2QmAwNkKJA+hQFqsFL6lD/JTAYGGNkh/cSLqj4nsxlCB6ggfcrq5QcRA1SWPmX18oOgV8Ag/mcyu59NV0DIN+WHF02VI7yp6tdktoCQr4RV9Q7AQ3JgO5uWH0TeiqgcYdPyg+h7QRUjbA7Af8yqcE9QVUkmC+Fu6P4rYfUG3BQGGBkjvCQH8mxefsAAZ8Zl6FtyIA8D7GXnPWDzU1AwwKL8kuVo0wbclNABFuQ/qOpNwY151/KDyAEy8ocbcsmzo13LD8ZfEm4AGOTrzLifc7Fw/u3c+WsG5Z/HrPyFx73OnccAC2NG4mksyr8Q4XHunLUjzD2gZM3P8eGesPsGjChvyNSQf2I4X+Tf1k+VAO4342rKPwLXS1Dr8uE5QA/y4TVAL/LhMUBP8uEtQG/y4SlAj/LhJUCv8uEhQM/y0XuA3uWj5wAe5KPXAF7ko8cAnuSjtwDe5KOnAB7lo5cAXuWjhwCe5aP1AN7lo+UAEeSj1QBR5KPFAJHko7UA0eSjpQAR5aOVAFHlo4UAkeXDOkB0+bAMQPn/MQlA+WeuHoDy33PVAJSfcrUAlD/PVQJQ/mUOD0D5yxwagPLzHBaA8ss4JADll1M9AOWvo2oAEflN+euofQUMf/1vH+Yof4GqAVR1+PKK75MIlJ/hkM8Ji8gtgDtV/ZUcJO9def+gduuE/8YsaxjAGAYwhgGMYQBjGMAYBjCGAYxhAGMYwBgGMIYBLAHwF4/RU4hJQEIfAAAAAElFTkSuQmCC",
+//   rectangleDark:
+//     "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAC4AAAAiCAYAAAAge+tMAAAABGdBTUEAALGPC/xhBQAAAIZJREFUWAnt2LENgGAIhFExzsP+c7CQJpZUV1xQks9Ocz+SBzZGZt7Hwutc2PPbMo1PT+7qL6yq6M/+cN+/RVZleiqIIy4KsCoilC2GuI1SLIS4CGWLIW6jFAshLkLZYojbKMVCiItQthjiNkqxEOIilC2GuI1SLBT9D5F47vMYqzI9grXiDy7JB1eT5yRbAAAAAElFTkSuQmCC",
+//   marqueeDark:
+//     "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAC4AAAAiCAYAAAAge+tMAAAABGdBTUEAALGPC/xhBQAAAKpJREFUWAntl0EOgCAQA8HwHv7/Dj6k4dAEe+JAYKv1sgoEdodaQq613ml4Wmt5+ExR+68xSaX3opRszxUKkCWeUQHIs8bRfjpynrLEZTTOSpAlflq6/1v/dUpGLv87rsKV8N8bdRdkXcU+HlVSzmsVAfv4KpKz8xT7+CyqRePs44tAepqwBOzju7fGPr6dOC+Ik5RvQmjH+N39WBdR9gZ0dXJMD1VFjrLEH/xAUETson4YAAAAAElFTkSuQmCC"
+// };
+//# sourceMappingURL=toolbar-drawer.js.map
 }
   Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/types.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftypes$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftypes$2ejs.deps = {}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftypes$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/types.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftypes$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
 "use strict";
@@ -777,8 +925,7 @@ exports.__esModule = true;
 var ActionType;
 (function (ActionType) {
     ActionType[ActionType["Moving"] = 0] = "Moving";
-    ActionType[ActionType["Enlarging"] = 1] = "Enlarging";
-    ActionType[ActionType["Resizing"] = 2] = "Resizing";
+    ActionType[ActionType["Resizing"] = 1] = "Resizing";
 })(ActionType = exports.ActionType || (exports.ActionType = {}));
 var LayerType;
 (function (LayerType) {

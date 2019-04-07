@@ -33,10 +33,12 @@ export default class Grid {
     this.gridColor = c;
   }
 
-  drawCross(center: Point) {
-    const size = 7;
-    const htSize = 7;
+  drawCell(center: Point) {
+    const size = 9;
 
+    // Here a bounds object is created to be used to determine if the mouse is
+    // within a certain cell. It is essentially the bounds of one cell.
+    const htSize = size;
     const rightTop = util.pt(center[0] - htSize, center[1] + htSize);
     const leftBottom = util.pt(center[0] + htSize, center[1] - htSize);
     const bounds = [rightTop, leftBottom];
@@ -69,13 +71,13 @@ export default class Grid {
     let w = this.size.width;
     let h = this.size.height;
 
-    const padding = 20;
+    const padding = 25;
     const margin = 15;
 
     for (let x = padding; x < w - padding; x += margin) {
       for (let y = padding; y < h - padding; y += margin) {
         const p = util.pt(x, y);
-        this.drawCross(p);
+        this.drawCell(p);
         grid.push(p);
       }
     }

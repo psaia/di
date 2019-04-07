@@ -2,7 +2,7 @@
 export const DARK = {
   stageBg: "#222831",
   stageColor: "#ffffff",
-  gridColor: "#ffffff",
+  gridColor: "#393E46",
   shapeColor: "#ffffff",
 
   // The primary toolbar at the top.

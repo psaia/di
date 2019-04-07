@@ -52,7 +52,7 @@ export default class Canvas extends Component {
     this.ctx.clearRect(0, 0, this.width, this.height);
     this.grid.render();
 
-    for (let s of this.shapes) s.render(this.ctx, this.colorPalette);
+    for (let s of this.shapes) s.render();
   };
 
   private resize(container: HTMLElement) {

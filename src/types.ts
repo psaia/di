@@ -8,7 +8,6 @@ export type Group = Float32Array[];
 
 export enum ActionType {
   Moving = 0,
-  Enlarging,
   Resizing
 }
 

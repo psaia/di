@@ -1,15 +1,15 @@
 import * as dom from "./dom";
 import ControlDrawer from "./control-drawer";
-import Canvas from "./canvas";
 import LayerDrawer from "./layer-drawer";
-import Toolbar from "./toolbar";
+import ToolbarDrawer from "./toolbar-drawer";
+import Canvas from "./canvas";
 import * as palettes from "./palettes";
 import * as interactions from "./interactions";
 
 function di(parentSelector: string) {
   const parent = dom.select(parentSelector);
   const controldrawer = new ControlDrawer(palettes.DEFAULT);
-  const toolbar = new Toolbar(palettes.DEFAULT);
+  const toolbar = new ToolbarDrawer(palettes.DEFAULT);
   const layers = new LayerDrawer(palettes.DEFAULT);
   const canvas = new Canvas(palettes.DEFAULT);
 
@@ -18,12 +18,18 @@ function di(parentSelector: string) {
   toolbar.onRender(dom.renderer(parent));
   canvas.onRender(dom.renderer(parent));
 
-  canvas.render();
   toolbar.render();
   layers.render();
   controldrawer.render();
+  canvas.render();
 
-  interactions.configure({ canvas, toolbar, layers, controldrawer });
+  interactions.configure({
+    colors: palettes.DEFAULT,
+    canvas,
+    toolbar,
+    layers,
+    controldrawer
+  });
 }
 
 (<any>window).di = di;
