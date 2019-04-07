@@ -1,4 +1,4 @@
-import { Dimension, ElementLike, RenderFn } from "./types";
+import { Dimension, RenderFn } from "./types";
 
 const prefix = "di__";
 

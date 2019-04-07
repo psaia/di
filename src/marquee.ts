@@ -1,6 +1,4 @@
 import Shape from "./shape";
-import { Point, Group } from "./types";
-import * as util from "./util";
 
 export default class Marquee extends Shape {
   render() {

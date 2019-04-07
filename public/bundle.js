@@ -421,7 +421,6 @@ var Grid = /** @class */ (function () {
     };
     Grid.prototype.render = function () {
         var grid = [];
-        var ctx = this.ctx;
         var w = this.size.width;
         var h = this.size.height;
         var padding = 25;
@@ -449,11 +448,6 @@ var marquee_lifecycle_1 = require("./marquee-lifecycle");
 var rect_lifecycle_1 = require("./rect-lifecycle");
 var line_lifecycle_1 = require("./line-lifecycle");
 var types_1 = require("./types");
-var Area;
-(function (Area) {
-    Area[Area["Corner"] = 0] = "Corner";
-    Area[Area["Center"] = 1] = "Center";
-})(Area || (Area = {}));
 function configure(os) {
     var state = new state_1["default"]();
     var op = new Operator(os, state);
@@ -659,10 +653,7 @@ var LineLifeCycle = /** @class */ (function (_super) {
         this.initialPts = util.clone(this.shape.pts);
         c.addShape(this.shape);
     };
-    LineLifeCycle.prototype.stop = function () {
-        // this.shape.stop();
-        // c.removeShape(this.shape);
-    };
+    LineLifeCycle.prototype.stop = function () { };
     LineLifeCycle.prototype.remove = function (c) {
         this.shape.stop();
         c.removeShape(this.shape);

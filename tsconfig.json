@@ -4,7 +4,8 @@
     "lib": ["DOM", "ES2015"],
     "outDir": "lib/",
     "sourceMap": true,
-    "downlevelIteration": true
+    "downlevelIteration": true,
+    "noUnusedLocals": true
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "src/*_test.ts"]

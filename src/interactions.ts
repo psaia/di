@@ -1,32 +1,24 @@
 import Canvas from "./canvas";
 import LayerDrawer from "./layer-drawer";
-import Layer from "./layer";
+// import Layer from "./layer";
 import Toolbar from "./toolbar-drawer";
 import ControlDrawer from "./control-drawer";
-import * as util from "./util";
 import State from "./state";
 import MarqueeLifeCycle from "./marquee-lifecycle";
 import RectLifeCycle from "./rect-lifecycle";
 import LineLifeCycle from "./line-lifecycle";
 
-import {
-  ColorPalette,
-  Mode,
-  ActionType,
-  Point,
-  Group,
-  LayerType
-} from "./types";
+import { Mode } from "./types";
 
-enum Area {
-  Corner = 0,
-  Center
-}
+// enum Area {
+//   Corner = 0,
+//   Center
+// }
 
-interface Selection {
-  layer: Layer;
-  area: Area;
-}
+// interface Selection {
+//   layer: Layer;
+//   area: Area;
+// }
 
 interface OS {
   toolbar: Toolbar;

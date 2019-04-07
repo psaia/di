@@ -66,7 +66,6 @@ export default class Grid {
 
   render() {
     const grid = [];
-    const ctx = this.ctx;
 
     let w = this.size.width;
     let h = this.size.height;

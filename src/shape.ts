@@ -1,4 +1,3 @@
-import Canvas from "./canvas";
 import { ColorPalette, Group } from "./types";
 
 export default abstract class Shape {

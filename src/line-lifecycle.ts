@@ -1,7 +1,6 @@
 import Line from "./line";
 import LifeCycle from "./lifecycle";
 import Canvas from "./canvas";
-import State from "./state";
 import * as util from "./util";
 import RectLineConnection from "./rect-line-connection";
 import { Group } from "./types";
@@ -20,10 +19,7 @@ export default class LineLifeCycle extends LifeCycle {
 
     c.addShape(this.shape);
   }
-  stop() {
-    // this.shape.stop();
-    // c.removeShape(this.shape);
-  }
+  stop() {}
   remove(c: Canvas) {
     this.shape.stop();
     c.removeShape(this.shape);

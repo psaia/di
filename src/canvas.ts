@@ -3,7 +3,6 @@ import * as util from "./util";
 import Grid from "./grid";
 import Shape from "./shape";
 import Component from "./component";
-import { ColorPalette } from "./types";
 
 export default class Canvas extends Component {
   public width: number = 0;

@@ -1,7 +1,6 @@
 import Marquee from "./marquee";
 import LifeCycle from "./lifecycle";
 import Canvas from "./canvas";
-import State from "./state";
 import * as util from "./util";
 import { Group } from "./types";
 

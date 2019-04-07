@@ -1,5 +1,4 @@
 import * as dom from "./dom";
-import Layer from "./layer";
 import Component from "./component";
 
 export default class ControlDrawer extends Component {

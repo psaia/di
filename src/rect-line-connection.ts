@@ -1,5 +1,5 @@
-import Line from "./line";
-import Rect from "./rect";
+// import Line from "./line";
+// import Rect from "./rect";
 import { AnchorPlacement } from "./types";
 
 /**

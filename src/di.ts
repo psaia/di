@@ -3,7 +3,6 @@ import ControlDrawer from "./control-drawer";
 import LayerDrawer from "./layer-drawer";
 import ToolbarDrawer from "./toolbar-drawer";
 import Canvas from "./canvas";
-import * as palettes from "./palettes";
 import * as interactions from "./interactions";
 
 function di(parentSelector: string) {

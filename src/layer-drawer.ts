@@ -1,7 +1,7 @@
 import * as dom from "./dom";
 import Layer from "./layer";
 import Component from "./component";
-import { LayerType, RenderFn } from "./types";
+import { LayerType } from "./types";
 
 export default class LayerDrawer extends Component {
   protected layers: Layer[] = [];

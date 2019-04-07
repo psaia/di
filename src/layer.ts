@@ -1,4 +1,3 @@
-import * as dom from "./dom";
 import { LayerType } from "./types";
 import Rect from "./rect";
 import Line from "./line";
