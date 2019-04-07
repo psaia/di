@@ -19,8 +19,8 @@ export default class LineLifeCycle extends LifeCycle {
     c.addShape(this.shape);
   }
   stop(c: Canvas) {
-    this.shape.stop();
-    c.removeShape(this.shape);
+    // this.shape.stop();
+    // c.removeShape(this.shape);
   }
   run(s: State) {
     this.shape.pts = [s.pinnedCursorPoint, s.cursorPoint];

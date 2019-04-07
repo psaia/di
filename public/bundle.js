@@ -441,12 +441,12 @@ var Grid = /** @class */ (function () {
 exports["default"] = Grid;
 //# sourceMappingURL=grid.js.map
 }
-  Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/interactions.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2finteractions$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2finteractions$2ejs.deps = {"./marquee-lifecycle":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fmarquee$2dlifecycle$2ejs,"./line-lifecycle":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fline$2dlifecycle$2ejs,"./state":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fstate$2ejs,"./types":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftypes$2ejs}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2finteractions$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/interactions.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2finteractions$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
+  Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/interactions.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2finteractions$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2finteractions$2ejs.deps = {"./marquee-lifecycle":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fmarquee$2dlifecycle$2ejs,"./line-lifecycle":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fline$2dlifecycle$2ejs,"./state":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fstate$2ejs,"./rect-lifecycle":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2frect$2dlifecycle$2ejs,"./types":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftypes$2ejs}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2finteractions$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/interactions.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2finteractions$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
 "use strict";
 exports.__esModule = true;
 var state_1 = require("./state");
 var marquee_lifecycle_1 = require("./marquee-lifecycle");
-var marquee_lifecycle_2 = require("./marquee-lifecycle");
+var rect_lifecycle_1 = require("./rect-lifecycle");
 var line_lifecycle_1 = require("./line-lifecycle");
 var types_1 = require("./types");
 var Area;
@@ -456,8 +456,8 @@ var Area;
 })(Area || (Area = {}));
 function configure(os) {
     var state = new state_1["default"]();
-    var shell = new Operator(os, state);
-    shell.dombind();
+    var op = new Operator(os, state);
+    op.dbind();
 }
 exports.configure = configure;
 // function addLayer(layers: Layers, shape): Layer {
@@ -505,7 +505,7 @@ var Operator = /** @class */ (function () {
         this.state = state;
         this.os = os;
     }
-    Operator.prototype.dombind = function () {
+    Operator.prototype.dbind = function () {
         this.os.canvas.onMouseDown(this.handleMouseDown.bind(this));
         this.os.canvas.onMouseUp(this.handleMouseUp.bind(this));
         this.os.canvas.onMouseMove(this.handleMouseMove.bind(this));
@@ -523,7 +523,7 @@ var Operator = /** @class */ (function () {
                 this.activity = new marquee_lifecycle_1["default"]();
                 break;
             case types_1.Mode.Rectangle:
-                this.activity = new marquee_lifecycle_2["default"]();
+                this.activity = new rect_lifecycle_1["default"]();
                 break;
             case types_1.Mode.Line:
                 this.activity = new line_lifecycle_1["default"]();
@@ -651,8 +651,8 @@ var LineLifeCycle = /** @class */ (function (_super) {
         c.addShape(this.shape);
     };
     LineLifeCycle.prototype.stop = function (c) {
-        this.shape.stop();
-        c.removeShape(this.shape);
+        // this.shape.stop();
+        // c.removeShape(this.shape);
     };
     LineLifeCycle.prototype.run = function (s) {
         this.shape.pts = [s.pinnedCursorPoint, s.cursorPoint];
@@ -810,6 +810,92 @@ exports.DARK = {
 exports.DEFAULT = exports.DARK;
 //# sourceMappingURL=palettes.js.map
 }
+  Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/rect-lifecycle.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2frect$2dlifecycle$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2frect$2dlifecycle$2ejs.deps = {"./lifecycle":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2flifecycle$2ejs,"./util":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2futil$2ejs,"./rect":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2frect$2ejs}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2frect$2dlifecycle$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/rect-lifecycle.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2frect$2dlifecycle$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
+"use strict";
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    }
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+exports.__esModule = true;
+var rect_1 = require("./rect");
+var lifecycle_1 = require("./lifecycle");
+var util = require("./util");
+var RectLifeCycle = /** @class */ (function (_super) {
+    __extends(RectLifeCycle, _super);
+    function RectLifeCycle() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    RectLifeCycle.prototype.start = function (c, s) {
+        this.shape = new rect_1["default"]();
+        this.shape.pts = [s.pinnedCursorPoint, s.cursorPoint];
+        this.shape.uid = crypto.getRandomValues(new Uint32Array(4)).join("-");
+        this.shape.colors = this.colors;
+        this.shape.ctx = c.ctx;
+        this.initialPts = util.clone(this.shape.pts);
+        c.addShape(this.shape);
+    };
+    RectLifeCycle.prototype.stop = function (c) {
+        // this.shape.stop();
+    };
+    RectLifeCycle.prototype.run = function (s) {
+        this.shape.pts = [s.pinnedCursorPoint, s.cursorPoint];
+    };
+    return RectLifeCycle;
+}(lifecycle_1["default"]));
+exports["default"] = RectLifeCycle;
+//# sourceMappingURL=rect-lifecycle.js.map
+}
+  Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/rect.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2frect$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2frect$2ejs.deps = {"./shape":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fshape$2ejs}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2frect$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/rect.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2frect$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
+"use strict";
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    }
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+exports.__esModule = true;
+var shape_1 = require("./shape");
+var Rect = /** @class */ (function (_super) {
+    __extends(Rect, _super);
+    function Rect() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    Rect.prototype.render = function () {
+        if (!this.animating || this.pts.length < 2) {
+            return;
+        }
+        this.ctx.beginPath();
+        this.ctx.setLineDash([]);
+        this.ctx.strokeStyle = this.colors.shapeColor;
+        this.ctx.lineWidth = 2;
+        this.ctx.moveTo(this.pts[0][0], this.pts[0][1]);
+        this.ctx.lineTo(this.pts[0][0], this.pts[1][1]);
+        this.ctx.lineTo(this.pts[1][0], this.pts[1][1]);
+        this.ctx.lineTo(this.pts[1][0], this.pts[0][1]);
+        this.ctx.closePath();
+        this.ctx.stroke();
+    };
+    return Rect;
+}(shape_1["default"]));
+exports["default"] = Rect;
+//# sourceMappingURL=rect.js.map
+}
   Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/shape.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fshape$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fshape$2ejs.deps = {}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fshape$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/shape.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fshape$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
 "use strict";
 exports.__esModule = true;
@@ -829,11 +915,13 @@ var Shape = /** @class */ (function () {
 exports["default"] = Shape;
 //# sourceMappingURL=shape.js.map
 }
-  Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/state.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fstate$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fstate$2ejs.deps = {}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fstate$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/state.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fstate$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
+  Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/state.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fstate$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fstate$2ejs.deps = {"./types":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftypes$2ejs}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fstate$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/state.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fstate$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
 "use strict";
 exports.__esModule = true;
+var types_1 = require("./types");
 var State = /** @class */ (function () {
     function State() {
+        this.mode = types_1.Mode.Marquee;
     }
     return State;
 }());

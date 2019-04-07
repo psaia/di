@@ -6,7 +6,7 @@ import ControlDrawer from "./control-drawer";
 import * as util from "./util";
 import State from "./state";
 import MarqueeLifeCycle from "./marquee-lifecycle";
-import RectLifeCycle from "./marquee-lifecycle";
+import RectLifeCycle from "./rect-lifecycle";
 import LineLifeCycle from "./line-lifecycle";
 
 import {
@@ -38,8 +38,8 @@ interface OS {
 
 export function configure(os: OS): void {
   const state = new State();
-  const shell = new Operator(os, state);
-  shell.dombind();
+  const op = new Operator(os, state);
+  op.dbind();
 }
 
 // function addLayer(layers: Layers, shape): Layer {
@@ -93,7 +93,7 @@ class Operator {
     this.state = state;
     this.os = os;
   }
-  public dombind() {
+  public dbind() {
     this.os.canvas.onMouseDown(this.handleMouseDown.bind(this));
     this.os.canvas.onMouseUp(this.handleMouseUp.bind(this));
     this.os.canvas.onMouseMove(this.handleMouseMove.bind(this));
@@ -118,6 +118,7 @@ class Operator {
         this.activity = new LineLifeCycle();
         break;
     }
+
     this.activity.colors = this.os.colors;
     this.activity.start(this.os.canvas, this.state);
   }

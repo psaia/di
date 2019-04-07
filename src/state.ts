@@ -10,7 +10,7 @@ import {
 import Canvas from "./canvas";
 
 export default class State {
-  public mode: Mode;
+  public mode: Mode = Mode.Marquee;
   public cursorPoint: Point;
   public pinnedCursorPoint: Point;
   public downAt: number;

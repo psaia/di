@@ -18,7 +18,7 @@ export default class RectLifeCycle extends LifeCycle {
     c.addShape(this.shape);
   }
   stop(c: Canvas) {
-    this.shape.stop();
+    // this.shape.stop();
   }
   run(s: State) {
     this.shape.pts = [s.pinnedCursorPoint, s.cursorPoint];
