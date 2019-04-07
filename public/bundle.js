@@ -646,7 +646,6 @@ var LineLifeCycle = /** @class */ (function (_super) {
     }
     LineLifeCycle.prototype.start = function (c) {
         this.shape = new line_1["default"]();
-        this.shape.pts = [this.state.pinnedCursorPoint, this.state.cursorPoint];
         this.shape.uid = crypto.getRandomValues(new Uint32Array(4)).join("-");
         this.shape.colors = this.state.colors;
         this.shape.ctx = c.ctx;
@@ -666,7 +665,7 @@ var LineLifeCycle = /** @class */ (function (_super) {
 exports["default"] = LineLifeCycle;
 //# sourceMappingURL=line-lifecycle.js.map
 }
-  Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/line.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fline$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fline$2ejs.deps = {"./shape":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fshape$2ejs}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fline$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/line.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fline$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
+  Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/line.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fline$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fline$2ejs.deps = {"./util":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2futil$2ejs,"./shape":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fshape$2ejs}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fline$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/line.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fline$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -683,6 +682,11 @@ var __extends = (this && this.__extends) || (function () {
 })();
 exports.__esModule = true;
 var shape_1 = require("./shape");
+var util = require("./util");
+/**
+ * A line follows a very particular algorithm. There are potentially 4 break
+ * points for each line since there are no diaganal lines.
+ */
 var Line = /** @class */ (function (_super) {
     __extends(Line, _super);
     function Line() {
@@ -692,11 +696,18 @@ var Line = /** @class */ (function (_super) {
         if (this.pts.length < 2) {
             return;
         }
+        var from = this.pts[0];
+        var to = this.pts[1];
         this.ctx.beginPath();
-        this.ctx.moveTo(this.pts[0][0], this.pts[0][1]);
-        for (var i = 1, len = this.pts.length; i < len; i++) {
-            this.ctx.lineTo(this.pts[i][0], this.pts[i][1]);
-        }
+        this.ctx.moveTo(from[0], from[1]);
+        var pt1 = util.pt(from[0] + (to[0] - from[0]) / 2, from[1]);
+        var pt2 = util.pt(pt1[0], to[1]);
+        // Starting half line.
+        this.ctx.lineTo(pt1[0], pt1[1]);
+        // Intersecting vertical line.
+        this.ctx.lineTo(pt2[0], pt2[1]);
+        // Final connecting  line.
+        this.ctx.lineTo(to[0], to[1]);
         this.ctx.strokeStyle = this.colors.shapeColor;
         this.ctx.stroke();
     };

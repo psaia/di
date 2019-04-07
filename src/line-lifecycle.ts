@@ -11,7 +11,6 @@ export default class LineLifeCycle extends LifeCycle {
   initialPts: Group;
   start(c: Canvas) {
     this.shape = new Line();
-    this.shape.pts = [this.state.pinnedCursorPoint, this.state.cursorPoint];
     this.shape.uid = crypto.getRandomValues(new Uint32Array(4)).join("-");
     this.shape.colors = this.state.colors;
     this.shape.ctx = c.ctx;
