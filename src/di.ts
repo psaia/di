@@ -8,10 +8,10 @@ import * as interactions from "./interactions";
 
 function di(parentSelector: string) {
   const parent = dom.select(parentSelector);
-  const controldrawer = new ControlDrawer(palettes.DEFAULT);
-  const toolbar = new ToolbarDrawer(palettes.DEFAULT);
-  const layers = new LayerDrawer(palettes.DEFAULT);
-  const canvas = new Canvas(palettes.DEFAULT);
+  const controldrawer = new ControlDrawer();
+  const toolbar = new ToolbarDrawer();
+  const layers = new LayerDrawer();
+  const canvas = new Canvas();
 
   controldrawer.onRender(dom.renderer(parent));
   layers.onRender(dom.renderer(parent));
@@ -24,7 +24,6 @@ function di(parentSelector: string) {
   canvas.render();
 
   interactions.configure({
-    colors: palettes.DEFAULT,
     canvas,
     toolbar,
     layers,

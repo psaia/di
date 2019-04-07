@@ -29,7 +29,6 @@ interface Selection {
 }
 
 interface OS {
-  colors: ColorPalette;
   toolbar: Toolbar;
   canvas: Canvas;
   layers: LayerDrawer;
@@ -38,8 +37,10 @@ interface OS {
 
 export function configure(os: OS): void {
   const state = new State();
+
   const op = new Operator(os, state);
   op.dbind();
+  op.paint();
 }
 
 // function addLayer(layers: Layers, shape): Layer {
@@ -99,6 +100,11 @@ class Operator {
     this.os.canvas.onMouseMove(this.handleMouseMove.bind(this));
     this.os.toolbar.onModeChange = this.handleChangeMode.bind(this);
   }
+  public paint() {
+    for (let k in this.os) {
+      this.os[k].setColorPalette(this.state.colors);
+    }
+  }
   private handleChangeMode(m: Mode) {
     this.state.mode = m;
   }
@@ -109,22 +115,26 @@ class Operator {
 
     switch (this.state.mode) {
       case Mode.Marquee:
-        this.activity = new MarqueeLifeCycle();
+        this.activity = new MarqueeLifeCycle(this.state);
         break;
       case Mode.Rectangle:
-        this.activity = new RectLifeCycle();
+        this.activity = new RectLifeCycle(this.state);
         break;
       case Mode.Line:
-        this.activity = new LineLifeCycle();
+        this.activity = new LineLifeCycle(this.state);
         break;
     }
 
-    this.activity.colors = this.os.colors;
-    this.activity.start(this.os.canvas, this.state);
+    this.activity.start(this.os.canvas);
   }
   private handleMouseUp(e: MouseEvent) {
     if (this.activity) {
-      this.activity.stop(this.os.canvas);
+      this.activity.stop();
+
+      if (this.activity instanceof MarqueeLifeCycle) {
+        this.activity.remove(this.os.canvas);
+      }
+
       this.activity = null;
     }
   }
@@ -132,7 +142,7 @@ class Operator {
     this.state.cursorPoint = this.os.canvas.grid.closestPt;
 
     if (this.activity) {
-      this.activity.run(this.state);
+      this.activity.run();
     }
   }
 }

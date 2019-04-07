@@ -11,6 +11,16 @@ export enum ActionType {
   Resizing
 }
 
+export enum AnchorPlacement {
+  LeftTop = 0,
+  LeftMiddle,
+  LeftBottom,
+  Center,
+  RightTop,
+  RightMiddle,
+  RightBottom
+}
+
 export enum LayerType {
   Rect = 0,
   Line,

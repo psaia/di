@@ -8,20 +8,24 @@ import { Group } from "./types";
 export default class MarqueeLifeCycle extends LifeCycle {
   shape: Marquee;
   initialPts: Group;
-  start(c: Canvas, s: State) {
+  start(c: Canvas) {
     this.shape = new Marquee();
-    this.shape.pts = [s.pinnedCursorPoint, s.cursorPoint];
+    this.shape.pts = [this.state.pinnedCursorPoint, this.state.cursorPoint];
     this.shape.uid = crypto.getRandomValues(new Uint32Array(4)).join("-");
-    this.shape.colors = this.colors;
+    this.shape.colors = this.state.colors;
     this.shape.ctx = c.ctx;
     this.initialPts = util.clone(this.shape.pts);
+
     c.addShape(this.shape);
   }
-  stop(c: Canvas) {
+  stop() {
+    // The marquee gets removed as soon as it's let go.
+  }
+  remove(c: Canvas) {
     this.shape.stop();
     c.removeShape(this.shape);
   }
-  run(s: State) {
-    this.shape.pts = [s.pinnedCursorPoint, s.cursorPoint];
+  run() {
+    this.shape.pts = [this.state.pinnedCursorPoint, this.state.cursorPoint];
   }
 }

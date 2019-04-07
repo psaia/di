@@ -1,4 +1,5 @@
 import Shape from "./shape";
+import { Point } from "./types";
 
 export default class Line extends Shape {
   render() {

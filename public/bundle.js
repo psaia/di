@@ -200,18 +200,20 @@ var Canvas = /** @class */ (function (_super) {
 exports["default"] = Canvas;
 //# sourceMappingURL=canvas.js.map
 }
-  Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/component.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fcomponent$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fcomponent$2ejs.deps = {}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fcomponent$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/component.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fcomponent$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
+  Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/component.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fcomponent$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fcomponent$2ejs.deps = {"./palettes":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fpalettes$2ejs}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fcomponent$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/component.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fcomponent$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
 "use strict";
 exports.__esModule = true;
+var palettes = require("./palettes");
 var Component = /** @class */ (function () {
-    function Component(defaultPalette) {
-        this.setColorPalette(defaultPalette);
+    function Component() {
+        this.colorPalette = palettes.DEFAULT;
     }
     Component.prototype.onRender = function (fn) {
         this.rendered = fn;
     };
     Component.prototype.setColorPalette = function (c) {
         this.colorPalette = c;
+        this.render();
     };
     return Component;
 }());
@@ -252,7 +254,7 @@ var ControlDrawer = /** @class */ (function (_super) {
 exports["default"] = ControlDrawer;
 //# sourceMappingURL=control-drawer.js.map
 }
-  Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/di.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fdi$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fdi$2ejs.deps = {"./palettes":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fpalettes$2ejs,"./layer-drawer":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2flayer$2ddrawer$2ejs,"./canvas":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fcanvas$2ejs,"./control-drawer":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fcontrol$2ddrawer$2ejs,"./toolbar-drawer":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftoolbar$2ddrawer$2ejs,"./dom":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fdom$2ejs,"./interactions":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2finteractions$2ejs}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fdi$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/di.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fdi$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
+  Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/di.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fdi$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fdi$2ejs.deps = {"./layer-drawer":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2flayer$2ddrawer$2ejs,"./canvas":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fcanvas$2ejs,"./control-drawer":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fcontrol$2ddrawer$2ejs,"./toolbar-drawer":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftoolbar$2ddrawer$2ejs,"./dom":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fdom$2ejs,"./interactions":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2finteractions$2ejs}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fdi$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/di.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fdi$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
 "use strict";
 exports.__esModule = true;
 var dom = require("./dom");
@@ -260,14 +262,13 @@ var control_drawer_1 = require("./control-drawer");
 var layer_drawer_1 = require("./layer-drawer");
 var toolbar_drawer_1 = require("./toolbar-drawer");
 var canvas_1 = require("./canvas");
-var palettes = require("./palettes");
 var interactions = require("./interactions");
 function di(parentSelector) {
     var parent = dom.select(parentSelector);
-    var controldrawer = new control_drawer_1["default"](palettes.DEFAULT);
-    var toolbar = new toolbar_drawer_1["default"](palettes.DEFAULT);
-    var layers = new layer_drawer_1["default"](palettes.DEFAULT);
-    var canvas = new canvas_1["default"](palettes.DEFAULT);
+    var controldrawer = new control_drawer_1["default"]();
+    var toolbar = new toolbar_drawer_1["default"]();
+    var layers = new layer_drawer_1["default"]();
+    var canvas = new canvas_1["default"]();
     controldrawer.onRender(dom.renderer(parent));
     layers.onRender(dom.renderer(parent));
     toolbar.onRender(dom.renderer(parent));
@@ -277,7 +278,6 @@ function di(parentSelector) {
     controldrawer.render();
     canvas.render();
     interactions.configure({
-        colors: palettes.DEFAULT,
         canvas: canvas,
         toolbar: toolbar,
         layers: layers,
@@ -458,6 +458,7 @@ function configure(os) {
     var state = new state_1["default"]();
     var op = new Operator(os, state);
     op.dbind();
+    op.paint();
 }
 exports.configure = configure;
 // function addLayer(layers: Layers, shape): Layer {
@@ -511,6 +512,11 @@ var Operator = /** @class */ (function () {
         this.os.canvas.onMouseMove(this.handleMouseMove.bind(this));
         this.os.toolbar.onModeChange = this.handleChangeMode.bind(this);
     };
+    Operator.prototype.paint = function () {
+        for (var k in this.os) {
+            this.os[k].setColorPalette(this.state.colors);
+        }
+    };
     Operator.prototype.handleChangeMode = function (m) {
         this.state.mode = m;
     };
@@ -520,28 +526,30 @@ var Operator = /** @class */ (function () {
         this.state.cursorPoint = this.os.canvas.grid.closestPt;
         switch (this.state.mode) {
             case types_1.Mode.Marquee:
-                this.activity = new marquee_lifecycle_1["default"]();
+                this.activity = new marquee_lifecycle_1["default"](this.state);
                 break;
             case types_1.Mode.Rectangle:
-                this.activity = new rect_lifecycle_1["default"]();
+                this.activity = new rect_lifecycle_1["default"](this.state);
                 break;
             case types_1.Mode.Line:
-                this.activity = new line_lifecycle_1["default"]();
+                this.activity = new line_lifecycle_1["default"](this.state);
                 break;
         }
-        this.activity.colors = this.os.colors;
-        this.activity.start(this.os.canvas, this.state);
+        this.activity.start(this.os.canvas);
     };
     Operator.prototype.handleMouseUp = function (e) {
         if (this.activity) {
-            this.activity.stop(this.os.canvas);
+            this.activity.stop();
+            if (this.activity instanceof marquee_lifecycle_1["default"]) {
+                this.activity.remove(this.os.canvas);
+            }
             this.activity = null;
         }
     };
     Operator.prototype.handleMouseMove = function (e) {
         this.state.cursorPoint = this.os.canvas.grid.closestPt;
         if (this.activity) {
-            this.activity.run(this.state);
+            this.activity.run();
         }
     };
     return Operator;
@@ -610,7 +618,8 @@ exports["default"] = LayerDrawer;
 "use strict";
 exports.__esModule = true;
 var LifeCycle = /** @class */ (function () {
-    function LifeCycle() {
+    function LifeCycle(state) {
+        this.state = state;
     }
     return LifeCycle;
 }());
@@ -641,21 +650,25 @@ var LineLifeCycle = /** @class */ (function (_super) {
     function LineLifeCycle() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
-    LineLifeCycle.prototype.start = function (c, s) {
+    LineLifeCycle.prototype.start = function (c) {
         this.shape = new line_1["default"]();
-        this.shape.ctx = c.ctx;
-        this.shape.pts = [s.pinnedCursorPoint, s.cursorPoint];
+        this.shape.pts = [this.state.pinnedCursorPoint, this.state.cursorPoint];
         this.shape.uid = crypto.getRandomValues(new Uint32Array(4)).join("-");
-        this.shape.colors = this.colors;
+        this.shape.colors = this.state.colors;
+        this.shape.ctx = c.ctx;
         this.initialPts = util.clone(this.shape.pts);
         c.addShape(this.shape);
     };
-    LineLifeCycle.prototype.stop = function (c) {
+    LineLifeCycle.prototype.stop = function () {
         // this.shape.stop();
         // c.removeShape(this.shape);
     };
-    LineLifeCycle.prototype.run = function (s) {
-        this.shape.pts = [s.pinnedCursorPoint, s.cursorPoint];
+    LineLifeCycle.prototype.remove = function (c) {
+        this.shape.stop();
+        c.removeShape(this.shape);
+    };
+    LineLifeCycle.prototype.run = function () {
+        this.shape.pts = [this.state.pinnedCursorPoint, this.state.cursorPoint];
     };
     return LineLifeCycle;
 }(lifecycle_1["default"]));
@@ -725,21 +738,24 @@ var MarqueeLifeCycle = /** @class */ (function (_super) {
     function MarqueeLifeCycle() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
-    MarqueeLifeCycle.prototype.start = function (c, s) {
+    MarqueeLifeCycle.prototype.start = function (c) {
         this.shape = new marquee_1["default"]();
-        this.shape.pts = [s.pinnedCursorPoint, s.cursorPoint];
+        this.shape.pts = [this.state.pinnedCursorPoint, this.state.cursorPoint];
         this.shape.uid = crypto.getRandomValues(new Uint32Array(4)).join("-");
-        this.shape.colors = this.colors;
+        this.shape.colors = this.state.colors;
         this.shape.ctx = c.ctx;
         this.initialPts = util.clone(this.shape.pts);
         c.addShape(this.shape);
     };
-    MarqueeLifeCycle.prototype.stop = function (c) {
+    MarqueeLifeCycle.prototype.stop = function () {
+        // The marquee gets removed as soon as it's let go.
+    };
+    MarqueeLifeCycle.prototype.remove = function (c) {
         this.shape.stop();
         c.removeShape(this.shape);
     };
-    MarqueeLifeCycle.prototype.run = function (s) {
-        this.shape.pts = [s.pinnedCursorPoint, s.cursorPoint];
+    MarqueeLifeCycle.prototype.run = function () {
+        this.shape.pts = [this.state.pinnedCursorPoint, this.state.cursorPoint];
     };
     return MarqueeLifeCycle;
 }(lifecycle_1["default"]));
@@ -834,20 +850,22 @@ var RectLifeCycle = /** @class */ (function (_super) {
     function RectLifeCycle() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
-    RectLifeCycle.prototype.start = function (c, s) {
+    RectLifeCycle.prototype.start = function (c) {
         this.shape = new rect_1["default"]();
-        this.shape.pts = [s.pinnedCursorPoint, s.cursorPoint];
+        this.shape.pts = [this.state.pinnedCursorPoint, this.state.cursorPoint];
         this.shape.uid = crypto.getRandomValues(new Uint32Array(4)).join("-");
-        this.shape.colors = this.colors;
+        this.shape.colors = this.state.colors;
         this.shape.ctx = c.ctx;
         this.initialPts = util.clone(this.shape.pts);
         c.addShape(this.shape);
     };
-    RectLifeCycle.prototype.stop = function (c) {
-        // this.shape.stop();
+    RectLifeCycle.prototype.stop = function () { };
+    RectLifeCycle.prototype.remove = function (c) {
+        this.shape.stop();
+        c.removeShape(this.shape);
     };
-    RectLifeCycle.prototype.run = function (s) {
-        this.shape.pts = [s.pinnedCursorPoint, s.cursorPoint];
+    RectLifeCycle.prototype.run = function () {
+        this.shape.pts = [this.state.pinnedCursorPoint, this.state.cursorPoint];
     };
     return RectLifeCycle;
 }(lifecycle_1["default"]));
@@ -915,13 +933,15 @@ var Shape = /** @class */ (function () {
 exports["default"] = Shape;
 //# sourceMappingURL=shape.js.map
 }
-  Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/state.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fstate$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fstate$2ejs.deps = {"./types":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftypes$2ejs}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fstate$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/state.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fstate$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
+  Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/state.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fstate$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fstate$2ejs.deps = {"./palettes":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fpalettes$2ejs,"./types":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftypes$2ejs}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fstate$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/state.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fstate$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
 "use strict";
 exports.__esModule = true;
 var types_1 = require("./types");
+var palettes = require("./palettes");
 var State = /** @class */ (function () {
     function State() {
         this.mode = types_1.Mode.Marquee;
+        this.colors = palettes.DEFAULT;
     }
     return State;
 }());
@@ -1015,6 +1035,16 @@ var ActionType;
     ActionType[ActionType["Moving"] = 0] = "Moving";
     ActionType[ActionType["Resizing"] = 1] = "Resizing";
 })(ActionType = exports.ActionType || (exports.ActionType = {}));
+var AnchorPlacement;
+(function (AnchorPlacement) {
+    AnchorPlacement[AnchorPlacement["LeftTop"] = 0] = "LeftTop";
+    AnchorPlacement[AnchorPlacement["LeftMiddle"] = 1] = "LeftMiddle";
+    AnchorPlacement[AnchorPlacement["LeftBottom"] = 2] = "LeftBottom";
+    AnchorPlacement[AnchorPlacement["Center"] = 3] = "Center";
+    AnchorPlacement[AnchorPlacement["RightTop"] = 4] = "RightTop";
+    AnchorPlacement[AnchorPlacement["RightMiddle"] = 5] = "RightMiddle";
+    AnchorPlacement[AnchorPlacement["RightBottom"] = 6] = "RightBottom";
+})(AnchorPlacement = exports.AnchorPlacement || (exports.AnchorPlacement = {}));
 var LayerType;
 (function (LayerType) {
     LayerType[LayerType["Rect"] = 0] = "Rect";

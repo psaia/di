@@ -1,12 +1,9 @@
 import { RenderFn, ColorPalette } from "./Types";
+import * as palettes from "./palettes";
 
 export default abstract class Component {
   protected rendered: RenderFn;
-  protected colorPalette: ColorPalette;
-
-  constructor(defaultPalette: ColorPalette) {
-    this.setColorPalette(defaultPalette);
-  }
+  protected colorPalette: ColorPalette = palettes.DEFAULT;
 
   public onRender(fn: RenderFn) {
     this.rendered = fn;
@@ -14,6 +11,7 @@ export default abstract class Component {
 
   public setColorPalette(c: ColorPalette) {
     this.colorPalette = c;
+    this.render();
   }
 
   // Always call this.rendered(element); at the end.
