@@ -613,6 +613,7 @@ exports["default"] = LayerDrawer;
 exports.__esModule = true;
 var LifeCycle = /** @class */ (function () {
     function LifeCycle(state) {
+        this.selected = true;
         this.state = state;
     }
     return LifeCycle;
@@ -828,7 +829,7 @@ exports.DARK = {
 exports.DEFAULT = exports.DARK;
 //# sourceMappingURL=palettes.js.map
 }
-  Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/rect-lifecycle.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2frect$2dlifecycle$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2frect$2dlifecycle$2ejs.deps = {"./lifecycle":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2flifecycle$2ejs,"./util":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2futil$2ejs,"./rect":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2frect$2ejs}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2frect$2dlifecycle$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/rect-lifecycle.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2frect$2dlifecycle$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
+  Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/rect-lifecycle.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2frect$2dlifecycle$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2frect$2dlifecycle$2ejs.deps = {"./lifecycle":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2flifecycle$2ejs,"./tux":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftux$2ejs,"./util":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2futil$2ejs,"./rect":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2frect$2ejs}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2frect$2dlifecycle$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/rect-lifecycle.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2frect$2dlifecycle$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -846,6 +847,7 @@ var __extends = (this && this.__extends) || (function () {
 exports.__esModule = true;
 var rect_1 = require("./rect");
 var lifecycle_1 = require("./lifecycle");
+var tux_1 = require("./tux");
 var util = require("./util");
 var RectLifeCycle = /** @class */ (function (_super) {
     __extends(RectLifeCycle, _super);
@@ -859,6 +861,14 @@ var RectLifeCycle = /** @class */ (function (_super) {
         this.shape.colors = this.state.colors;
         this.shape.ctx = c.ctx;
         this.initialPts = util.clone(this.shape.pts);
+        if (this.selected) {
+            this.tux = new tux_1["default"]();
+            this.tux.uid = crypto.getRandomValues(new Uint32Array(4)).join("-");
+            this.tux.colors = this.state.colors;
+            this.tux.pts = this.shape.pts;
+            this.tux.ctx = c.ctx;
+            c.addShape(this.tux);
+        }
         c.addShape(this.shape);
     };
     RectLifeCycle.prototype.stop = function () { };
@@ -868,6 +878,7 @@ var RectLifeCycle = /** @class */ (function (_super) {
     };
     RectLifeCycle.prototype.run = function () {
         this.shape.pts = [this.state.pinnedCursorPoint, this.state.cursorPoint];
+        this.tux.pts = this.shape.pts;
     };
     return RectLifeCycle;
 }(lifecycle_1["default"]));
@@ -919,6 +930,9 @@ exports["default"] = Rect;
   Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/shape.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fshape$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fshape$2ejs.deps = {}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fshape$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/shape.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fshape$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
 "use strict";
 exports.__esModule = true;
+/**
+ * All shapes on the stage must implement this class.
+ */
 var Shape = /** @class */ (function () {
     function Shape() {
         this.pts = [];
@@ -1028,6 +1042,65 @@ exports["default"] = ToolbarDrawer;
 //     "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAC4AAAAiCAYAAAAge+tMAAAABGdBTUEAALGPC/xhBQAAAKpJREFUWAntl0EOgCAQA8HwHv7/Dj6k4dAEe+JAYKv1sgoEdodaQq613ml4Wmt5+ExR+68xSaX3opRszxUKkCWeUQHIs8bRfjpynrLEZTTOSpAlflq6/1v/dUpGLv87rsKV8N8bdRdkXcU+HlVSzmsVAfv4KpKz8xT7+CyqRePs44tAepqwBOzju7fGPr6dOC+Ik5RvQmjH+N39WBdR9gZ0dXJMD1VFjrLEH/xAUETson4YAAAAAElFTkSuQmCC"
 // };
 //# sourceMappingURL=toolbar-drawer.js.map
+}
+  Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/tux.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftux$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftux$2ejs.deps = {"./util":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2futil$2ejs,"./shape":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fshape$2ejs}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftux$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/tux.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftux$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
+"use strict";
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    }
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+exports.__esModule = true;
+var shape_1 = require("./shape");
+var util = require("./util");
+var Tux = /** @class */ (function (_super) {
+    __extends(Tux, _super);
+    function Tux() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    Tux.prototype.anchorBounds = function (p) {
+        var margin = 5;
+        var topLeft = util.pt(p[0] - margin, p[1] + margin);
+        var topRight = util.pt(p[0] + margin, p[1] + margin);
+        var bottomLeft = util.pt(p[0] - margin, p[1] - margin);
+        var bottomRight = util.pt(p[0] + margin, p[1] - margin);
+        return [topLeft, topRight, bottomRight, bottomLeft];
+    };
+    Tux.prototype.drawAnchor = function (bounds) {
+        this.ctx.beginPath();
+        this.ctx.setLineDash([]);
+        this.ctx.lineWidth = 1;
+        this.ctx.moveTo(bounds[0][0], bounds[0][1]);
+        this.ctx.lineTo(bounds[1][0], bounds[1][1]);
+        this.ctx.lineTo(bounds[2][0], bounds[2][1]);
+        this.ctx.lineTo(bounds[3][0], bounds[3][1]);
+        this.ctx.strokeStyle = this.colors.shapeColor;
+        this.ctx.fillStyle = this.colors.shapeColor;
+        this.ctx.fill();
+        this.ctx.closePath();
+    };
+    Tux.prototype.render = function () {
+        // Left side.
+        this.drawAnchor(this.anchorBounds(this.pts[0]));
+        this.drawAnchor(this.anchorBounds(util.pt(this.pts[0][0], this.pts[0][1] + (this.pts[1][1] - this.pts[0][1]) / 2)));
+        this.drawAnchor(this.anchorBounds(util.pt(this.pts[0][0], this.pts[0][1] + (this.pts[1][1] - this.pts[0][1]))));
+        // Right side.
+        this.drawAnchor(this.anchorBounds(this.pts[1]));
+        this.drawAnchor(this.anchorBounds(util.pt(this.pts[1][0], this.pts[1][1] - (this.pts[1][1] - this.pts[0][1]) / 2)));
+        this.drawAnchor(this.anchorBounds(util.pt(this.pts[1][0], this.pts[1][1] - (this.pts[1][1] - this.pts[0][1]))));
+    };
+    return Tux;
+}(shape_1["default"]));
+exports["default"] = Tux;
+//# sourceMappingURL=tux.js.map
 }
   Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/types.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftypes$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftypes$2ejs.deps = {}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftypes$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/types.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftypes$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
 "use strict";

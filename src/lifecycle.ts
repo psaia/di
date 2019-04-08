@@ -3,6 +3,7 @@ import Canvas from "./canvas";
 
 export default abstract class LifeCycle {
   state: State;
+  selected: boolean = true;
   constructor(state: State) {
     this.state = state;
   }
