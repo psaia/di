@@ -1,12 +1,12 @@
 import Line from "./line";
-import LifeCycle from "./lifecycle";
+import Lifecycle from "./lifecycle";
 import Canvas from "./canvas";
 import LineTux from "./line-tux";
 import RectLineConnection from "./rect-line-connection";
 import * as util from "./util";
 import { Point, AnchorPosition } from "./types";
 
-export default class LineLifeCycle extends LifeCycle {
+export default class LineLifeCycle extends Lifecycle {
   shape: Line;
   tux: LineTux;
   rectLineConnection: RectLineConnection;
@@ -19,19 +19,22 @@ export default class LineLifeCycle extends LifeCycle {
     this.shape = new Line();
     this.shape.ctx = c.ctx;
 
+    this.tux = new LineTux();
+    this.tux.ctx = c.ctx;
+
     c.addShape(this.shape);
-
-    if (this.selected) {
-      this.tux = new LineTux();
-      this.tux.ctx = c.ctx;
-
-      c.addShape(this.tux);
-    }
+    c.addShape(this.tux);
   }
-  stop() {}
   remove(c: Canvas) {
     c.removeShape(this.shape);
     c.removeShape(this.tux);
+  }
+  select(selected: boolean) {
+    if (selected) {
+      this.tux.play();
+    } else {
+      this.tux.stop();
+    }
   }
   mutate() {
     this.shape.colors = this.state.colors;

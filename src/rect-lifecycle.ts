@@ -1,11 +1,11 @@
 import Rect from "./rect";
-import LifeCycle from "./lifecycle";
+import Lifecycle from "./lifecycle";
 import Canvas from "./canvas";
 import RectTux from "./rect-tux";
 import * as util from "./util";
 import { Point, AnchorPosition } from "./types";
 
-export default class RectLifeCycle extends LifeCycle {
+export default class RectLifeCycle extends Lifecycle {
   shape: Rect;
   tux: RectTux;
   hitTest(p: Point) {
@@ -17,22 +17,23 @@ export default class RectLifeCycle extends LifeCycle {
     this.shape = new Rect();
     this.shape.ctx = c.ctx;
 
+    this.tux = new RectTux();
+    this.tux.pts = this.shape.pts;
+    this.tux.ctx = c.ctx;
+
     c.addShape(this.shape);
-
-    if (this.selected) {
-      this.tux = new RectTux();
-      this.tux.pts = this.shape.pts;
-      this.tux.ctx = c.ctx;
-
-      c.addShape(this.tux);
-    }
+    c.addShape(this.tux);
   }
-  stop() {}
   remove(c: Canvas) {
     c.removeShape(this.shape);
     c.removeShape(this.tux);
-    this.shape = null;
-    this.tux = null;
+  }
+  select(selected: boolean) {
+    if (selected) {
+      this.tux.play();
+    } else {
+      this.tux.stop();
+    }
   }
   mutate() {
     this.shape.colors = this.state.colors;

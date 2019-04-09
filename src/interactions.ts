@@ -45,6 +45,11 @@ class Operator {
       this.os[k].setColorPalette(this.state.colors);
     }
   }
+  public deselectAll() {
+    for (let cycle of this.state.cycles.values()) {
+      cycle.select(false);
+    }
+  }
   private handleChangeMode(m: Mode) {
     this.state.mode = m;
   }
@@ -66,6 +71,7 @@ class Operator {
       const o = cycle.hitTest(this.os.canvas.grid.cursorPt);
       if (o !== null) {
         this.state.cycle = cycle;
+        cycle.select(true);
         this.state.initialPts = util.clone(cycle.shape.pts);
         this.state.anchorPosition = o.position;
         return;
@@ -74,6 +80,7 @@ class Operator {
 
     switch (this.state.mode) {
       case Mode.Marquee:
+        this.deselectAll();
         this.state.cycle = new MarqueeLifeCycle(this.state);
         this.state.cycles.add(this.state.cycle);
         this.state.cycle.start(this.os.canvas);
@@ -92,8 +99,6 @@ class Operator {
   }
   private handleMouseUp(e: MouseEvent) {
     if (this.state.cycle) {
-      this.state.cycle.stop();
-
       // A marquee gets removed as soon as the cursor is released, always.
       if (this.state.cycle instanceof MarqueeLifeCycle) {
         this.state.cycle.remove(this.os.canvas);
@@ -101,6 +106,9 @@ class Operator {
 
       this.state.cycle = null;
     }
+
+    // Reset the mode to be marquee, always.
+    this.state.mode = Mode.Marquee;
   }
   private handleMouseMove(e: MouseEvent) {
     this.state.cursorPoint = this.os.canvas.grid.closestPt;

@@ -100,9 +100,11 @@ var Canvas = /** @class */ (function (_super) {
             _this.ctx.clearRect(0, 0, _this.width, _this.height);
             _this.grid.render();
             try {
-                for (var _b = __values(_this.shapes), _c = _b.next(); !_c.done; _c = _b.next()) {
+                for (var _b = __values(_this.shapes.values()), _c = _b.next(); !_c.done; _c = _b.next()) {
                     var s = _c.value;
-                    s.render();
+                    if (s.animating) {
+                        s.render();
+                    }
                 }
             }
             catch (e_1_1) { e_1 = { error: e_1_1 }; }
@@ -485,11 +487,28 @@ var Operator = /** @class */ (function () {
             this.os[k].setColorPalette(this.state.colors);
         }
     };
+    Operator.prototype.deselectAll = function () {
+        var e_1, _a;
+        try {
+            for (var _b = __values(this.state.cycles.values()), _c = _b.next(); !_c.done; _c = _b.next()) {
+                var cycle = _c.value;
+                cycle.select(false);
+                console.log("deselecting", cycle);
+            }
+        }
+        catch (e_1_1) { e_1 = { error: e_1_1 }; }
+        finally {
+            try {
+                if (_c && !_c.done && (_a = _b["return"])) _a.call(_b);
+            }
+            finally { if (e_1) throw e_1.error; }
+        }
+    };
     Operator.prototype.handleChangeMode = function (m) {
         this.state.mode = m;
     };
     Operator.prototype.handleMouseDown = function (e) {
-        var e_1, _a;
+        var e_2, _a;
         this.state.downAt = new Date().getTime();
         this.state.pinnedCursorPoint = this.os.canvas.grid.closestPt;
         this.state.cursorPoint = this.os.canvas.grid.closestPt;
@@ -508,21 +527,24 @@ var Operator = /** @class */ (function () {
                 var o = cycle.hitTest(this.os.canvas.grid.cursorPt);
                 if (o !== null) {
                     this.state.cycle = cycle;
+                    cycle.select(true);
                     this.state.initialPts = util.clone(cycle.shape.pts);
                     this.state.anchorPosition = o.position;
                     return;
                 }
             }
         }
-        catch (e_1_1) { e_1 = { error: e_1_1 }; }
+        catch (e_2_1) { e_2 = { error: e_2_1 }; }
         finally {
             try {
                 if (_c && !_c.done && (_a = _b["return"])) _a.call(_b);
             }
-            finally { if (e_1) throw e_1.error; }
+            finally { if (e_2) throw e_2.error; }
         }
         switch (this.state.mode) {
             case types_1.Mode.Marquee:
+                this.deselectAll();
+                console.log("sdelescting all");
                 this.state.cycle = new marquee_lifecycle_1["default"](this.state);
                 this.state.cycles.add(this.state.cycle);
                 this.state.cycle.start(this.os.canvas);
@@ -541,13 +563,14 @@ var Operator = /** @class */ (function () {
     };
     Operator.prototype.handleMouseUp = function (e) {
         if (this.state.cycle) {
-            this.state.cycle.stop();
             // A marquee gets removed as soon as the cursor is released, always.
             if (this.state.cycle instanceof marquee_lifecycle_1["default"]) {
                 this.state.cycle.remove(this.os.canvas);
             }
             this.state.cycle = null;
         }
+        // Reset the mode to be marquee, always.
+        this.state.mode = types_1.Mode.Marquee;
     };
     Operator.prototype.handleMouseMove = function (e) {
         this.state.cursorPoint = this.os.canvas.grid.closestPt;
@@ -620,14 +643,13 @@ exports["default"] = LayerDrawer;
   Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/lifecycle.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2flifecycle$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2flifecycle$2ejs.deps = {}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2flifecycle$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/lifecycle.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2flifecycle$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
 "use strict";
 exports.__esModule = true;
-var LifeCycle = /** @class */ (function () {
-    function LifeCycle(state) {
-        this.selected = true;
+var Lifecycle = /** @class */ (function () {
+    function Lifecycle(state) {
         this.state = state;
     }
-    return LifeCycle;
+    return Lifecycle;
 }());
-exports["default"] = LifeCycle;
+exports["default"] = Lifecycle;
 //# sourceMappingURL=lifecycle.js.map
 }
   Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/line-lifecycle.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fline$2dlifecycle$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fline$2dlifecycle$2ejs.deps = {"./lifecycle":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2flifecycle$2ejs,"./line":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fline$2ejs,"./line-tux":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fline$2dtux$2ejs,"./util":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2futil$2ejs,"./types":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftypes$2ejs}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fline$2dlifecycle$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/line-lifecycle.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fline$2dlifecycle$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
@@ -664,17 +686,22 @@ var LineLifeCycle = /** @class */ (function (_super) {
     LineLifeCycle.prototype.start = function (c) {
         this.shape = new line_1["default"]();
         this.shape.ctx = c.ctx;
+        this.tux = new line_tux_1["default"]();
+        this.tux.ctx = c.ctx;
         c.addShape(this.shape);
-        if (this.selected) {
-            this.tux = new line_tux_1["default"]();
-            this.tux.ctx = c.ctx;
-            c.addShape(this.tux);
-        }
+        c.addShape(this.tux);
     };
-    LineLifeCycle.prototype.stop = function () { };
     LineLifeCycle.prototype.remove = function (c) {
         c.removeShape(this.shape);
         c.removeShape(this.tux);
+    };
+    LineLifeCycle.prototype.select = function (selected) {
+        if (selected) {
+            this.tux.play();
+        }
+        else {
+            this.tux.stop();
+        }
     };
     LineLifeCycle.prototype.mutate = function () {
         this.shape.colors = this.state.colors;
@@ -838,16 +865,13 @@ var MarqueeLifeCycle = /** @class */ (function (_super) {
         this.initialPts = util.clone(this.shape.pts);
         c.addShape(this.shape);
     };
-    MarqueeLifeCycle.prototype.stop = function () {
-        // The marquee gets removed as soon as it's let go.
-    };
     MarqueeLifeCycle.prototype.remove = function (c) {
-        this.shape.stop();
         c.removeShape(this.shape);
     };
     MarqueeLifeCycle.prototype.mutate = function () {
         this.shape.pts = [this.state.pinnedCursorPoint, this.state.cursorPoint];
     };
+    MarqueeLifeCycle.prototype.select = function (selected) { };
     return MarqueeLifeCycle;
 }(lifecycle_1["default"]));
 exports["default"] = MarqueeLifeCycle;
@@ -951,20 +975,23 @@ var RectLifeCycle = /** @class */ (function (_super) {
     RectLifeCycle.prototype.start = function (c) {
         this.shape = new rect_1["default"]();
         this.shape.ctx = c.ctx;
+        this.tux = new rect_tux_1["default"]();
+        this.tux.pts = this.shape.pts;
+        this.tux.ctx = c.ctx;
         c.addShape(this.shape);
-        if (this.selected) {
-            this.tux = new rect_tux_1["default"]();
-            this.tux.pts = this.shape.pts;
-            this.tux.ctx = c.ctx;
-            c.addShape(this.tux);
-        }
+        c.addShape(this.tux);
     };
-    RectLifeCycle.prototype.stop = function () { };
     RectLifeCycle.prototype.remove = function (c) {
         c.removeShape(this.shape);
         c.removeShape(this.tux);
-        this.shape = null;
-        this.tux = null;
+    };
+    RectLifeCycle.prototype.select = function (selected) {
+        if (selected) {
+            this.tux.play();
+        }
+        else {
+            this.tux.stop();
+        }
     };
     RectLifeCycle.prototype.mutate = function () {
         this.shape.colors = this.state.colors;

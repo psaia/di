@@ -7,9 +7,9 @@ export default abstract class Shape {
   public ctx: CanvasRenderingContext2D;
   public pts: Group = [];
   public colors: ColorPalette;
-  protected animating: boolean = true;
+  public animating: boolean = true;
 
-  abstract render();
+  abstract render(): void;
 
   stop() {
     this.animating = false;
