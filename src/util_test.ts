@@ -10,4 +10,10 @@ describe("util", function() {
       assert.equal(true, util.within(1, 1, 5));
     });
   });
+  describe("util.centroid()", function() {
+    it("should obtain the center of a boundbox of vectors", function() {
+      const center = util.centroid([util.pt(0, 0), util.pt(2, 2)]);
+      assert.deepEqual([center[0], center[1]], [1, 1]);
+    });
+  });
 });

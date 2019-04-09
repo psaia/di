@@ -1,6 +1,6 @@
 // import Line from "./line";
 // import Rect from "./rect";
-import { AnchorPlacement } from "./types";
+import { AnchorPosition } from "./types";
 
 /**
  * RectLineConnection is the point where a line connects to a rectangle. A line
@@ -13,6 +13,6 @@ import { AnchorPlacement } from "./types";
  * [RightTop, RightMiddle, RightBottom]
  */
 export default class RectLineConnection {
-  startRect: AnchorPlacement;
-  endRect: AnchorPlacement;
+  startRect: AnchorPosition;
+  endRect: AnchorPosition;
 }

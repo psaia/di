@@ -1,5 +1,6 @@
 import State from "./state";
 import Canvas from "./canvas";
+import { Point } from "./types";
 
 export default abstract class LifeCycle {
   state: State;
@@ -7,8 +8,9 @@ export default abstract class LifeCycle {
   constructor(state: State) {
     this.state = state;
   }
+  abstract hitTest(p: Point);
   abstract start(c: Canvas);
   abstract stop();
-  abstract run();
+  abstract mutate();
   abstract remove(c: Canvas);
 }

@@ -2,11 +2,14 @@ import Marquee from "./marquee";
 import LifeCycle from "./lifecycle";
 import Canvas from "./canvas";
 import * as util from "./util";
-import { Group } from "./types";
+import { Group, Point } from "./types";
 
 export default class MarqueeLifeCycle extends LifeCycle {
   shape: Marquee;
   initialPts: Group;
+  hitTest(p: Point) {
+    return null;
+  }
   start(c: Canvas) {
     this.shape = new Marquee();
     this.shape.pts = [this.state.pinnedCursorPoint, this.state.cursorPoint];
@@ -24,7 +27,7 @@ export default class MarqueeLifeCycle extends LifeCycle {
     this.shape.stop();
     c.removeShape(this.shape);
   }
-  run() {
+  mutate() {
     this.shape.pts = [this.state.pinnedCursorPoint, this.state.cursorPoint];
   }
 }

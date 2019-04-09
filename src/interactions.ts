@@ -1,24 +1,13 @@
 import Canvas from "./canvas";
 import LayerDrawer from "./layer-drawer";
-// import Layer from "./layer";
 import Toolbar from "./toolbar-drawer";
 import ControlDrawer from "./control-drawer";
 import State from "./state";
+import * as util from "./util";
 import MarqueeLifeCycle from "./marquee-lifecycle";
 import RectLifeCycle from "./rect-lifecycle";
 import LineLifeCycle from "./line-lifecycle";
-
-import { Mode } from "./types";
-
-// enum Area {
-//   Corner = 0,
-//   Center
-// }
-
-// interface Selection {
-//   layer: Layer;
-//   area: Area;
-// }
+import { Mode, AnchorPosition } from "./types";
 
 interface OS {
   toolbar: Toolbar;
@@ -35,51 +24,7 @@ export function configure(os: OS): void {
   op.paint();
 }
 
-// function addLayer(layers: Layers, shape): Layer {
-//   const layer = new Layer();
-//   layer.humanName = "Rectangle";
-//   layer.type = LayerType.Rect;
-//   layer.shape = shape;
-//   layers.addLayer(layer);
-//   layers.render();
-//
-//   return layer;
-// }
-
-// function what(cursor: Point, layers: Layers): Selection | null {
-//   const list = layers.getLayers();
-//
-//   for (let i = 0, l = list.length; i < l; i++) {
-//     const layer = list[i];
-//     const shape = list[i].shape;
-//
-//     if (shape.pts.length > 1) {
-//       if (util.withinBound(cursor, shape.pts)) {
-//         return {
-//           layer,
-//           area: Area.Corner
-//         };
-//       }
-//     }
-//   }
-// }
-
-// class RectangleLifeCycle extends LifeCycle {
-//   start(c: Canvas, s: State) {
-//     const shape = new Marquee(c);
-//     const layer = new Layer();
-//     layer.humanName = "Rectangle";
-//     layer.type = LayerType.Rect;
-//     layer.shape = shape;
-//
-//     s.selection = what(canvas.grid.closestPt, layers);
-//     this.initialPts = util.clone(s.selection.layer.shape.pts);
-//   }
-//   stop() {}
-// }
-
 class Operator {
-  private activity: null | MarqueeLifeCycle | RectLifeCycle | LineLifeCycle;
   private state: State;
   private os: OS;
   constructor(os: OS, state: State) {
@@ -92,6 +37,9 @@ class Operator {
     this.os.canvas.onMouseMove(this.handleMouseMove.bind(this));
     this.os.toolbar.onModeChange = this.handleChangeMode.bind(this);
   }
+  /**
+   * Called to set/change the operating system with a different color scheme.
+   */
   public paint() {
     for (let k in this.os) {
       this.os[k].setColorPalette(this.state.colors);
@@ -104,37 +52,61 @@ class Operator {
     this.state.downAt = new Date().getTime();
     this.state.pinnedCursorPoint = this.os.canvas.grid.closestPt;
     this.state.cursorPoint = this.os.canvas.grid.closestPt;
+    this.state.anchorPosition = AnchorPosition.RightBottom;
+    this.state.initialPts = [
+      this.state.pinnedCursorPoint,
+      this.state.pinnedCursorPoint
+    ];
+
+    // Loop through each cycle to see if the user clicked on something on the
+    // stage.
+    for (let cycle of this.state.cycles.values()) {
+      // Note that the cursorPt is passed and not the closestPt. This is so the
+      // most absolute position is accounted for.
+      const o = cycle.hitTest(this.os.canvas.grid.cursorPt);
+      if (o !== null) {
+        this.state.cycle = cycle;
+        this.state.initialPts = util.clone(cycle.shape.pts);
+        this.state.anchorPosition = o.position;
+        return;
+      }
+    }
 
     switch (this.state.mode) {
       case Mode.Marquee:
-        this.activity = new MarqueeLifeCycle(this.state);
+        this.state.cycle = new MarqueeLifeCycle(this.state);
+        this.state.cycles.add(this.state.cycle);
+        this.state.cycle.start(this.os.canvas);
         break;
       case Mode.Rectangle:
-        this.activity = new RectLifeCycle(this.state);
+        this.state.cycle = new RectLifeCycle(this.state);
+        this.state.cycles.add(this.state.cycle);
+        this.state.cycle.start(this.os.canvas);
         break;
       case Mode.Line:
-        this.activity = new LineLifeCycle(this.state);
+        this.state.cycle = new LineLifeCycle(this.state);
+        this.state.cycles.add(this.state.cycle);
+        this.state.cycle.start(this.os.canvas);
         break;
     }
-
-    this.activity.start(this.os.canvas);
   }
   private handleMouseUp(e: MouseEvent) {
-    if (this.activity) {
-      this.activity.stop();
+    if (this.state.cycle) {
+      this.state.cycle.stop();
 
-      if (this.activity instanceof MarqueeLifeCycle) {
-        this.activity.remove(this.os.canvas);
+      // A marquee gets removed as soon as the cursor is released, always.
+      if (this.state.cycle instanceof MarqueeLifeCycle) {
+        this.state.cycle.remove(this.os.canvas);
       }
 
-      this.activity = null;
+      this.state.cycle = null;
     }
   }
   private handleMouseMove(e: MouseEvent) {
     this.state.cursorPoint = this.os.canvas.grid.closestPt;
 
-    if (this.activity) {
-      this.activity.run();
+    if (this.state.cycle) {
+      this.state.cycle.mutate();
     }
   }
 }

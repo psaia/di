@@ -11,14 +11,16 @@ export enum ActionType {
   Resizing
 }
 
-export enum AnchorPlacement {
+export enum AnchorPosition {
   LeftTop = 0,
   LeftMiddle,
   LeftBottom,
   Center,
   RightTop,
   RightMiddle,
-  RightBottom
+  RightBottom,
+  BottomMiddle,
+  TopMiddle
 }
 
 export enum LayerType {
@@ -32,6 +34,20 @@ export enum Mode {
   Rectangle,
   Line,
   Text
+}
+
+export interface HitTestResult {
+  position: AnchorPosition;
+  point: Point;
+}
+
+export type HitTestFn = (p: Point) => HitTestResult | null;
+
+export interface Bounds {
+  topLeft: Point;
+  topRight: Point;
+  bottomLeft: Point;
+  bottomRight: Point;
 }
 
 export interface ColorPalette {

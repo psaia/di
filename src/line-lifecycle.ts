@@ -3,12 +3,15 @@ import LifeCycle from "./lifecycle";
 import Canvas from "./canvas";
 import * as util from "./util";
 import RectLineConnection from "./rect-line-connection";
-import { Group } from "./types";
+import { Group, Point } from "./types";
 
 export default class LineLifeCycle extends LifeCycle {
   rectLineConnection: RectLineConnection;
   shape: Line;
   initialPts: Group;
+  hitTest(p: Point) {
+    return null;
+  }
   start(c: Canvas) {
     this.shape = new Line();
     this.shape.uid = crypto.getRandomValues(new Uint32Array(4)).join("-");
@@ -23,7 +26,7 @@ export default class LineLifeCycle extends LifeCycle {
     this.shape.stop();
     c.removeShape(this.shape);
   }
-  run() {
+  mutate() {
     this.shape.pts = [this.state.pinnedCursorPoint, this.state.cursorPoint];
   }
 }

@@ -3,19 +3,25 @@ import LifeCycle from "./lifecycle";
 import Canvas from "./canvas";
 import Tux from "./tux";
 import * as util from "./util";
-import { Group } from "./types";
+import { Group, Point, AnchorPosition } from "./types";
 
 export default class RectLifeCycle extends LifeCycle {
   tux: Tux;
   shape: Rect;
   initialPts: Group;
+  hitTest(p: Point) {
+    if (this.tux) {
+      return this.tux.checkAllHitTests(p);
+    }
+  }
   start(c: Canvas) {
     this.shape = new Rect();
-    this.shape.pts = [this.state.pinnedCursorPoint, this.state.cursorPoint];
     this.shape.uid = crypto.getRandomValues(new Uint32Array(4)).join("-");
     this.shape.colors = this.state.colors;
     this.shape.ctx = c.ctx;
-    this.initialPts = util.clone(this.shape.pts);
+    this.shape.anchor = this.state.anchorPosition;
+
+    c.addShape(this.shape);
 
     if (this.selected) {
       this.tux = new Tux();
@@ -23,18 +29,76 @@ export default class RectLifeCycle extends LifeCycle {
       this.tux.colors = this.state.colors;
       this.tux.pts = this.shape.pts;
       this.tux.ctx = c.ctx;
+
       c.addShape(this.tux);
     }
-
-    c.addShape(this.shape);
   }
   stop() {}
   remove(c: Canvas) {
-    this.shape.stop();
     c.removeShape(this.shape);
+    c.removeShape(this.tux);
+    this.shape = null;
+    this.tux = null;
   }
-  run() {
-    this.shape.pts = [this.state.pinnedCursorPoint, this.state.cursorPoint];
-    this.tux.pts = this.shape.pts;
+  mutate() {
+    const diffX = this.state.cursorPoint[0] - this.state.pinnedCursorPoint[0];
+    const diffY = this.state.cursorPoint[1] - this.state.pinnedCursorPoint[1];
+
+    if (this.state.anchorPosition === AnchorPosition.RightBottom) {
+      this.shape.pts = [this.state.initialPts[0], this.state.cursorPoint];
+    } else if (this.state.anchorPosition === AnchorPosition.RightMiddle) {
+      this.shape.pts = [
+        this.shape.pts[0],
+        util.pt(diffX + this.state.initialPts[1][0], this.shape.pts[1][1])
+      ];
+    } else if (this.state.anchorPosition === AnchorPosition.RightTop) {
+      this.shape.pts = [
+        util.pt(this.shape.pts[0][0], this.state.initialPts[0][1] + diffY),
+        util.pt(this.state.initialPts[1][0] + diffX, this.shape.pts[1][1])
+      ];
+    } else if (this.state.anchorPosition === AnchorPosition.BottomMiddle) {
+      this.shape.pts = [
+        this.shape.pts[0],
+        util.pt(this.shape.pts[1][0], this.state.initialPts[1][1] + diffY)
+      ];
+    } else if (this.state.anchorPosition === AnchorPosition.LeftBottom) {
+      this.shape.pts = [
+        util.pt(this.state.initialPts[0][0] + diffX, this.shape.pts[0][1]),
+        util.pt(this.shape.pts[1][0], this.state.initialPts[1][1] + diffY)
+      ];
+    } else if (this.state.anchorPosition === AnchorPosition.LeftMiddle) {
+      this.shape.pts = [
+        util.pt(this.state.initialPts[0][0] + diffX, this.shape.pts[0][1]),
+        util.pt(this.shape.pts[1][0], this.shape.pts[1][1])
+      ];
+    } else if (this.state.anchorPosition === AnchorPosition.LeftTop) {
+      this.shape.pts = [
+        util.pt(
+          this.state.initialPts[0][0] + diffX,
+          this.state.initialPts[0][1] + diffY
+        ),
+        util.pt(this.shape.pts[1][0], this.shape.pts[1][1])
+      ];
+    } else if (this.state.anchorPosition === AnchorPosition.TopMiddle) {
+      this.shape.pts = [
+        util.pt(this.shape.pts[0][0], this.state.initialPts[0][1] + diffY),
+        util.pt(this.shape.pts[1][0], this.shape.pts[1][1])
+      ];
+    } else if (this.state.anchorPosition === AnchorPosition.Center) {
+      this.shape.pts = [
+        util.pt(
+          this.state.initialPts[0][0] + diffX,
+          this.state.initialPts[0][1] + diffY
+        ),
+        util.pt(
+          this.state.initialPts[1][0] + diffX,
+          this.state.initialPts[1][1] + diffY
+        )
+      ];
+    }
+
+    if (this.tux && this.shape.pts.length) {
+      this.tux.pts = this.shape.pts;
+    }
   }
 }

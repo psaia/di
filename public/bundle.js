@@ -440,10 +440,21 @@ var Grid = /** @class */ (function () {
 exports["default"] = Grid;
 //# sourceMappingURL=grid.js.map
 }
-  Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/interactions.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2finteractions$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2finteractions$2ejs.deps = {"./marquee-lifecycle":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fmarquee$2dlifecycle$2ejs,"./line-lifecycle":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fline$2dlifecycle$2ejs,"./state":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fstate$2ejs,"./rect-lifecycle":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2frect$2dlifecycle$2ejs,"./types":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftypes$2ejs}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2finteractions$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/interactions.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2finteractions$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
+  Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/interactions.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2finteractions$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2finteractions$2ejs.deps = {"./marquee-lifecycle":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fmarquee$2dlifecycle$2ejs,"./line-lifecycle":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fline$2dlifecycle$2ejs,"./state":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fstate$2ejs,"./util":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2futil$2ejs,"./rect-lifecycle":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2frect$2dlifecycle$2ejs,"./types":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftypes$2ejs}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2finteractions$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/interactions.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2finteractions$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
 "use strict";
+var __values = (this && this.__values) || function (o) {
+    var m = typeof Symbol === "function" && o[Symbol.iterator], i = 0;
+    if (m) return m.call(o);
+    return {
+        next: function () {
+            if (o && i >= o.length) o = void 0;
+            return { value: o && o[i++], done: !o };
+        }
+    };
+};
 exports.__esModule = true;
 var state_1 = require("./state");
+var util = require("./util");
 var marquee_lifecycle_1 = require("./marquee-lifecycle");
 var rect_lifecycle_1 = require("./rect-lifecycle");
 var line_lifecycle_1 = require("./line-lifecycle");
@@ -455,46 +466,6 @@ function configure(os) {
     op.paint();
 }
 exports.configure = configure;
-// function addLayer(layers: Layers, shape): Layer {
-//   const layer = new Layer();
-//   layer.humanName = "Rectangle";
-//   layer.type = LayerType.Rect;
-//   layer.shape = shape;
-//   layers.addLayer(layer);
-//   layers.render();
-//
-//   return layer;
-// }
-// function what(cursor: Point, layers: Layers): Selection | null {
-//   const list = layers.getLayers();
-//
-//   for (let i = 0, l = list.length; i < l; i++) {
-//     const layer = list[i];
-//     const shape = list[i].shape;
-//
-//     if (shape.pts.length > 1) {
-//       if (util.withinBound(cursor, shape.pts)) {
-//         return {
-//           layer,
-//           area: Area.Corner
-//         };
-//       }
-//     }
-//   }
-// }
-// class RectangleLifeCycle extends LifeCycle {
-//   start(c: Canvas, s: State) {
-//     const shape = new Marquee(c);
-//     const layer = new Layer();
-//     layer.humanName = "Rectangle";
-//     layer.type = LayerType.Rect;
-//     layer.shape = shape;
-//
-//     s.selection = what(canvas.grid.closestPt, layers);
-//     this.initialPts = util.clone(s.selection.layer.shape.pts);
-//   }
-//   stop() {}
-// }
 var Operator = /** @class */ (function () {
     function Operator(os, state) {
         this.state = state;
@@ -506,6 +477,9 @@ var Operator = /** @class */ (function () {
         this.os.canvas.onMouseMove(this.handleMouseMove.bind(this));
         this.os.toolbar.onModeChange = this.handleChangeMode.bind(this);
     };
+    /**
+     * Called to set/change the operating system with a different color scheme.
+     */
     Operator.prototype.paint = function () {
         for (var k in this.os) {
             this.os[k].setColorPalette(this.state.colors);
@@ -515,35 +489,71 @@ var Operator = /** @class */ (function () {
         this.state.mode = m;
     };
     Operator.prototype.handleMouseDown = function (e) {
+        var e_1, _a;
         this.state.downAt = new Date().getTime();
         this.state.pinnedCursorPoint = this.os.canvas.grid.closestPt;
         this.state.cursorPoint = this.os.canvas.grid.closestPt;
+        this.state.anchorPosition = types_1.AnchorPosition.RightBottom;
+        this.state.initialPts = [
+            this.state.pinnedCursorPoint,
+            this.state.pinnedCursorPoint
+        ];
+        try {
+            // Loop through each cycle to see if the user clicked on something on the
+            // stage.
+            for (var _b = __values(this.state.cycles.values()), _c = _b.next(); !_c.done; _c = _b.next()) {
+                var cycle = _c.value;
+                // Note that the cursorPt is passed and not the closestPt. This is so the
+                // most absolute position is accounted for.
+                var o = cycle.hitTest(this.os.canvas.grid.cursorPt);
+                if (o !== null) {
+                    this.state.cycle = cycle;
+                    this.state.initialPts = util.clone(cycle.shape.pts);
+                    this.state.anchorPosition = o.position;
+                    return;
+                }
+            }
+        }
+        catch (e_1_1) { e_1 = { error: e_1_1 }; }
+        finally {
+            try {
+                if (_c && !_c.done && (_a = _b["return"])) _a.call(_b);
+            }
+            finally { if (e_1) throw e_1.error; }
+        }
+        console.log("Creating new, nothing clicked");
         switch (this.state.mode) {
             case types_1.Mode.Marquee:
-                this.activity = new marquee_lifecycle_1["default"](this.state);
+                this.state.cycle = new marquee_lifecycle_1["default"](this.state);
+                this.state.cycles.add(this.state.cycle);
+                this.state.cycle.start(this.os.canvas);
                 break;
             case types_1.Mode.Rectangle:
-                this.activity = new rect_lifecycle_1["default"](this.state);
+                this.state.cycle = new rect_lifecycle_1["default"](this.state);
+                this.state.cycles.add(this.state.cycle);
+                this.state.cycle.start(this.os.canvas);
                 break;
             case types_1.Mode.Line:
-                this.activity = new line_lifecycle_1["default"](this.state);
+                this.state.cycle = new line_lifecycle_1["default"](this.state);
+                this.state.cycles.add(this.state.cycle);
+                this.state.cycle.start(this.os.canvas);
                 break;
         }
-        this.activity.start(this.os.canvas);
     };
     Operator.prototype.handleMouseUp = function (e) {
-        if (this.activity) {
-            this.activity.stop();
-            if (this.activity instanceof marquee_lifecycle_1["default"]) {
-                this.activity.remove(this.os.canvas);
+        if (this.state.cycle) {
+            this.state.cycle.stop();
+            // A marquee gets removed as soon as the cursor is released, always.
+            if (this.state.cycle instanceof marquee_lifecycle_1["default"]) {
+                this.state.cycle.remove(this.os.canvas);
             }
-            this.activity = null;
+            this.state.cycle = null;
         }
     };
     Operator.prototype.handleMouseMove = function (e) {
         this.state.cursorPoint = this.os.canvas.grid.closestPt;
-        if (this.activity) {
-            this.activity.run();
+        if (this.state.cycle) {
+            this.state.cycle.mutate();
         }
     };
     return Operator;
@@ -645,6 +655,9 @@ var LineLifeCycle = /** @class */ (function (_super) {
     function LineLifeCycle() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
+    LineLifeCycle.prototype.hitTest = function (p) {
+        return null;
+    };
     LineLifeCycle.prototype.start = function (c) {
         this.shape = new line_1["default"]();
         this.shape.uid = crypto.getRandomValues(new Uint32Array(4)).join("-");
@@ -658,7 +671,7 @@ var LineLifeCycle = /** @class */ (function (_super) {
         this.shape.stop();
         c.removeShape(this.shape);
     };
-    LineLifeCycle.prototype.run = function () {
+    LineLifeCycle.prototype.mutate = function () {
         this.shape.pts = [this.state.pinnedCursorPoint, this.state.cursorPoint];
     };
     return LineLifeCycle;
@@ -741,6 +754,9 @@ var MarqueeLifeCycle = /** @class */ (function (_super) {
     function MarqueeLifeCycle() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
+    MarqueeLifeCycle.prototype.hitTest = function (p) {
+        return null;
+    };
     MarqueeLifeCycle.prototype.start = function (c) {
         this.shape = new marquee_1["default"]();
         this.shape.pts = [this.state.pinnedCursorPoint, this.state.cursorPoint];
@@ -757,7 +773,7 @@ var MarqueeLifeCycle = /** @class */ (function (_super) {
         this.shape.stop();
         c.removeShape(this.shape);
     };
-    MarqueeLifeCycle.prototype.run = function () {
+    MarqueeLifeCycle.prototype.mutate = function () {
         this.shape.pts = [this.state.pinnedCursorPoint, this.state.cursorPoint];
     };
     return MarqueeLifeCycle;
@@ -829,7 +845,7 @@ exports.DARK = {
 exports.DEFAULT = exports.DARK;
 //# sourceMappingURL=palettes.js.map
 }
-  Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/rect-lifecycle.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2frect$2dlifecycle$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2frect$2dlifecycle$2ejs.deps = {"./lifecycle":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2flifecycle$2ejs,"./tux":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftux$2ejs,"./util":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2futil$2ejs,"./rect":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2frect$2ejs}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2frect$2dlifecycle$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/rect-lifecycle.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2frect$2dlifecycle$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
+  Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/rect-lifecycle.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2frect$2dlifecycle$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2frect$2dlifecycle$2ejs.deps = {"./lifecycle":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2flifecycle$2ejs,"./tux":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftux$2ejs,"./util":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2futil$2ejs,"./rect":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2frect$2ejs,"./types":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftypes$2ejs}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2frect$2dlifecycle$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/rect-lifecycle.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2frect$2dlifecycle$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -849,18 +865,25 @@ var rect_1 = require("./rect");
 var lifecycle_1 = require("./lifecycle");
 var tux_1 = require("./tux");
 var util = require("./util");
+var types_1 = require("./types");
 var RectLifeCycle = /** @class */ (function (_super) {
     __extends(RectLifeCycle, _super);
     function RectLifeCycle() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
+    RectLifeCycle.prototype.hitTest = function (p) {
+        // First check the tux anchors.
+        if (this.tux) {
+            return this.tux.checkAllHitTests(p);
+        }
+    };
     RectLifeCycle.prototype.start = function (c) {
         this.shape = new rect_1["default"]();
-        this.shape.pts = [this.state.pinnedCursorPoint, this.state.cursorPoint];
         this.shape.uid = crypto.getRandomValues(new Uint32Array(4)).join("-");
         this.shape.colors = this.state.colors;
         this.shape.ctx = c.ctx;
-        this.initialPts = util.clone(this.shape.pts);
+        this.shape.anchor = this.state.anchorPosition;
+        c.addShape(this.shape);
         if (this.selected) {
             this.tux = new tux_1["default"]();
             this.tux.uid = crypto.getRandomValues(new Uint32Array(4)).join("-");
@@ -869,16 +892,71 @@ var RectLifeCycle = /** @class */ (function (_super) {
             this.tux.ctx = c.ctx;
             c.addShape(this.tux);
         }
-        c.addShape(this.shape);
     };
     RectLifeCycle.prototype.stop = function () { };
     RectLifeCycle.prototype.remove = function (c) {
-        this.shape.stop();
         c.removeShape(this.shape);
+        c.removeShape(this.tux);
+        this.shape = null;
+        this.tux = null;
     };
-    RectLifeCycle.prototype.run = function () {
-        this.shape.pts = [this.state.pinnedCursorPoint, this.state.cursorPoint];
-        this.tux.pts = this.shape.pts;
+    RectLifeCycle.prototype.mutate = function () {
+        var diffX = this.state.cursorPoint[0] - this.state.pinnedCursorPoint[0];
+        var diffY = this.state.cursorPoint[1] - this.state.pinnedCursorPoint[1];
+        if (this.state.anchorPosition === types_1.AnchorPosition.RightBottom) {
+            this.shape.pts = [this.state.initialPts[0], this.state.cursorPoint];
+        }
+        else if (this.state.anchorPosition === types_1.AnchorPosition.RightMiddle) {
+            this.shape.pts = [
+                this.shape.pts[0],
+                util.pt(diffX + this.state.initialPts[1][0], this.shape.pts[1][1])
+            ];
+        }
+        else if (this.state.anchorPosition === types_1.AnchorPosition.RightTop) {
+            this.shape.pts = [
+                util.pt(this.shape.pts[0][0], this.state.initialPts[0][1] + diffY),
+                util.pt(this.state.initialPts[1][0] + diffX, this.shape.pts[1][1])
+            ];
+        }
+        else if (this.state.anchorPosition === types_1.AnchorPosition.BottomMiddle) {
+            this.shape.pts = [
+                this.shape.pts[0],
+                util.pt(this.shape.pts[1][0], this.state.initialPts[1][1] + diffY)
+            ];
+        }
+        else if (this.state.anchorPosition === types_1.AnchorPosition.LeftBottom) {
+            this.shape.pts = [
+                util.pt(this.state.initialPts[0][0] + diffX, this.shape.pts[0][1]),
+                util.pt(this.shape.pts[1][0], this.state.initialPts[1][1] + diffY)
+            ];
+        }
+        else if (this.state.anchorPosition === types_1.AnchorPosition.LeftMiddle) {
+            this.shape.pts = [
+                util.pt(this.state.initialPts[0][0] + diffX, this.shape.pts[0][1]),
+                util.pt(this.shape.pts[1][0], this.shape.pts[1][1])
+            ];
+        }
+        else if (this.state.anchorPosition === types_1.AnchorPosition.LeftTop) {
+            this.shape.pts = [
+                util.pt(this.state.initialPts[0][0] + diffX, this.state.initialPts[0][1] + diffY),
+                util.pt(this.shape.pts[1][0], this.shape.pts[1][1])
+            ];
+        }
+        else if (this.state.anchorPosition === types_1.AnchorPosition.TopMiddle) {
+            this.shape.pts = [
+                util.pt(this.shape.pts[0][0], this.state.initialPts[0][1] + diffY),
+                util.pt(this.shape.pts[1][0], this.shape.pts[1][1])
+            ];
+        }
+        else if (this.state.anchorPosition === types_1.AnchorPosition.Center) {
+            this.shape.pts = [
+                util.pt(this.state.initialPts[0][0] + diffX, this.state.initialPts[0][1] + diffY),
+                util.pt(this.state.initialPts[1][0] + diffX, this.state.initialPts[1][1] + diffY)
+            ];
+        }
+        if (this.tux && this.shape.pts.length) {
+            this.tux.pts = this.shape.pts;
+        }
     };
     return RectLifeCycle;
 }(lifecycle_1["default"]));
@@ -954,10 +1032,19 @@ exports["default"] = Shape;
 exports.__esModule = true;
 var types_1 = require("./types");
 var palettes = require("./palettes");
+/**
+ * This class is instantiated in the interactions module and is mutated as
+ * needed. It effectively contains the entire state of the application at a
+ * given moment from a data perspective.
+ */
 var State = /** @class */ (function () {
     function State() {
+        // Mode represents the intended object to create. This is updated by the
+        // toolbar.
         this.mode = types_1.Mode.Marquee;
+        this.cycles = new Set();
         this.colors = palettes.DEFAULT;
+        this.initialPts = [];
     }
     return State;
 }());
@@ -1043,7 +1130,7 @@ exports["default"] = ToolbarDrawer;
 // };
 //# sourceMappingURL=toolbar-drawer.js.map
 }
-  Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/tux.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftux$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftux$2ejs.deps = {"./util":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2futil$2ejs,"./shape":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fshape$2ejs}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftux$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/tux.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftux$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
+  Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/tux.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftux$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftux$2ejs.deps = {"./util":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2futil$2ejs,"./shape":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fshape$2ejs,"./types":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftypes$2ejs}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftux$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/tux.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftux$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -1061,41 +1148,80 @@ var __extends = (this && this.__extends) || (function () {
 exports.__esModule = true;
 var shape_1 = require("./shape");
 var util = require("./util");
+var types_1 = require("./types");
 var Tux = /** @class */ (function (_super) {
     __extends(Tux, _super);
     function Tux() {
-        return _super !== null && _super.apply(this, arguments) || this;
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.hitTestChecks = [];
+        return _this;
     }
+    /**
+     * Check all the hit tests to see if the given point is within anything.
+     */
+    Tux.prototype.checkAllHitTests = function (p) {
+        for (var i = 0, l = this.hitTestChecks.length; i < l; i++) {
+            var result = this.hitTestChecks[i](p);
+            if (result) {
+                return result;
+            }
+        }
+        return null;
+    };
     Tux.prototype.anchorBounds = function (p) {
         var margin = 5;
-        var topLeft = util.pt(p[0] - margin, p[1] + margin);
-        var topRight = util.pt(p[0] + margin, p[1] + margin);
-        var bottomLeft = util.pt(p[0] - margin, p[1] - margin);
-        var bottomRight = util.pt(p[0] + margin, p[1] - margin);
-        return [topLeft, topRight, bottomRight, bottomLeft];
+        var bottomLeft = util.pt(p[0] - margin, p[1] + margin);
+        var bottomRight = util.pt(p[0] + margin, p[1] + margin);
+        var topLeft = util.pt(p[0] - margin, p[1] - margin);
+        var topRight = util.pt(p[0] + margin, p[1] - margin);
+        return { topLeft: topLeft, topRight: topRight, bottomRight: bottomRight, bottomLeft: bottomLeft };
     };
-    Tux.prototype.drawAnchor = function (bounds) {
+    Tux.prototype.configureAnchor = function (position, bounds) {
         this.ctx.beginPath();
         this.ctx.setLineDash([]);
         this.ctx.lineWidth = 1;
-        this.ctx.moveTo(bounds[0][0], bounds[0][1]);
-        this.ctx.lineTo(bounds[1][0], bounds[1][1]);
-        this.ctx.lineTo(bounds[2][0], bounds[2][1]);
-        this.ctx.lineTo(bounds[3][0], bounds[3][1]);
+        this.ctx.moveTo(bounds.topLeft[0], bounds.topLeft[1]);
+        this.ctx.lineTo(bounds.topRight[0], bounds.topRight[1]);
+        this.ctx.lineTo(bounds.bottomRight[0], bounds.bottomRight[1]);
+        this.ctx.lineTo(bounds.bottomLeft[0], bounds.bottomLeft[1]);
         this.ctx.strokeStyle = this.colors.shapeColor;
         this.ctx.fillStyle = this.colors.shapeColor;
         this.ctx.fill();
         this.ctx.closePath();
+        this.hitTestChecks.push(function (p) {
+            if (util.withinBound(p, [bounds.topLeft, bounds.bottomRight])) {
+                return {
+                    position: position,
+                    point: util.centroid([bounds.topLeft, bounds.bottomRight])
+                };
+            }
+        });
     };
+    // The only thing render does is setup hittest checks.
     Tux.prototype.render = function () {
-        // Left side.
-        this.drawAnchor(this.anchorBounds(this.pts[0]));
-        this.drawAnchor(this.anchorBounds(util.pt(this.pts[0][0], this.pts[0][1] + (this.pts[1][1] - this.pts[0][1]) / 2)));
-        this.drawAnchor(this.anchorBounds(util.pt(this.pts[0][0], this.pts[0][1] + (this.pts[1][1] - this.pts[0][1]))));
-        // Right side.
-        this.drawAnchor(this.anchorBounds(this.pts[1]));
-        this.drawAnchor(this.anchorBounds(util.pt(this.pts[1][0], this.pts[1][1] - (this.pts[1][1] - this.pts[0][1]) / 2)));
-        this.drawAnchor(this.anchorBounds(util.pt(this.pts[1][0], this.pts[1][1] - (this.pts[1][1] - this.pts[0][1]))));
+        var _this = this;
+        if (this.pts.length !== 2) {
+            return;
+        }
+        var centroid = util.centroid(this.pts);
+        this.hitTestChecks = [];
+        this.configureAnchor(types_1.AnchorPosition.LeftTop, this.anchorBounds(this.pts[0]));
+        this.configureAnchor(types_1.AnchorPosition.LeftMiddle, this.anchorBounds(util.pt(this.pts[0][0], centroid[1])));
+        this.configureAnchor(types_1.AnchorPosition.LeftBottom, this.anchorBounds(util.pt(this.pts[0][0], this.pts[0][1] + (this.pts[1][1] - this.pts[0][1]))));
+        this.configureAnchor(types_1.AnchorPosition.RightBottom, this.anchorBounds(this.pts[1]));
+        this.configureAnchor(types_1.AnchorPosition.RightMiddle, this.anchorBounds(util.pt(this.pts[1][0], centroid[1])));
+        this.configureAnchor(types_1.AnchorPosition.RightTop, this.anchorBounds(util.pt(this.pts[1][0], this.pts[1][1] - (this.pts[1][1] - this.pts[0][1]))));
+        this.configureAnchor(types_1.AnchorPosition.TopMiddle, this.anchorBounds(util.pt(centroid[0], this.pts[0][1])));
+        this.configureAnchor(types_1.AnchorPosition.BottomMiddle, this.anchorBounds(util.pt(centroid[0], this.pts[1][1])));
+        // Lastly, setup a check for anywhere in the center of the shape.
+        this.hitTestChecks.push(function (p) {
+            if (util.withinBound(p, [_this.pts[0], _this.pts[1]])) {
+                return {
+                    position: types_1.AnchorPosition.Center,
+                    point: centroid
+                };
+            }
+        });
     };
     return Tux;
 }(shape_1["default"]));
@@ -1110,16 +1236,18 @@ var ActionType;
     ActionType[ActionType["Moving"] = 0] = "Moving";
     ActionType[ActionType["Resizing"] = 1] = "Resizing";
 })(ActionType = exports.ActionType || (exports.ActionType = {}));
-var AnchorPlacement;
-(function (AnchorPlacement) {
-    AnchorPlacement[AnchorPlacement["LeftTop"] = 0] = "LeftTop";
-    AnchorPlacement[AnchorPlacement["LeftMiddle"] = 1] = "LeftMiddle";
-    AnchorPlacement[AnchorPlacement["LeftBottom"] = 2] = "LeftBottom";
-    AnchorPlacement[AnchorPlacement["Center"] = 3] = "Center";
-    AnchorPlacement[AnchorPlacement["RightTop"] = 4] = "RightTop";
-    AnchorPlacement[AnchorPlacement["RightMiddle"] = 5] = "RightMiddle";
-    AnchorPlacement[AnchorPlacement["RightBottom"] = 6] = "RightBottom";
-})(AnchorPlacement = exports.AnchorPlacement || (exports.AnchorPlacement = {}));
+var AnchorPosition;
+(function (AnchorPosition) {
+    AnchorPosition[AnchorPosition["LeftTop"] = 0] = "LeftTop";
+    AnchorPosition[AnchorPosition["LeftMiddle"] = 1] = "LeftMiddle";
+    AnchorPosition[AnchorPosition["LeftBottom"] = 2] = "LeftBottom";
+    AnchorPosition[AnchorPosition["Center"] = 3] = "Center";
+    AnchorPosition[AnchorPosition["RightTop"] = 4] = "RightTop";
+    AnchorPosition[AnchorPosition["RightMiddle"] = 5] = "RightMiddle";
+    AnchorPosition[AnchorPosition["RightBottom"] = 6] = "RightBottom";
+    AnchorPosition[AnchorPosition["BottomMiddle"] = 7] = "BottomMiddle";
+    AnchorPosition[AnchorPosition["TopMiddle"] = 8] = "TopMiddle";
+})(AnchorPosition = exports.AnchorPosition || (exports.AnchorPosition = {}));
 var LayerType;
 (function (LayerType) {
     LayerType[LayerType["Rect"] = 0] = "Rect";
@@ -1157,6 +1285,14 @@ function withinBound(pt, rect) {
     return true;
 }
 exports.withinBound = withinBound;
+/**
+ * Obtain the center of two vectors in 2d space.
+ * @params pts contains top left and bottom right.
+ */
+function centroid(pts) {
+    return pt(pts[0][0] + (pts[1][0] - pts[0][0]) / 2, pts[0][1] + (pts[1][1] - pts[0][1]) / 2);
+}
+exports.centroid = centroid;
 function add(a, b) {
     if (b instanceof Array) {
         return b.map(function (v) { return pt(v[0] + a[0], v[1] + a[1]); });

@@ -21,6 +21,17 @@ export function withinBound(pt: Point, rect: Group): boolean {
   return true;
 }
 
+/**
+ * Obtain the center of two vectors in 2d space.
+ * @params pts contains top left and bottom right.
+ */
+export function centroid(pts: Group): Point {
+  return pt(
+    pts[0][0] + (pts[1][0] - pts[0][0]) / 2,
+    pts[0][1] + (pts[1][1] - pts[0][1]) / 2
+  );
+}
+
 export function add(a: Point, b: Point | Group): Point | Group {
   if (b instanceof Array) {
     return b.map(v => pt(v[0] + a[0], v[1] + a[1]));
