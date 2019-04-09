@@ -6,7 +6,7 @@ import RectLineConnection from "./rect-line-connection";
 import * as util from "./util";
 import { Point, AnchorPosition } from "./types";
 
-export default class LineLifeCycle extends Lifecycle {
+export default class LineLifecycle extends Lifecycle {
   shape: Line;
   tux: LineTux;
   rectLineConnection: RectLineConnection;

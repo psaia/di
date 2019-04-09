@@ -4,7 +4,7 @@ import Canvas from "./canvas";
 import * as util from "./util";
 import { Group, Point } from "./types";
 
-export default class MarqueeLifeCycle extends Lifecycle {
+export default class MarqueeLifecycle extends Lifecycle {
   shape: Marquee;
   initialPts: Group;
   hitTest(p: Point) {

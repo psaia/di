@@ -1,10 +1,10 @@
 import { Mode, Point, ColorPalette, AnchorPosition, Group } from "./types";
 import * as palettes from "./palettes";
-import MarqueeLifeCycle from "./marquee-lifecycle";
-import RectLifeCycle from "./rect-lifecycle";
-import LineLifeCycle from "./line-lifecycle";
+import MarqueeLifecycle from "./marquee-lifecycle";
+import RectLifecycle from "./rect-lifecycle";
+import LineLifecycle from "./line-lifecycle";
 
-type LifeCycleItem = MarqueeLifeCycle | RectLifeCycle | LineLifeCycle;
+type LifecycleItem = MarqueeLifecycle | RectLifecycle | LineLifecycle;
 
 /**
  * This class is instantiated in the interactions module and is mutated as
@@ -13,12 +13,12 @@ type LifeCycleItem = MarqueeLifeCycle | RectLifeCycle | LineLifeCycle;
  */
 export default class State {
   // The current selected object.
-  public cycle: LifeCycleItem | null;
+  public cycle: LifecycleItem | null;
   // Mode represents the intended object to create. This is updated by the
   // toolbar.
   public mode: Mode = Mode.Marquee;
   public anchorPosition: AnchorPosition;
-  public cycles: Set<LifeCycleItem> = new Set();
+  public cycles: Set<LifecycleItem> = new Set();
   public colors: ColorPalette = palettes.DEFAULT;
   public cursorPoint: Point;
   public pinnedCursorPoint: Point;

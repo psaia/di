@@ -5,7 +5,7 @@ import RectTux from "./rect-tux";
 import * as util from "./util";
 import { Point, AnchorPosition } from "./types";
 
-export default class RectLifeCycle extends Lifecycle {
+export default class RectLifecycle extends Lifecycle {
   shape: Rect;
   tux: RectTux;
   hitTest(p: Point) {

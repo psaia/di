@@ -493,7 +493,6 @@ var Operator = /** @class */ (function () {
             for (var _b = __values(this.state.cycles.values()), _c = _b.next(); !_c.done; _c = _b.next()) {
                 var cycle = _c.value;
                 cycle.select(false);
-                console.log("deselecting", cycle);
             }
         }
         catch (e_1_1) { e_1 = { error: e_1_1 }; }
@@ -544,7 +543,6 @@ var Operator = /** @class */ (function () {
         switch (this.state.mode) {
             case types_1.Mode.Marquee:
                 this.deselectAll();
-                console.log("sdelescting all");
                 this.state.cycle = new marquee_lifecycle_1["default"](this.state);
                 this.state.cycles.add(this.state.cycle);
                 this.state.cycle.start(this.os.canvas);
@@ -673,17 +671,17 @@ var lifecycle_1 = require("./lifecycle");
 var line_tux_1 = require("./line-tux");
 var util = require("./util");
 var types_1 = require("./types");
-var LineLifeCycle = /** @class */ (function (_super) {
-    __extends(LineLifeCycle, _super);
-    function LineLifeCycle() {
+var LineLifecycle = /** @class */ (function (_super) {
+    __extends(LineLifecycle, _super);
+    function LineLifecycle() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
-    LineLifeCycle.prototype.hitTest = function (p) {
+    LineLifecycle.prototype.hitTest = function (p) {
         if (this.tux) {
             return this.tux.checkAllHitTests(p);
         }
     };
-    LineLifeCycle.prototype.start = function (c) {
+    LineLifecycle.prototype.start = function (c) {
         this.shape = new line_1["default"]();
         this.shape.ctx = c.ctx;
         this.tux = new line_tux_1["default"]();
@@ -691,11 +689,11 @@ var LineLifeCycle = /** @class */ (function (_super) {
         c.addShape(this.shape);
         c.addShape(this.tux);
     };
-    LineLifeCycle.prototype.remove = function (c) {
+    LineLifecycle.prototype.remove = function (c) {
         c.removeShape(this.shape);
         c.removeShape(this.tux);
     };
-    LineLifeCycle.prototype.select = function (selected) {
+    LineLifecycle.prototype.select = function (selected) {
         if (selected) {
             this.tux.play();
         }
@@ -703,7 +701,7 @@ var LineLifeCycle = /** @class */ (function (_super) {
             this.tux.stop();
         }
     };
-    LineLifeCycle.prototype.mutate = function () {
+    LineLifecycle.prototype.mutate = function () {
         this.shape.colors = this.state.colors;
         this.tux.colors = this.state.colors;
         var diffX = this.state.cursorPoint[0] - this.state.pinnedCursorPoint[0];
@@ -725,9 +723,9 @@ var LineLifeCycle = /** @class */ (function (_super) {
         }
         this.tux.pts = this.shape.pts;
     };
-    return LineLifeCycle;
+    return LineLifecycle;
 }(lifecycle_1["default"]));
-exports["default"] = LineLifeCycle;
+exports["default"] = LineLifecycle;
 //# sourceMappingURL=line-lifecycle.js.map
 }
   Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/line-tux.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fline$2dtux$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fline$2dtux$2ejs.deps = {"./tux":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftux$2ejs,"./util":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2futil$2ejs,"./types":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftypes$2ejs}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fline$2dtux$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/line-tux.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fline$2dtux$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
@@ -849,15 +847,15 @@ exports.__esModule = true;
 var marquee_1 = require("./marquee");
 var lifecycle_1 = require("./lifecycle");
 var util = require("./util");
-var MarqueeLifeCycle = /** @class */ (function (_super) {
-    __extends(MarqueeLifeCycle, _super);
-    function MarqueeLifeCycle() {
+var MarqueeLifecycle = /** @class */ (function (_super) {
+    __extends(MarqueeLifecycle, _super);
+    function MarqueeLifecycle() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
-    MarqueeLifeCycle.prototype.hitTest = function (p) {
+    MarqueeLifecycle.prototype.hitTest = function (p) {
         return null;
     };
-    MarqueeLifeCycle.prototype.start = function (c) {
+    MarqueeLifecycle.prototype.start = function (c) {
         this.shape = new marquee_1["default"]();
         this.shape.pts = [this.state.pinnedCursorPoint, this.state.cursorPoint];
         this.shape.colors = this.state.colors;
@@ -865,16 +863,16 @@ var MarqueeLifeCycle = /** @class */ (function (_super) {
         this.initialPts = util.clone(this.shape.pts);
         c.addShape(this.shape);
     };
-    MarqueeLifeCycle.prototype.remove = function (c) {
+    MarqueeLifecycle.prototype.remove = function (c) {
         c.removeShape(this.shape);
     };
-    MarqueeLifeCycle.prototype.mutate = function () {
+    MarqueeLifecycle.prototype.mutate = function () {
         this.shape.pts = [this.state.pinnedCursorPoint, this.state.cursorPoint];
     };
-    MarqueeLifeCycle.prototype.select = function (selected) { };
-    return MarqueeLifeCycle;
+    MarqueeLifecycle.prototype.select = function (selected) { };
+    return MarqueeLifecycle;
 }(lifecycle_1["default"]));
-exports["default"] = MarqueeLifeCycle;
+exports["default"] = MarqueeLifecycle;
 //# sourceMappingURL=marquee-lifecycle.js.map
 }
   Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/marquee.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fmarquee$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fmarquee$2ejs.deps = {"./shape":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fshape$2ejs}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fmarquee$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/marquee.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fmarquee$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
@@ -962,17 +960,17 @@ var lifecycle_1 = require("./lifecycle");
 var rect_tux_1 = require("./rect-tux");
 var util = require("./util");
 var types_1 = require("./types");
-var RectLifeCycle = /** @class */ (function (_super) {
-    __extends(RectLifeCycle, _super);
-    function RectLifeCycle() {
+var RectLifecycle = /** @class */ (function (_super) {
+    __extends(RectLifecycle, _super);
+    function RectLifecycle() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
-    RectLifeCycle.prototype.hitTest = function (p) {
+    RectLifecycle.prototype.hitTest = function (p) {
         if (this.tux) {
             return this.tux.checkAllHitTests(p);
         }
     };
-    RectLifeCycle.prototype.start = function (c) {
+    RectLifecycle.prototype.start = function (c) {
         this.shape = new rect_1["default"]();
         this.shape.ctx = c.ctx;
         this.tux = new rect_tux_1["default"]();
@@ -981,11 +979,11 @@ var RectLifeCycle = /** @class */ (function (_super) {
         c.addShape(this.shape);
         c.addShape(this.tux);
     };
-    RectLifeCycle.prototype.remove = function (c) {
+    RectLifecycle.prototype.remove = function (c) {
         c.removeShape(this.shape);
         c.removeShape(this.tux);
     };
-    RectLifeCycle.prototype.select = function (selected) {
+    RectLifecycle.prototype.select = function (selected) {
         if (selected) {
             this.tux.play();
         }
@@ -993,7 +991,7 @@ var RectLifeCycle = /** @class */ (function (_super) {
             this.tux.stop();
         }
     };
-    RectLifeCycle.prototype.mutate = function () {
+    RectLifecycle.prototype.mutate = function () {
         this.shape.colors = this.state.colors;
         this.tux.colors = this.state.colors;
         var diffX = this.state.cursorPoint[0] - this.state.pinnedCursorPoint[0];
@@ -1053,9 +1051,9 @@ var RectLifeCycle = /** @class */ (function (_super) {
             this.tux.pts = this.shape.pts;
         }
     };
-    return RectLifeCycle;
+    return RectLifecycle;
 }(lifecycle_1["default"]));
-exports["default"] = RectLifeCycle;
+exports["default"] = RectLifecycle;
 //# sourceMappingURL=rect-lifecycle.js.map
 }
   Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/rect-tux.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2frect$2dtux$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2frect$2dtux$2ejs.deps = {"./tux":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftux$2ejs,"./util":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2futil$2ejs,"./types":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftypes$2ejs}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2frect$2dtux$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/rect-tux.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2frect$2dtux$2ejs(module, exports, require, __filename, __dirname, __import_meta) {

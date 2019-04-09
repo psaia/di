@@ -4,9 +4,9 @@ import Toolbar from "./toolbar-drawer";
 import ControlDrawer from "./control-drawer";
 import State from "./state";
 import * as util from "./util";
-import MarqueeLifeCycle from "./marquee-lifecycle";
-import RectLifeCycle from "./rect-lifecycle";
-import LineLifeCycle from "./line-lifecycle";
+import MarqueeLifecycle from "./marquee-lifecycle";
+import RectLifecycle from "./rect-lifecycle";
+import LineLifecycle from "./line-lifecycle";
 import { Mode, AnchorPosition } from "./types";
 
 interface OS {
@@ -81,17 +81,17 @@ class Operator {
     switch (this.state.mode) {
       case Mode.Marquee:
         this.deselectAll();
-        this.state.cycle = new MarqueeLifeCycle(this.state);
+        this.state.cycle = new MarqueeLifecycle(this.state);
         this.state.cycles.add(this.state.cycle);
         this.state.cycle.start(this.os.canvas);
         break;
       case Mode.Rectangle:
-        this.state.cycle = new RectLifeCycle(this.state);
+        this.state.cycle = new RectLifecycle(this.state);
         this.state.cycles.add(this.state.cycle);
         this.state.cycle.start(this.os.canvas);
         break;
       case Mode.Line:
-        this.state.cycle = new LineLifeCycle(this.state);
+        this.state.cycle = new LineLifecycle(this.state);
         this.state.cycles.add(this.state.cycle);
         this.state.cycle.start(this.os.canvas);
         break;
@@ -100,7 +100,7 @@ class Operator {
   private handleMouseUp(e: MouseEvent) {
     if (this.state.cycle) {
       // A marquee gets removed as soon as the cursor is released, always.
-      if (this.state.cycle instanceof MarqueeLifeCycle) {
+      if (this.state.cycle instanceof MarqueeLifecycle) {
         this.state.cycle.remove(this.os.canvas);
       }
 
