@@ -521,7 +521,6 @@ var Operator = /** @class */ (function () {
             }
             finally { if (e_1) throw e_1.error; }
         }
-        console.log("Creating new, nothing clicked");
         switch (this.state.mode) {
             case types_1.Mode.Marquee:
                 this.state.cycle = new marquee_lifecycle_1["default"](this.state);
@@ -631,7 +630,7 @@ var LifeCycle = /** @class */ (function () {
 exports["default"] = LifeCycle;
 //# sourceMappingURL=lifecycle.js.map
 }
-  Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/line-lifecycle.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fline$2dlifecycle$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fline$2dlifecycle$2ejs.deps = {"./lifecycle":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2flifecycle$2ejs,"./line":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fline$2ejs,"./util":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2futil$2ejs}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fline$2dlifecycle$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/line-lifecycle.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fline$2dlifecycle$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
+  Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/line-lifecycle.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fline$2dlifecycle$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fline$2dlifecycle$2ejs.deps = {"./lifecycle":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2flifecycle$2ejs,"./line":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fline$2ejs,"./line-tux":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fline$2dtux$2ejs,"./util":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2futil$2ejs,"./types":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftypes$2ejs}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fline$2dlifecycle$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/line-lifecycle.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fline$2dlifecycle$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -649,35 +648,108 @@ var __extends = (this && this.__extends) || (function () {
 exports.__esModule = true;
 var line_1 = require("./line");
 var lifecycle_1 = require("./lifecycle");
+var line_tux_1 = require("./line-tux");
 var util = require("./util");
+var types_1 = require("./types");
 var LineLifeCycle = /** @class */ (function (_super) {
     __extends(LineLifeCycle, _super);
     function LineLifeCycle() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     LineLifeCycle.prototype.hitTest = function (p) {
-        return null;
+        if (this.tux) {
+            return this.tux.checkAllHitTests(p);
+        }
     };
     LineLifeCycle.prototype.start = function (c) {
         this.shape = new line_1["default"]();
-        this.shape.uid = crypto.getRandomValues(new Uint32Array(4)).join("-");
-        this.shape.colors = this.state.colors;
         this.shape.ctx = c.ctx;
-        this.initialPts = util.clone(this.shape.pts);
         c.addShape(this.shape);
+        if (this.selected) {
+            this.tux = new line_tux_1["default"]();
+            this.tux.ctx = c.ctx;
+            c.addShape(this.tux);
+        }
     };
     LineLifeCycle.prototype.stop = function () { };
     LineLifeCycle.prototype.remove = function (c) {
-        this.shape.stop();
         c.removeShape(this.shape);
+        c.removeShape(this.tux);
     };
     LineLifeCycle.prototype.mutate = function () {
-        this.shape.pts = [this.state.pinnedCursorPoint, this.state.cursorPoint];
+        this.shape.colors = this.state.colors;
+        this.tux.colors = this.state.colors;
+        var diffX = this.state.cursorPoint[0] - this.state.pinnedCursorPoint[0];
+        var diffY = this.state.cursorPoint[1] - this.state.pinnedCursorPoint[1];
+        if (this.state.anchorPosition === types_1.AnchorPosition.RightMiddle) {
+            this.shape.pts = [
+                util.pt(this.state.initialPts[0][0], this.state.initialPts[0][1]),
+                util.pt(this.state.initialPts[1][0] + diffX, this.state.initialPts[1][1] + diffY)
+            ];
+        }
+        else if (this.state.anchorPosition === types_1.AnchorPosition.LeftMiddle) {
+            this.shape.pts = [
+                util.pt(this.state.initialPts[0][0] + diffX, this.state.initialPts[0][1] + diffY),
+                util.pt(this.state.initialPts[1][0], this.state.initialPts[1][1])
+            ];
+        }
+        else {
+            this.shape.pts = [this.state.pinnedCursorPoint, this.state.cursorPoint];
+        }
+        this.tux.pts = this.shape.pts;
     };
     return LineLifeCycle;
 }(lifecycle_1["default"]));
 exports["default"] = LineLifeCycle;
 //# sourceMappingURL=line-lifecycle.js.map
+}
+  Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/line-tux.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fline$2dtux$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fline$2dtux$2ejs.deps = {"./tux":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftux$2ejs,"./util":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2futil$2ejs,"./types":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftypes$2ejs}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fline$2dtux$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/line-tux.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fline$2dtux$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
+"use strict";
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    }
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+exports.__esModule = true;
+var tux_1 = require("./tux");
+var util = require("./util");
+var types_1 = require("./types");
+var LineTux = /** @class */ (function (_super) {
+    __extends(LineTux, _super);
+    function LineTux() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    LineTux.prototype.render = function () {
+        var _this = this;
+        if (this.pts.length < 2) {
+            return;
+        }
+        var centroid = util.centroid(this.pts);
+        this.hitTestChecks = [];
+        this.configureAnchor(types_1.AnchorPosition.LeftMiddle, this.anchorBounds(this.pts[0]));
+        this.configureAnchor(types_1.AnchorPosition.RightMiddle, this.anchorBounds(this.pts[1]));
+        // Lastly, setup a check for anywhere in the center of the shape.
+        this.hitTestChecks.push(function (p) {
+            if (util.withinBound(p, [_this.pts[0], _this.pts[1]])) {
+                return {
+                    position: types_1.AnchorPosition.Center,
+                    point: centroid
+                };
+            }
+        });
+    };
+    return LineTux;
+}(tux_1["default"]));
+exports["default"] = LineTux;
+//# sourceMappingURL=line-tux.js.map
 }
   Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/line.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fline$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fline$2ejs.deps = {"./util":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2futil$2ejs,"./shape":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fshape$2ejs}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fline$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/line.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fline$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
 "use strict";
@@ -713,6 +785,7 @@ var Line = /** @class */ (function (_super) {
         var from = this.pts[0];
         var to = this.pts[1];
         this.ctx.beginPath();
+        this.ctx.lineWidth = 2;
         this.ctx.moveTo(from[0], from[1]);
         var pt1 = util.pt(from[0] + (to[0] - from[0]) / 2, from[1]);
         var pt2 = util.pt(pt1[0], to[1]);
@@ -760,7 +833,6 @@ var MarqueeLifeCycle = /** @class */ (function (_super) {
     MarqueeLifeCycle.prototype.start = function (c) {
         this.shape = new marquee_1["default"]();
         this.shape.pts = [this.state.pinnedCursorPoint, this.state.cursorPoint];
-        this.shape.uid = crypto.getRandomValues(new Uint32Array(4)).join("-");
         this.shape.colors = this.state.colors;
         this.shape.ctx = c.ctx;
         this.initialPts = util.clone(this.shape.pts);
@@ -845,7 +917,7 @@ exports.DARK = {
 exports.DEFAULT = exports.DARK;
 //# sourceMappingURL=palettes.js.map
 }
-  Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/rect-lifecycle.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2frect$2dlifecycle$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2frect$2dlifecycle$2ejs.deps = {"./lifecycle":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2flifecycle$2ejs,"./tux":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftux$2ejs,"./util":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2futil$2ejs,"./rect":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2frect$2ejs,"./types":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftypes$2ejs}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2frect$2dlifecycle$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/rect-lifecycle.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2frect$2dlifecycle$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
+  Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/rect-lifecycle.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2frect$2dlifecycle$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2frect$2dlifecycle$2ejs.deps = {"./lifecycle":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2flifecycle$2ejs,"./util":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2futil$2ejs,"./rect":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2frect$2ejs,"./rect-tux":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2frect$2dtux$2ejs,"./types":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftypes$2ejs}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2frect$2dlifecycle$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/rect-lifecycle.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2frect$2dlifecycle$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -863,7 +935,7 @@ var __extends = (this && this.__extends) || (function () {
 exports.__esModule = true;
 var rect_1 = require("./rect");
 var lifecycle_1 = require("./lifecycle");
-var tux_1 = require("./tux");
+var rect_tux_1 = require("./rect-tux");
 var util = require("./util");
 var types_1 = require("./types");
 var RectLifeCycle = /** @class */ (function (_super) {
@@ -872,22 +944,16 @@ var RectLifeCycle = /** @class */ (function (_super) {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     RectLifeCycle.prototype.hitTest = function (p) {
-        // First check the tux anchors.
         if (this.tux) {
             return this.tux.checkAllHitTests(p);
         }
     };
     RectLifeCycle.prototype.start = function (c) {
         this.shape = new rect_1["default"]();
-        this.shape.uid = crypto.getRandomValues(new Uint32Array(4)).join("-");
-        this.shape.colors = this.state.colors;
         this.shape.ctx = c.ctx;
-        this.shape.anchor = this.state.anchorPosition;
         c.addShape(this.shape);
         if (this.selected) {
-            this.tux = new tux_1["default"]();
-            this.tux.uid = crypto.getRandomValues(new Uint32Array(4)).join("-");
-            this.tux.colors = this.state.colors;
+            this.tux = new rect_tux_1["default"]();
             this.tux.pts = this.shape.pts;
             this.tux.ctx = c.ctx;
             c.addShape(this.tux);
@@ -901,6 +967,8 @@ var RectLifeCycle = /** @class */ (function (_super) {
         this.tux = null;
     };
     RectLifeCycle.prototype.mutate = function () {
+        this.shape.colors = this.state.colors;
+        this.tux.colors = this.state.colors;
         var diffX = this.state.cursorPoint[0] - this.state.pinnedCursorPoint[0];
         var diffY = this.state.cursorPoint[1] - this.state.pinnedCursorPoint[1];
         if (this.state.anchorPosition === types_1.AnchorPosition.RightBottom) {
@@ -962,6 +1030,60 @@ var RectLifeCycle = /** @class */ (function (_super) {
 }(lifecycle_1["default"]));
 exports["default"] = RectLifeCycle;
 //# sourceMappingURL=rect-lifecycle.js.map
+}
+  Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/rect-tux.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2frect$2dtux$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2frect$2dtux$2ejs.deps = {"./tux":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftux$2ejs,"./util":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2futil$2ejs,"./types":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftypes$2ejs}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2frect$2dtux$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/rect-tux.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2frect$2dtux$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
+"use strict";
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    }
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+exports.__esModule = true;
+var tux_1 = require("./tux");
+var util = require("./util");
+var types_1 = require("./types");
+var RectTux = /** @class */ (function (_super) {
+    __extends(RectTux, _super);
+    function RectTux() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    RectTux.prototype.render = function () {
+        var _this = this;
+        if (this.pts.length !== 2) {
+            return;
+        }
+        var centroid = util.centroid(this.pts);
+        this.hitTestChecks = [];
+        this.configureAnchor(types_1.AnchorPosition.LeftTop, this.anchorBounds(this.pts[0]));
+        this.configureAnchor(types_1.AnchorPosition.LeftMiddle, this.anchorBounds(util.pt(this.pts[0][0], centroid[1])));
+        this.configureAnchor(types_1.AnchorPosition.LeftBottom, this.anchorBounds(util.pt(this.pts[0][0], this.pts[0][1] + (this.pts[1][1] - this.pts[0][1]))));
+        this.configureAnchor(types_1.AnchorPosition.RightBottom, this.anchorBounds(this.pts[1]));
+        this.configureAnchor(types_1.AnchorPosition.RightMiddle, this.anchorBounds(util.pt(this.pts[1][0], centroid[1])));
+        this.configureAnchor(types_1.AnchorPosition.RightTop, this.anchorBounds(util.pt(this.pts[1][0], this.pts[1][1] - (this.pts[1][1] - this.pts[0][1]))));
+        this.configureAnchor(types_1.AnchorPosition.TopMiddle, this.anchorBounds(util.pt(centroid[0], this.pts[0][1])));
+        this.configureAnchor(types_1.AnchorPosition.BottomMiddle, this.anchorBounds(util.pt(centroid[0], this.pts[1][1])));
+        // Lastly, setup a check for anywhere in the center of the shape.
+        this.hitTestChecks.push(function (p) {
+            if (util.withinBound(p, [_this.pts[0], _this.pts[1]])) {
+                return {
+                    position: types_1.AnchorPosition.Center,
+                    point: centroid
+                };
+            }
+        });
+    };
+    return RectTux;
+}(tux_1["default"]));
+exports["default"] = RectTux;
+//# sourceMappingURL=rect-tux.js.map
 }
   Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/rect.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2frect$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2frect$2ejs.deps = {"./shape":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fshape$2ejs}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2frect$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/rect.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2frect$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
 "use strict";
@@ -1130,7 +1252,7 @@ exports["default"] = ToolbarDrawer;
 // };
 //# sourceMappingURL=toolbar-drawer.js.map
 }
-  Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/tux.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftux$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftux$2ejs.deps = {"./util":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2futil$2ejs,"./shape":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fshape$2ejs,"./types":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftypes$2ejs}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftux$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/tux.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftux$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
+  Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/tux.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftux$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftux$2ejs.deps = {"./util":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2futil$2ejs,"./shape":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fshape$2ejs}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftux$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/tux.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2ftux$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -1148,7 +1270,6 @@ var __extends = (this && this.__extends) || (function () {
 exports.__esModule = true;
 var shape_1 = require("./shape");
 var util = require("./util");
-var types_1 = require("./types");
 var Tux = /** @class */ (function (_super) {
     __extends(Tux, _super);
     function Tux() {
@@ -1197,32 +1318,7 @@ var Tux = /** @class */ (function (_super) {
             }
         });
     };
-    // The only thing render does is setup hittest checks.
-    Tux.prototype.render = function () {
-        var _this = this;
-        if (this.pts.length !== 2) {
-            return;
-        }
-        var centroid = util.centroid(this.pts);
-        this.hitTestChecks = [];
-        this.configureAnchor(types_1.AnchorPosition.LeftTop, this.anchorBounds(this.pts[0]));
-        this.configureAnchor(types_1.AnchorPosition.LeftMiddle, this.anchorBounds(util.pt(this.pts[0][0], centroid[1])));
-        this.configureAnchor(types_1.AnchorPosition.LeftBottom, this.anchorBounds(util.pt(this.pts[0][0], this.pts[0][1] + (this.pts[1][1] - this.pts[0][1]))));
-        this.configureAnchor(types_1.AnchorPosition.RightBottom, this.anchorBounds(this.pts[1]));
-        this.configureAnchor(types_1.AnchorPosition.RightMiddle, this.anchorBounds(util.pt(this.pts[1][0], centroid[1])));
-        this.configureAnchor(types_1.AnchorPosition.RightTop, this.anchorBounds(util.pt(this.pts[1][0], this.pts[1][1] - (this.pts[1][1] - this.pts[0][1]))));
-        this.configureAnchor(types_1.AnchorPosition.TopMiddle, this.anchorBounds(util.pt(centroid[0], this.pts[0][1])));
-        this.configureAnchor(types_1.AnchorPosition.BottomMiddle, this.anchorBounds(util.pt(centroid[0], this.pts[1][1])));
-        // Lastly, setup a check for anywhere in the center of the shape.
-        this.hitTestChecks.push(function (p) {
-            if (util.withinBound(p, [_this.pts[0], _this.pts[1]])) {
-                return {
-                    position: types_1.AnchorPosition.Center,
-                    point: centroid
-                };
-            }
-        });
-    };
+    Tux.prototype.render = function () { };
     return Tux;
 }(shape_1["default"]));
 exports["default"] = Tux;

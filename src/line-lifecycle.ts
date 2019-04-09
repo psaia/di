@@ -1,32 +1,64 @@
 import Line from "./line";
 import LifeCycle from "./lifecycle";
 import Canvas from "./canvas";
-import * as util from "./util";
+import LineTux from "./line-tux";
 import RectLineConnection from "./rect-line-connection";
-import { Group, Point } from "./types";
+import * as util from "./util";
+import { Point, AnchorPosition } from "./types";
 
 export default class LineLifeCycle extends LifeCycle {
-  rectLineConnection: RectLineConnection;
   shape: Line;
-  initialPts: Group;
+  tux: LineTux;
+  rectLineConnection: RectLineConnection;
   hitTest(p: Point) {
-    return null;
+    if (this.tux) {
+      return this.tux.checkAllHitTests(p);
+    }
   }
   start(c: Canvas) {
     this.shape = new Line();
-    this.shape.uid = crypto.getRandomValues(new Uint32Array(4)).join("-");
-    this.shape.colors = this.state.colors;
     this.shape.ctx = c.ctx;
-    this.initialPts = util.clone(this.shape.pts);
 
     c.addShape(this.shape);
+
+    if (this.selected) {
+      this.tux = new LineTux();
+      this.tux.ctx = c.ctx;
+
+      c.addShape(this.tux);
+    }
   }
   stop() {}
   remove(c: Canvas) {
-    this.shape.stop();
     c.removeShape(this.shape);
+    c.removeShape(this.tux);
   }
   mutate() {
-    this.shape.pts = [this.state.pinnedCursorPoint, this.state.cursorPoint];
+    this.shape.colors = this.state.colors;
+    this.tux.colors = this.state.colors;
+
+    const diffX = this.state.cursorPoint[0] - this.state.pinnedCursorPoint[0];
+    const diffY = this.state.cursorPoint[1] - this.state.pinnedCursorPoint[1];
+
+    if (this.state.anchorPosition === AnchorPosition.RightMiddle) {
+      this.shape.pts = [
+        util.pt(this.state.initialPts[0][0], this.state.initialPts[0][1]),
+        util.pt(
+          this.state.initialPts[1][0] + diffX,
+          this.state.initialPts[1][1] + diffY
+        )
+      ];
+    } else if (this.state.anchorPosition === AnchorPosition.LeftMiddle) {
+      this.shape.pts = [
+        util.pt(
+          this.state.initialPts[0][0] + diffX,
+          this.state.initialPts[0][1] + diffY
+        ),
+        util.pt(this.state.initialPts[1][0], this.state.initialPts[1][1])
+      ];
+    } else {
+      this.shape.pts = [this.state.pinnedCursorPoint, this.state.cursorPoint];
+    }
+    this.tux.pts = this.shape.pts;
   }
 }

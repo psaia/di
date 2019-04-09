@@ -13,7 +13,6 @@ export default class MarqueeLifeCycle extends LifeCycle {
   start(c: Canvas) {
     this.shape = new Marquee();
     this.shape.pts = [this.state.pinnedCursorPoint, this.state.cursorPoint];
-    this.shape.uid = crypto.getRandomValues(new Uint32Array(4)).join("-");
     this.shape.colors = this.state.colors;
     this.shape.ctx = c.ctx;
     this.initialPts = util.clone(this.shape.pts);

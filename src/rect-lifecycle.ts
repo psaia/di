@@ -1,14 +1,13 @@
 import Rect from "./rect";
 import LifeCycle from "./lifecycle";
 import Canvas from "./canvas";
-import Tux from "./tux";
+import RectTux from "./rect-tux";
 import * as util from "./util";
-import { Group, Point, AnchorPosition } from "./types";
+import { Point, AnchorPosition } from "./types";
 
 export default class RectLifeCycle extends LifeCycle {
-  tux: Tux;
   shape: Rect;
-  initialPts: Group;
+  tux: RectTux;
   hitTest(p: Point) {
     if (this.tux) {
       return this.tux.checkAllHitTests(p);
@@ -16,17 +15,12 @@ export default class RectLifeCycle extends LifeCycle {
   }
   start(c: Canvas) {
     this.shape = new Rect();
-    this.shape.uid = crypto.getRandomValues(new Uint32Array(4)).join("-");
-    this.shape.colors = this.state.colors;
     this.shape.ctx = c.ctx;
-    this.shape.anchor = this.state.anchorPosition;
 
     c.addShape(this.shape);
 
     if (this.selected) {
-      this.tux = new Tux();
-      this.tux.uid = crypto.getRandomValues(new Uint32Array(4)).join("-");
-      this.tux.colors = this.state.colors;
+      this.tux = new RectTux();
       this.tux.pts = this.shape.pts;
       this.tux.ctx = c.ctx;
 
@@ -41,6 +35,9 @@ export default class RectLifeCycle extends LifeCycle {
     this.tux = null;
   }
   mutate() {
+    this.shape.colors = this.state.colors;
+    this.tux.colors = this.state.colors;
+
     const diffX = this.state.cursorPoint[0] - this.state.pinnedCursorPoint[0];
     const diffY = this.state.cursorPoint[1] - this.state.pinnedCursorPoint[1];
 

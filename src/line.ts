@@ -15,6 +15,7 @@ export default class Line extends Shape {
     const to = this.pts[1];
 
     this.ctx.beginPath();
+    this.ctx.lineWidth = 2;
     this.ctx.moveTo(from[0], from[1]);
 
     const pt1 = util.pt(from[0] + (to[0] - from[0]) / 2, from[1]);
