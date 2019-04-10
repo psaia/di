@@ -29,69 +29,61 @@ export default class RectLifecycle extends Lifecycle {
     c.removeShape(this.tux);
   }
   select(selected: boolean) {
+    this.selected = selected;
     if (selected) {
       this.tux.play();
     } else {
       this.tux.stop();
     }
   }
-  mutate() {
+  mutate(diffX: number, diffY: number) {
+    if (this.prevPts.length < 2) {
+      return;
+    }
     this.shape.colors = this.state.colors;
     this.tux.colors = this.state.colors;
 
-    const diffX = this.state.cursorPoint[0] - this.state.pinnedCursorPoint[0];
-    const diffY = this.state.cursorPoint[1] - this.state.pinnedCursorPoint[1];
-
     if (this.state.anchorPosition === AnchorPosition.RightBottom) {
-      this.shape.pts = [this.state.initialPts[0], this.state.cursorPoint];
+      this.shape.pts = [this.prevPts[0], this.state.cursorPoint];
     } else if (this.state.anchorPosition === AnchorPosition.RightMiddle) {
       this.shape.pts = [
         this.shape.pts[0],
-        util.pt(diffX + this.state.initialPts[1][0], this.shape.pts[1][1])
+        util.pt(diffX + this.prevPts[1][0], this.shape.pts[1][1])
       ];
     } else if (this.state.anchorPosition === AnchorPosition.RightTop) {
       this.shape.pts = [
-        util.pt(this.shape.pts[0][0], this.state.initialPts[0][1] + diffY),
-        util.pt(this.state.initialPts[1][0] + diffX, this.shape.pts[1][1])
+        util.pt(this.shape.pts[0][0], this.prevPts[0][1] + diffY),
+        util.pt(this.prevPts[1][0] + diffX, this.shape.pts[1][1])
       ];
     } else if (this.state.anchorPosition === AnchorPosition.BottomMiddle) {
       this.shape.pts = [
         this.shape.pts[0],
-        util.pt(this.shape.pts[1][0], this.state.initialPts[1][1] + diffY)
+        util.pt(this.shape.pts[1][0], this.prevPts[1][1] + diffY)
       ];
     } else if (this.state.anchorPosition === AnchorPosition.LeftBottom) {
       this.shape.pts = [
-        util.pt(this.state.initialPts[0][0] + diffX, this.shape.pts[0][1]),
-        util.pt(this.shape.pts[1][0], this.state.initialPts[1][1] + diffY)
+        util.pt(this.prevPts[0][0] + diffX, this.shape.pts[0][1]),
+        util.pt(this.shape.pts[1][0], this.prevPts[1][1] + diffY)
       ];
     } else if (this.state.anchorPosition === AnchorPosition.LeftMiddle) {
       this.shape.pts = [
-        util.pt(this.state.initialPts[0][0] + diffX, this.shape.pts[0][1]),
+        util.pt(this.prevPts[0][0] + diffX, this.shape.pts[0][1]),
         util.pt(this.shape.pts[1][0], this.shape.pts[1][1])
       ];
     } else if (this.state.anchorPosition === AnchorPosition.LeftTop) {
       this.shape.pts = [
-        util.pt(
-          this.state.initialPts[0][0] + diffX,
-          this.state.initialPts[0][1] + diffY
-        ),
+        util.pt(this.prevPts[0][0] + diffX, this.prevPts[0][1] + diffY),
         util.pt(this.shape.pts[1][0], this.shape.pts[1][1])
       ];
     } else if (this.state.anchorPosition === AnchorPosition.TopMiddle) {
       this.shape.pts = [
-        util.pt(this.shape.pts[0][0], this.state.initialPts[0][1] + diffY),
+        util.pt(this.shape.pts[0][0], this.prevPts[0][1] + diffY),
         util.pt(this.shape.pts[1][0], this.shape.pts[1][1])
       ];
     } else if (this.state.anchorPosition === AnchorPosition.Center) {
       this.shape.pts = [
-        util.pt(
-          this.state.initialPts[0][0] + diffX,
-          this.state.initialPts[0][1] + diffY
-        ),
-        util.pt(
-          this.state.initialPts[1][0] + diffX,
-          this.state.initialPts[1][1] + diffY
-        )
+        util.pt(this.prevPts[0][0] + diffX, this.prevPts[0][1] + diffY),
+        util.pt(this.prevPts[1][0] + diffX, this.prevPts[1][1] + diffY)
       ];
     }
 

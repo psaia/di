@@ -3,7 +3,7 @@ import * as util from "./util";
 
 export default class Grid {
   protected ctx: CanvasRenderingContext2D;
-  public density = 10;
+  public density = 15;
   public closestPt: Point;
   public grid: Group;
   public gridActiveColor: string = "white";
@@ -71,7 +71,7 @@ export default class Grid {
     let h = this.size.height;
 
     const padding = 25;
-    const margin = 15;
+    const margin = this.density;
 
     for (let x = padding; x < w - padding; x += margin) {
       for (let y = padding; y < h - padding; y += margin) {

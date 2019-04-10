@@ -11,6 +11,9 @@ export function within(p: number, a: number, b: number): boolean {
   return p >= Math.min(a, b) && p <= Math.max(a, b);
 }
 
+/**
+ * Determine if a point is within the bounds of a rect.
+ */
 export function withinBound(pt: Point, rect: Group): boolean {
   if (
     !within(pt[0], rect[0][0], rect[1][0]) ||
@@ -19,6 +22,22 @@ export function withinBound(pt: Point, rect: Group): boolean {
     return false;
   }
   return true;
+}
+
+/**
+ * Determine if a rect overlaps another rect.
+ */
+export function intersect(rect1: Group, rect2: Group): boolean {
+  const l1 = Math.min(rect1[0][0], rect1[1][0]);
+  const r1 = Math.max(rect1[0][0], rect1[1][0]);
+  const t1 = Math.min(rect1[0][1], rect1[1][1]);
+  const b1 = Math.max(rect1[0][1], rect1[1][1]);
+  const l2 = Math.min(rect2[0][0], rect2[1][0]);
+  const r2 = Math.max(rect2[0][0], rect2[1][0]);
+  const t2 = Math.min(rect2[0][1], rect2[1][1]);
+  const b2 = Math.max(rect2[0][1], rect2[1][1]);
+
+  return !(l2 > r1 || r2 < l1 || t2 > b1 || b2 < t1);
 }
 
 /**

@@ -375,7 +375,7 @@ exports.__esModule = true;
 var util = require("./util");
 var Grid = /** @class */ (function () {
     function Grid(ctx) {
-        this.density = 10;
+        this.density = 15;
         this.gridActiveColor = "white";
         this.gridColor = "white";
         this.size = {
@@ -426,7 +426,7 @@ var Grid = /** @class */ (function () {
         var w = this.size.width;
         var h = this.size.height;
         var padding = 25;
-        var margin = 15;
+        var margin = this.density;
         for (var x = padding; x < w - padding; x += margin) {
             for (var y = padding; y < h - padding; y += margin) {
                 var p = util.pt(x, y);
@@ -473,10 +473,15 @@ var Operator = /** @class */ (function () {
         this.state = state;
         this.os = os;
     }
+    /**
+     * Bind the canvas and toolbar elements in the OS to event listeners in the
+     * operator.
+     */
     Operator.prototype.dbind = function () {
         this.os.canvas.onMouseDown(this.handleMouseDown.bind(this));
         this.os.canvas.onMouseUp(this.handleMouseUp.bind(this));
         this.os.canvas.onMouseMove(this.handleMouseMove.bind(this));
+        document.addEventListener("keydown", this.handleKeyDown.bind(this));
         this.os.toolbar.onModeChange = this.handleChangeMode.bind(this);
     };
     /**
@@ -487,12 +492,15 @@ var Operator = /** @class */ (function () {
             this.os[k].setColorPalette(this.state.colors);
         }
     };
+    /**
+     * Deselect all cycles.
+     */
     Operator.prototype.deselectAll = function () {
         var e_1, _a;
         try {
             for (var _b = __values(this.state.cycles.values()), _c = _b.next(); !_c.done; _c = _b.next()) {
                 var cycle = _c.value;
-                cycle.select(false);
+                this.select(cycle, false);
             }
         }
         catch (e_1_1) { e_1 = { error: e_1_1 }; }
@@ -503,33 +511,17 @@ var Operator = /** @class */ (function () {
             finally { if (e_1) throw e_1.error; }
         }
     };
-    Operator.prototype.handleChangeMode = function (m) {
-        this.state.mode = m;
-    };
-    Operator.prototype.handleMouseDown = function (e) {
+    /**
+     * Automatically select and make hot cycles out of cycles that the marquee
+     * selects.
+     */
+    Operator.prototype.selectWithinRect = function (rect) {
         var e_2, _a;
-        this.state.downAt = new Date().getTime();
-        this.state.pinnedCursorPoint = this.os.canvas.grid.closestPt;
-        this.state.cursorPoint = this.os.canvas.grid.closestPt;
-        this.state.anchorPosition = types_1.AnchorPosition.RightBottom;
-        this.state.initialPts = [
-            this.state.pinnedCursorPoint,
-            this.state.pinnedCursorPoint
-        ];
         try {
-            // Loop through each cycle to see if the user clicked on something on the
-            // stage.
             for (var _b = __values(this.state.cycles.values()), _c = _b.next(); !_c.done; _c = _b.next()) {
                 var cycle = _c.value;
-                // Note that the cursorPt is passed and not the closestPt. This is so the
-                // most absolute position is accounted for.
-                var o = cycle.hitTest(this.os.canvas.grid.cursorPt);
-                if (o !== null) {
-                    this.state.cycle = cycle;
-                    cycle.select(true);
-                    this.state.initialPts = util.clone(cycle.shape.pts);
-                    this.state.anchorPosition = o.position;
-                    return;
+                if (util.intersect(rect, cycle.shape.pts)) {
+                    this.select(cycle, true);
                 }
             }
         }
@@ -540,40 +532,270 @@ var Operator = /** @class */ (function () {
             }
             finally { if (e_2) throw e_2.error; }
         }
-        switch (this.state.mode) {
-            case types_1.Mode.Marquee:
-                this.deselectAll();
-                this.state.cycle = new marquee_lifecycle_1["default"](this.state);
-                this.state.cycles.add(this.state.cycle);
-                this.state.cycle.start(this.os.canvas);
-                break;
-            case types_1.Mode.Rectangle:
-                this.state.cycle = new rect_lifecycle_1["default"](this.state);
-                this.state.cycles.add(this.state.cycle);
-                this.state.cycle.start(this.os.canvas);
-                break;
-            case types_1.Mode.Line:
-                this.state.cycle = new line_lifecycle_1["default"](this.state);
-                this.state.cycles.add(this.state.cycle);
-                this.state.cycle.start(this.os.canvas);
-                break;
+    };
+    /**
+     * Convienence method to select or deselect a cycle. This will also make it
+     * hot or cold depending on if it's selected.
+     */
+    Operator.prototype.select = function (cycle, selected) {
+        if (selected === void 0) { selected = true; }
+        cycle.select(selected);
+        if (selected) {
+            this.state.hotCycles.add(cycle);
+        }
+        else {
+            this.state.hotCycles["delete"](cycle);
         }
     };
-    Operator.prototype.handleMouseUp = function (e) {
-        if (this.state.cycle) {
-            // A marquee gets removed as soon as the cursor is released, always.
-            if (this.state.cycle instanceof marquee_lifecycle_1["default"]) {
-                this.state.cycle.remove(this.os.canvas);
+    /**
+     * Return all selected items on stage.
+     */
+    Operator.prototype.selected = function () {
+        var e_3, _a;
+        var s = new Set();
+        try {
+            for (var _b = __values(this.state.cycles.values()), _c = _b.next(); !_c.done; _c = _b.next()) {
+                var cycle = _c.value;
+                if (cycle.selected) {
+                    s.add(cycle);
+                }
             }
-            this.state.cycle = null;
+        }
+        catch (e_3_1) { e_3 = { error: e_3_1 }; }
+        finally {
+            try {
+                if (_c && !_c.done && (_a = _b["return"])) _a.call(_b);
+            }
+            finally { if (e_3) throw e_3.error; }
+        }
+        return s;
+    };
+    /**
+     * Delete a cycle from stage fully.
+     */
+    Operator.prototype.remove = function (cycle) {
+        this.state.hotCycles["delete"](cycle);
+        this.state.cycles["delete"](cycle);
+        cycle.remove(this.os.canvas);
+    };
+    /**
+     * Triggered when a mode changes from an external source. Likely, the toolbar.
+     */
+    Operator.prototype.handleChangeMode = function (m) {
+        this.state.mode = m;
+    };
+    /**
+     * When the mouse is pressed on the canvas.
+     */
+    Operator.prototype.handleMouseDown = function (e) {
+        var e_4, _a;
+        // Configure state based on this mousedown.
+        this.state.downAt = new Date().getTime();
+        this.state.pinnedCursorPoint = this.os.canvas.grid.closestPt;
+        this.state.cursorPoint = this.os.canvas.grid.closestPt;
+        this.state.anchorPosition = types_1.AnchorPosition.RightBottom;
+        try {
+            // Loop through each cycle to see if the user clicked on something on the
+            // stage.
+            for (var _b = __values(this.state.cycles.values()), _c = _b.next(); !_c.done; _c = _b.next()) {
+                var cycle = _c.value;
+                // Note that the cursorPt is passed and not the closestPt. This is so the
+                // most absolute position is accounted for.
+                var o = cycle.hitTest(this.os.canvas.grid.cursorPt);
+                if (o !== null) {
+                    this.state.anchorPosition = o.position;
+                    if (this.selected().size === 1) {
+                        this.deselectAll();
+                    }
+                    cycle.prevPts = util.clone(cycle.shape.pts);
+                    this.select(cycle, true);
+                    return;
+                }
+            }
+        }
+        catch (e_4_1) { e_4 = { error: e_4_1 }; }
+        finally {
+            try {
+                if (_c && !_c.done && (_a = _b["return"])) _a.call(_b);
+            }
+            finally { if (e_4) throw e_4.error; }
+        }
+        // Deselect all shapes before creating a new one or selecting others.
+        this.deselectAll();
+        // Move on to creating a new shape w/ mgmt lifecycle.
+        switch (this.state.mode) {
+            case types_1.Mode.Marquee: {
+                var cycle = new marquee_lifecycle_1["default"](this.state);
+                cycle.start(this.os.canvas);
+                cycle.prevPts = [
+                    this.state.pinnedCursorPoint,
+                    this.state.pinnedCursorPoint
+                ];
+                this.state.cycles.add(cycle);
+                this.select(cycle, true);
+                break;
+            }
+            case types_1.Mode.Rectangle: {
+                var cycle = new rect_lifecycle_1["default"](this.state);
+                cycle.prevPts = [
+                    this.state.pinnedCursorPoint,
+                    this.state.pinnedCursorPoint
+                ];
+                cycle.start(this.os.canvas);
+                this.state.cycles.add(cycle);
+                this.select(cycle, true);
+                break;
+            }
+            case types_1.Mode.Line: {
+                var cycle = new line_lifecycle_1["default"](this.state);
+                cycle.prevPts = [
+                    this.state.pinnedCursorPoint,
+                    this.state.pinnedCursorPoint
+                ];
+                cycle.start(this.os.canvas);
+                this.state.cycles.add(cycle);
+                this.select(cycle, true);
+                break;
+            }
+        }
+    };
+    /**
+     * When the mouse is released:
+     *
+     * 1. Determine if any of the hotCycles are the marquee. If so:
+     *   1. Remove the marquee.
+     *   2. Deselect all.
+     *   3. Select cycles which intersect with the marquee.
+     * 2. Set mode to marquee.
+     * 3. Unset anchor position.
+     */
+    Operator.prototype.handleMouseUp = function (e) {
+        var e_5, _a;
+        if (this.state.hotCycles.size) {
+            try {
+                for (var _b = __values(this.state.hotCycles.values()), _c = _b.next(); !_c.done; _c = _b.next()) {
+                    var cycle = _c.value;
+                    // A marquee gets removed as soon as the cursor is released, always. Then
+                    // selecty any shapes that the marquee overlapped.
+                    if (cycle instanceof marquee_lifecycle_1["default"]) {
+                        var marqueePts = util.clone(cycle.shape.pts);
+                        this.remove(cycle);
+                        this.deselectAll();
+                        this.selectWithinRect(marqueePts);
+                    }
+                    else {
+                        cycle.prevPts = cycle.shape.pts;
+                        this.state.hotCycles["delete"](cycle);
+                    }
+                }
+            }
+            catch (e_5_1) { e_5 = { error: e_5_1 }; }
+            finally {
+                try {
+                    if (_c && !_c.done && (_a = _b["return"])) _a.call(_b);
+                }
+                finally { if (e_5) throw e_5.error; }
+            }
         }
         // Reset the mode to be marquee, always.
         this.state.mode = types_1.Mode.Marquee;
+        this.state.anchorPosition = null;
     };
+    /**
+     * When the mouse moves all hotCycles need to be mutated relative to the
+     * current state.
+     */
     Operator.prototype.handleMouseMove = function (e) {
+        var e_6, _a, e_7, _b;
         this.state.cursorPoint = this.os.canvas.grid.closestPt;
-        if (this.state.cycle) {
-            this.state.cycle.mutate();
+        if (this.state.pinnedCursorPoint) {
+            var diffX = this.state.cursorPoint[0] - this.state.pinnedCursorPoint[0];
+            var diffY = this.state.cursorPoint[1] - this.state.pinnedCursorPoint[1];
+            // Only mutate what's hot unless we're moving things around. Then we can
+            // mutate all of the selected items at once.
+            if (this.state.anchorPosition === types_1.AnchorPosition.Center) {
+                try {
+                    for (var _c = __values(this.selected().values()), _d = _c.next(); !_d.done; _d = _c.next()) {
+                        var cycle = _d.value;
+                        cycle.mutate(diffX, diffY);
+                    }
+                }
+                catch (e_6_1) { e_6 = { error: e_6_1 }; }
+                finally {
+                    try {
+                        if (_d && !_d.done && (_a = _c["return"])) _a.call(_c);
+                    }
+                    finally { if (e_6) throw e_6.error; }
+                }
+            }
+            else {
+                try {
+                    for (var _e = __values(this.state.hotCycles.values()), _f = _e.next(); !_f.done; _f = _e.next()) {
+                        var cycle = _f.value;
+                        cycle.mutate(diffX, diffY);
+                    }
+                }
+                catch (e_7_1) { e_7 = { error: e_7_1 }; }
+                finally {
+                    try {
+                        if (_f && !_f.done && (_b = _e["return"])) _b.call(_e);
+                    }
+                    finally { if (e_7) throw e_7.error; }
+                }
+            }
+        }
+    };
+    /**
+     * Handle anytime a key is pressed.
+     */
+    Operator.prototype.handleKeyDown = function (e) {
+        var _a, e_8, _b, e_9, _c;
+        var direction = (_a = {},
+            _a[types_1.KeyEvent.ARROW_LEFT] = [-this.os.canvas.grid.density, 0],
+            _a[types_1.KeyEvent.ARROW_RIGHT] = [this.os.canvas.grid.density, 0],
+            _a[types_1.KeyEvent.ARROW_UP] = [0, -this.os.canvas.grid.density],
+            _a[types_1.KeyEvent.ARROW_DOWN] = [0, this.os.canvas.grid.density],
+            _a);
+        switch (e.keyCode) {
+            case types_1.KeyEvent.BACKSPACE: {
+                e.preventDefault();
+                try {
+                    for (var _d = __values(this.selected().values()), _e = _d.next(); !_e.done; _e = _d.next()) {
+                        var cycle = _e.value;
+                        this.remove(cycle);
+                    }
+                }
+                catch (e_8_1) { e_8 = { error: e_8_1 }; }
+                finally {
+                    try {
+                        if (_e && !_e.done && (_b = _d["return"])) _b.call(_d);
+                    }
+                    finally { if (e_8) throw e_8.error; }
+                }
+                break;
+            }
+            case types_1.KeyEvent.ARROW_UP:
+            case types_1.KeyEvent.ARROW_DOWN:
+            case types_1.KeyEvent.ARROW_RIGHT:
+            case types_1.KeyEvent.ARROW_LEFT:
+                e.preventDefault();
+                this.state.anchorPosition = types_1.AnchorPosition.Center;
+                try {
+                    for (var _f = __values(this.selected().values()), _g = _f.next(); !_g.done; _g = _f.next()) {
+                        var cycle = _g.value;
+                        cycle.mutate(direction[e.keyCode][0], direction[e.keyCode][1]);
+                        cycle.prevPts = cycle.shape.pts;
+                    }
+                }
+                catch (e_9_1) { e_9 = { error: e_9_1 }; }
+                finally {
+                    try {
+                        if (_g && !_g.done && (_c = _f["return"])) _c.call(_f);
+                    }
+                    finally { if (e_9) throw e_9.error; }
+                }
+                this.state.anchorPosition = null;
+                break;
         }
     };
     return Operator;
@@ -643,6 +865,16 @@ exports["default"] = LayerDrawer;
 exports.__esModule = true;
 var Lifecycle = /** @class */ (function () {
     function Lifecycle(state) {
+        /**
+         * prevPts need to be updated anytime a series of mutations is complete. This
+         * needs to be handled manually since there's not way to automatically know
+         * when the mutation is totally complete.
+         */
+        this.prevPts = [];
+        /**
+         * Determine whether or not the object is selected.
+         */
+        this.selected = true;
         this.state = state;
     }
     return Lifecycle;
@@ -694,6 +926,7 @@ var LineLifecycle = /** @class */ (function (_super) {
         c.removeShape(this.tux);
     };
     LineLifecycle.prototype.select = function (selected) {
+        this.selected = selected;
         if (selected) {
             this.tux.play();
         }
@@ -701,21 +934,25 @@ var LineLifecycle = /** @class */ (function (_super) {
             this.tux.stop();
         }
     };
-    LineLifecycle.prototype.mutate = function () {
+    LineLifecycle.prototype.mutate = function (diffX, diffY) {
         this.shape.colors = this.state.colors;
         this.tux.colors = this.state.colors;
-        var diffX = this.state.cursorPoint[0] - this.state.pinnedCursorPoint[0];
-        var diffY = this.state.cursorPoint[1] - this.state.pinnedCursorPoint[1];
         if (this.state.anchorPosition === types_1.AnchorPosition.RightMiddle) {
             this.shape.pts = [
-                util.pt(this.state.initialPts[0][0], this.state.initialPts[0][1]),
-                util.pt(this.state.initialPts[1][0] + diffX, this.state.initialPts[1][1] + diffY)
+                util.pt(this.prevPts[0][0], this.prevPts[0][1]),
+                util.pt(this.prevPts[1][0] + diffX, this.prevPts[1][1] + diffY)
             ];
         }
         else if (this.state.anchorPosition === types_1.AnchorPosition.LeftMiddle) {
             this.shape.pts = [
-                util.pt(this.state.initialPts[0][0] + diffX, this.state.initialPts[0][1] + diffY),
-                util.pt(this.state.initialPts[1][0], this.state.initialPts[1][1])
+                util.pt(this.prevPts[0][0] + diffX, this.prevPts[0][1] + diffY),
+                util.pt(this.prevPts[1][0], this.prevPts[1][1])
+            ];
+        }
+        else if (this.state.anchorPosition === types_1.AnchorPosition.Center) {
+            this.shape.pts = [
+                util.pt(this.prevPts[0][0] + diffX, this.prevPts[0][1] + diffY),
+                util.pt(this.prevPts[1][0] + diffX, this.prevPts[1][1] + diffY)
             ];
         }
         else {
@@ -860,16 +1097,18 @@ var MarqueeLifecycle = /** @class */ (function (_super) {
         this.shape.pts = [this.state.pinnedCursorPoint, this.state.cursorPoint];
         this.shape.colors = this.state.colors;
         this.shape.ctx = c.ctx;
-        this.initialPts = util.clone(this.shape.pts);
+        this.prevPts = util.clone(this.shape.pts);
         c.addShape(this.shape);
     };
     MarqueeLifecycle.prototype.remove = function (c) {
         c.removeShape(this.shape);
     };
-    MarqueeLifecycle.prototype.mutate = function () {
+    MarqueeLifecycle.prototype.mutate = function (diffX, diffY) {
         this.shape.pts = [this.state.pinnedCursorPoint, this.state.cursorPoint];
     };
-    MarqueeLifecycle.prototype.select = function (selected) { };
+    MarqueeLifecycle.prototype.select = function (selected) {
+        this.selected = selected;
+    };
     return MarqueeLifecycle;
 }(lifecycle_1["default"]));
 exports["default"] = MarqueeLifecycle;
@@ -984,6 +1223,7 @@ var RectLifecycle = /** @class */ (function (_super) {
         c.removeShape(this.tux);
     };
     RectLifecycle.prototype.select = function (selected) {
+        this.selected = selected;
         if (selected) {
             this.tux.play();
         }
@@ -991,60 +1231,61 @@ var RectLifecycle = /** @class */ (function (_super) {
             this.tux.stop();
         }
     };
-    RectLifecycle.prototype.mutate = function () {
+    RectLifecycle.prototype.mutate = function (diffX, diffY) {
+        if (this.prevPts.length < 2) {
+            return;
+        }
         this.shape.colors = this.state.colors;
         this.tux.colors = this.state.colors;
-        var diffX = this.state.cursorPoint[0] - this.state.pinnedCursorPoint[0];
-        var diffY = this.state.cursorPoint[1] - this.state.pinnedCursorPoint[1];
         if (this.state.anchorPosition === types_1.AnchorPosition.RightBottom) {
-            this.shape.pts = [this.state.initialPts[0], this.state.cursorPoint];
+            this.shape.pts = [this.prevPts[0], this.state.cursorPoint];
         }
         else if (this.state.anchorPosition === types_1.AnchorPosition.RightMiddle) {
             this.shape.pts = [
                 this.shape.pts[0],
-                util.pt(diffX + this.state.initialPts[1][0], this.shape.pts[1][1])
+                util.pt(diffX + this.prevPts[1][0], this.shape.pts[1][1])
             ];
         }
         else if (this.state.anchorPosition === types_1.AnchorPosition.RightTop) {
             this.shape.pts = [
-                util.pt(this.shape.pts[0][0], this.state.initialPts[0][1] + diffY),
-                util.pt(this.state.initialPts[1][0] + diffX, this.shape.pts[1][1])
+                util.pt(this.shape.pts[0][0], this.prevPts[0][1] + diffY),
+                util.pt(this.prevPts[1][0] + diffX, this.shape.pts[1][1])
             ];
         }
         else if (this.state.anchorPosition === types_1.AnchorPosition.BottomMiddle) {
             this.shape.pts = [
                 this.shape.pts[0],
-                util.pt(this.shape.pts[1][0], this.state.initialPts[1][1] + diffY)
+                util.pt(this.shape.pts[1][0], this.prevPts[1][1] + diffY)
             ];
         }
         else if (this.state.anchorPosition === types_1.AnchorPosition.LeftBottom) {
             this.shape.pts = [
-                util.pt(this.state.initialPts[0][0] + diffX, this.shape.pts[0][1]),
-                util.pt(this.shape.pts[1][0], this.state.initialPts[1][1] + diffY)
+                util.pt(this.prevPts[0][0] + diffX, this.shape.pts[0][1]),
+                util.pt(this.shape.pts[1][0], this.prevPts[1][1] + diffY)
             ];
         }
         else if (this.state.anchorPosition === types_1.AnchorPosition.LeftMiddle) {
             this.shape.pts = [
-                util.pt(this.state.initialPts[0][0] + diffX, this.shape.pts[0][1]),
+                util.pt(this.prevPts[0][0] + diffX, this.shape.pts[0][1]),
                 util.pt(this.shape.pts[1][0], this.shape.pts[1][1])
             ];
         }
         else if (this.state.anchorPosition === types_1.AnchorPosition.LeftTop) {
             this.shape.pts = [
-                util.pt(this.state.initialPts[0][0] + diffX, this.state.initialPts[0][1] + diffY),
+                util.pt(this.prevPts[0][0] + diffX, this.prevPts[0][1] + diffY),
                 util.pt(this.shape.pts[1][0], this.shape.pts[1][1])
             ];
         }
         else if (this.state.anchorPosition === types_1.AnchorPosition.TopMiddle) {
             this.shape.pts = [
-                util.pt(this.shape.pts[0][0], this.state.initialPts[0][1] + diffY),
+                util.pt(this.shape.pts[0][0], this.prevPts[0][1] + diffY),
                 util.pt(this.shape.pts[1][0], this.shape.pts[1][1])
             ];
         }
         else if (this.state.anchorPosition === types_1.AnchorPosition.Center) {
             this.shape.pts = [
-                util.pt(this.state.initialPts[0][0] + diffX, this.state.initialPts[0][1] + diffY),
-                util.pt(this.state.initialPts[1][0] + diffX, this.state.initialPts[1][1] + diffY)
+                util.pt(this.prevPts[0][0] + diffX, this.prevPts[0][1] + diffY),
+                util.pt(this.prevPts[1][0] + diffX, this.prevPts[1][1] + diffY)
             ];
         }
         if (this.tux && this.shape.pts.length) {
@@ -1186,12 +1427,14 @@ var palettes = require("./palettes");
  */
 var State = /** @class */ (function () {
     function State() {
+        // The current selected objects.
+        this.hotCycles = new Set();
         // Mode represents the intended object to create. This is updated by the
         // toolbar.
         this.mode = types_1.Mode.Marquee;
+        // All cycles in runtime/stage.
         this.cycles = new Set();
         this.colors = palettes.DEFAULT;
-        this.initialPts = [];
     }
     return State;
 }());
@@ -1382,6 +1625,14 @@ var Mode;
     Mode[Mode["Line"] = 2] = "Line";
     Mode[Mode["Text"] = 3] = "Text";
 })(Mode = exports.Mode || (exports.Mode = {}));
+var KeyEvent;
+(function (KeyEvent) {
+    KeyEvent[KeyEvent["BACKSPACE"] = 8] = "BACKSPACE";
+    KeyEvent[KeyEvent["ARROW_LEFT"] = 37] = "ARROW_LEFT";
+    KeyEvent[KeyEvent["ARROW_RIGHT"] = 39] = "ARROW_RIGHT";
+    KeyEvent[KeyEvent["ARROW_UP"] = 38] = "ARROW_UP";
+    KeyEvent[KeyEvent["ARROW_DOWN"] = 40] = "ARROW_DOWN";
+})(KeyEvent = exports.KeyEvent || (exports.KeyEvent = {}));
 //# sourceMappingURL=types.js.map
 }
   Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/util.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2futil$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2futil$2ejs.deps = {}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2futil$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/util.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2futil$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
@@ -1398,6 +1649,9 @@ function within(p, a, b) {
     return p >= Math.min(a, b) && p <= Math.max(a, b);
 }
 exports.within = within;
+/**
+ * Determine if a point is within the bounds of a rect.
+ */
 function withinBound(pt, rect) {
     if (!within(pt[0], rect[0][0], rect[1][0]) ||
         !within(pt[1], rect[0][1], rect[1][1])) {
@@ -1406,6 +1660,21 @@ function withinBound(pt, rect) {
     return true;
 }
 exports.withinBound = withinBound;
+/**
+ * Determine if a rect overlaps another rect.
+ */
+function intersect(rect1, rect2) {
+    var l1 = Math.min(rect1[0][0], rect1[1][0]);
+    var r1 = Math.max(rect1[0][0], rect1[1][0]);
+    var t1 = Math.min(rect1[0][1], rect1[1][1]);
+    var b1 = Math.max(rect1[0][1], rect1[1][1]);
+    var l2 = Math.min(rect2[0][0], rect2[1][0]);
+    var r2 = Math.max(rect2[0][0], rect2[1][0]);
+    var t2 = Math.min(rect2[0][1], rect2[1][1]);
+    var b2 = Math.max(rect2[0][1], rect2[1][1]);
+    return !(l2 > r1 || r2 < l1 || t2 > b1 || b2 < t1);
+}
+exports.intersect = intersect;
 /**
  * Obtain the center of two vectors in 2d space.
  * @params pts contains top left and bottom right.
