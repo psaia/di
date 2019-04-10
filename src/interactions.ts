@@ -152,34 +152,34 @@ class Operator {
     // Move on to creating a new shape w/ mgmt lifecycle.
     switch (this.state.mode) {
       case Mode.Marquee: {
-        const cycle = new MarqueeLifecycle(this.state);
-        cycle.start(this.os.canvas);
-        cycle.prevPts = [
-          this.state.pinnedCursorPoint,
-          this.state.pinnedCursorPoint
-        ];
+        const cycle = new MarqueeLifecycle();
+        cycle.start(
+          this.os.canvas,
+          [this.state.pinnedCursorPoint, this.state.pinnedCursorPoint],
+          this.state.colors
+        );
         this.state.cycles.add(cycle);
         this.select(cycle, true);
         break;
       }
       case Mode.Rectangle: {
-        const cycle = new RectLifecycle(this.state);
-        cycle.prevPts = [
-          this.state.pinnedCursorPoint,
-          this.state.pinnedCursorPoint
-        ];
-        cycle.start(this.os.canvas);
+        const cycle = new RectLifecycle();
+        cycle.start(
+          this.os.canvas,
+          [this.state.pinnedCursorPoint, this.state.pinnedCursorPoint],
+          this.state.colors
+        );
         this.state.cycles.add(cycle);
         this.select(cycle, true);
         break;
       }
       case Mode.Line: {
-        const cycle = new LineLifecycle(this.state);
-        cycle.prevPts = [
-          this.state.pinnedCursorPoint,
-          this.state.pinnedCursorPoint
-        ];
-        cycle.start(this.os.canvas);
+        const cycle = new LineLifecycle();
+        cycle.start(
+          this.os.canvas,
+          [this.state.pinnedCursorPoint, this.state.pinnedCursorPoint],
+          this.state.colors
+        );
         this.state.cycles.add(cycle);
         this.select(cycle, true);
         break;
@@ -203,7 +203,7 @@ class Operator {
         // A marquee gets removed as soon as the cursor is released, always. Then
         // selecty any shapes that the marquee overlapped.
         if (cycle instanceof MarqueeLifecycle) {
-          const marqueePts = util.clone(cycle.shape.pts);
+          const marqueePts = cycle.shape.pts;
           this.remove(cycle);
           this.deselectAll();
           this.selectWithinRect(marqueePts);
@@ -226,17 +226,28 @@ class Operator {
   private handleMouseMove(e: MouseEvent) {
     this.state.cursorPoint = this.os.canvas.grid.closestPt;
 
-    if (this.state.pinnedCursorPoint) {
+    if (this.state.anchorPosition !== null) {
       const diffX = this.state.cursorPoint[0] - this.state.pinnedCursorPoint[0];
       const diffY = this.state.cursorPoint[1] - this.state.pinnedCursorPoint[1];
 
       // Only mutate what's hot unless we're moving things around. Then we can
       // mutate all of the selected items at once.
       if (this.state.anchorPosition === AnchorPosition.Center) {
-        for (let cycle of this.selected().values()) cycle.mutate(diffX, diffY);
+        for (let cycle of this.selected().values())
+          cycle.mutate(
+            this.state.anchorPosition,
+            diffX,
+            diffY,
+            this.state.colors
+          );
       } else {
         for (let cycle of this.state.hotCycles.values())
-          cycle.mutate(diffX, diffY);
+          cycle.mutate(
+            this.state.anchorPosition,
+            diffX,
+            diffY,
+            this.state.colors
+          );
       }
     }
   }
@@ -262,12 +273,15 @@ class Operator {
       case KeyEvent.ARROW_RIGHT:
       case KeyEvent.ARROW_LEFT:
         e.preventDefault();
-        this.state.anchorPosition = AnchorPosition.Center;
         for (let cycle of this.selected().values()) {
-          cycle.mutate(direction[e.keyCode][0], direction[e.keyCode][1]);
+          cycle.mutate(
+            AnchorPosition.Center,
+            direction[e.keyCode][0],
+            direction[e.keyCode][1],
+            this.state.colors
+          );
           cycle.prevPts = cycle.shape.pts;
         }
-        this.state.anchorPosition = null;
         break;
     }
   }

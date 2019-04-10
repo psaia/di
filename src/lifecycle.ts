@@ -1,10 +1,13 @@
-import State from "./state";
 import Canvas from "./canvas";
-import { HitTestResult, Point, Group } from "./types";
+import {
+  ColorPalette,
+  AnchorPosition,
+  HitTestResult,
+  Point,
+  Group
+} from "./types";
 
 export default abstract class Lifecycle {
-  protected state: State;
-
   /**
    * prevPts need to be updated anytime a series of mutations is complete. This
    * needs to be handled manually since there's not way to automatically know
@@ -31,20 +34,21 @@ export default abstract class Lifecycle {
   /**
    * Instantiate the shapes on this canvas, including any tuxes.
    */
-  abstract start(c: Canvas);
+  abstract start(c: Canvas, initialPts: Group, colors: ColorPalette);
 
   /**
    * Mutate is called on every interactive tick and will mutate the relative
    * points based on the state.
    */
-  abstract mutate(diffX: number, diffY: number);
+  abstract mutate(
+    anchorPosition: AnchorPosition,
+    diffX: number,
+    diffY: number,
+    colors: ColorPalette
+  );
 
   /**
    * Remove all shapes that this lifecycle manages from the canvas.
    */
   abstract remove(c: Canvas);
-
-  constructor(state: State) {
-    this.state = state;
-  }
 }

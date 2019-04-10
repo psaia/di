@@ -3,7 +3,7 @@ import Lifecycle from "./lifecycle";
 import Canvas from "./canvas";
 import RectTux from "./rect-tux";
 import * as util from "./util";
-import { Point, AnchorPosition } from "./types";
+import { ColorPalette, Point, Group, AnchorPosition } from "./types";
 
 export default class RectLifecycle extends Lifecycle {
   shape: Rect;
@@ -14,13 +14,19 @@ export default class RectLifecycle extends Lifecycle {
       return this.tux.checkAllHitTests(p);
     }
   }
-  start(c: Canvas) {
+  start(c: Canvas, initialPts: Group, colors: ColorPalette) {
     this.shape = new Rect();
-    this.shape.ctx = c.ctx;
-
     this.tux = new RectTux();
-    this.tux.pts = this.shape.pts;
+
+    this.shape.colors = colors;
+    this.tux.colors = colors;
+
+    this.shape.ctx = c.ctx;
     this.tux.ctx = c.ctx;
+
+    this.shape.pts = initialPts;
+    this.tux.pts = initialPts;
+    this.prevPts = initialPts;
 
     c.addShape(this.shape);
     c.addShape(this.tux);
@@ -37,52 +43,57 @@ export default class RectLifecycle extends Lifecycle {
       this.tux.stop();
     }
   }
-  mutate(diffX: number, diffY: number) {
-    if (this.prevPts.length < 2) {
-      return;
-    }
-    this.shape.colors = this.state.colors;
-    this.tux.colors = this.state.colors;
+  mutate(
+    anchorPosition: AnchorPosition,
+    diffX: number,
+    diffY: number,
+    colors: ColorPalette
+  ) {
+    this.shape.colors = colors;
+    this.tux.colors = colors;
     this.shape.text = this.text;
 
-    if (this.state.anchorPosition === AnchorPosition.RightBottom) {
-      this.shape.pts = [this.prevPts[0], this.state.cursorPoint];
-    } else if (this.state.anchorPosition === AnchorPosition.RightMiddle) {
+    if (anchorPosition === AnchorPosition.RightBottom) {
+      this.shape.pts = [
+        util.pt(this.shape.pts[0][0], this.shape.pts[0][1]),
+        util.pt(this.prevPts[1][0] + diffX, this.prevPts[1][1] + diffY)
+      ];
+    } else if (anchorPosition === AnchorPosition.RightMiddle) {
       this.shape.pts = [
         this.shape.pts[0],
         util.pt(diffX + this.prevPts[1][0], this.shape.pts[1][1])
       ];
-    } else if (this.state.anchorPosition === AnchorPosition.RightTop) {
+    } else if (anchorPosition === AnchorPosition.RightTop) {
       this.shape.pts = [
         util.pt(this.shape.pts[0][0], this.prevPts[0][1] + diffY),
         util.pt(this.prevPts[1][0] + diffX, this.shape.pts[1][1])
       ];
-    } else if (this.state.anchorPosition === AnchorPosition.BottomMiddle) {
+    } else if (anchorPosition === AnchorPosition.BottomMiddle) {
       this.shape.pts = [
         this.shape.pts[0],
         util.pt(this.shape.pts[1][0], this.prevPts[1][1] + diffY)
       ];
-    } else if (this.state.anchorPosition === AnchorPosition.LeftBottom) {
+    } else if (anchorPosition === AnchorPosition.LeftBottom) {
       this.shape.pts = [
         util.pt(this.prevPts[0][0] + diffX, this.shape.pts[0][1]),
         util.pt(this.shape.pts[1][0], this.prevPts[1][1] + diffY)
       ];
-    } else if (this.state.anchorPosition === AnchorPosition.LeftMiddle) {
+    } else if (anchorPosition === AnchorPosition.LeftMiddle) {
       this.shape.pts = [
         util.pt(this.prevPts[0][0] + diffX, this.shape.pts[0][1]),
         util.pt(this.shape.pts[1][0], this.shape.pts[1][1])
       ];
-    } else if (this.state.anchorPosition === AnchorPosition.LeftTop) {
+    } else if (anchorPosition === AnchorPosition.LeftTop) {
       this.shape.pts = [
         util.pt(this.prevPts[0][0] + diffX, this.prevPts[0][1] + diffY),
         util.pt(this.shape.pts[1][0], this.shape.pts[1][1])
       ];
-    } else if (this.state.anchorPosition === AnchorPosition.TopMiddle) {
+    } else if (anchorPosition === AnchorPosition.TopMiddle) {
       this.shape.pts = [
         util.pt(this.shape.pts[0][0], this.prevPts[0][1] + diffY),
         util.pt(this.shape.pts[1][0], this.shape.pts[1][1])
       ];
-    } else if (this.state.anchorPosition === AnchorPosition.Center) {
+    } else if (anchorPosition === AnchorPosition.Center) {
       this.shape.pts = [
         util.pt(this.prevPts[0][0] + diffX, this.prevPts[0][1] + diffY),
         util.pt(this.prevPts[1][0] + diffX, this.prevPts[1][1] + diffY)

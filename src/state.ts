@@ -20,13 +20,19 @@ export default class State {
   public mode: Mode = Mode.Marquee;
 
   // The anchorPosition which is being dragged on a given cycle.
-  public anchorPosition: AnchorPosition;
+  public anchorPosition: AnchorPosition = null;
 
   // All cycles in runtime/stage.
   public cycles: Set<LifecycleItem> = new Set();
 
   public colors: ColorPalette = palettes.DEFAULT;
+
+  // The current position of the cursor on the stage.
   public cursorPoint: Point;
+
+  // Where the cursor clicked on the stage last.
   public pinnedCursorPoint: Point;
+
+  // DateTime of click.
   public downAt: number;
 }

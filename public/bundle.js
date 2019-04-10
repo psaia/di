@@ -625,34 +625,22 @@ var Operator = /** @class */ (function () {
         // Move on to creating a new shape w/ mgmt lifecycle.
         switch (this.state.mode) {
             case types_1.Mode.Marquee: {
-                var cycle = new marquee_lifecycle_1["default"](this.state);
-                cycle.start(this.os.canvas);
-                cycle.prevPts = [
-                    this.state.pinnedCursorPoint,
-                    this.state.pinnedCursorPoint
-                ];
+                var cycle = new marquee_lifecycle_1["default"]();
+                cycle.start(this.os.canvas, [this.state.pinnedCursorPoint, this.state.pinnedCursorPoint], this.state.colors);
                 this.state.cycles.add(cycle);
                 this.select(cycle, true);
                 break;
             }
             case types_1.Mode.Rectangle: {
-                var cycle = new rect_lifecycle_1["default"](this.state);
-                cycle.prevPts = [
-                    this.state.pinnedCursorPoint,
-                    this.state.pinnedCursorPoint
-                ];
-                cycle.start(this.os.canvas);
+                var cycle = new rect_lifecycle_1["default"]();
+                cycle.start(this.os.canvas, [this.state.pinnedCursorPoint, this.state.pinnedCursorPoint], this.state.colors);
                 this.state.cycles.add(cycle);
                 this.select(cycle, true);
                 break;
             }
             case types_1.Mode.Line: {
-                var cycle = new line_lifecycle_1["default"](this.state);
-                cycle.prevPts = [
-                    this.state.pinnedCursorPoint,
-                    this.state.pinnedCursorPoint
-                ];
-                cycle.start(this.os.canvas);
+                var cycle = new line_lifecycle_1["default"]();
+                cycle.start(this.os.canvas, [this.state.pinnedCursorPoint, this.state.pinnedCursorPoint], this.state.colors);
                 this.state.cycles.add(cycle);
                 this.select(cycle, true);
                 break;
@@ -678,7 +666,7 @@ var Operator = /** @class */ (function () {
                     // A marquee gets removed as soon as the cursor is released, always. Then
                     // selecty any shapes that the marquee overlapped.
                     if (cycle instanceof marquee_lifecycle_1["default"]) {
-                        var marqueePts = util.clone(cycle.shape.pts);
+                        var marqueePts = cycle.shape.pts;
                         this.remove(cycle);
                         this.deselectAll();
                         this.selectWithinRect(marqueePts);
@@ -708,7 +696,7 @@ var Operator = /** @class */ (function () {
     Operator.prototype.handleMouseMove = function (e) {
         var e_6, _a, e_7, _b;
         this.state.cursorPoint = this.os.canvas.grid.closestPt;
-        if (this.state.pinnedCursorPoint) {
+        if (this.state.anchorPosition !== null) {
             var diffX = this.state.cursorPoint[0] - this.state.pinnedCursorPoint[0];
             var diffY = this.state.cursorPoint[1] - this.state.pinnedCursorPoint[1];
             // Only mutate what's hot unless we're moving things around. Then we can
@@ -717,7 +705,7 @@ var Operator = /** @class */ (function () {
                 try {
                     for (var _c = __values(this.selected().values()), _d = _c.next(); !_d.done; _d = _c.next()) {
                         var cycle = _d.value;
-                        cycle.mutate(diffX, diffY);
+                        cycle.mutate(this.state.anchorPosition, diffX, diffY, this.state.colors);
                     }
                 }
                 catch (e_6_1) { e_6 = { error: e_6_1 }; }
@@ -732,7 +720,7 @@ var Operator = /** @class */ (function () {
                 try {
                     for (var _e = __values(this.state.hotCycles.values()), _f = _e.next(); !_f.done; _f = _e.next()) {
                         var cycle = _f.value;
-                        cycle.mutate(diffX, diffY);
+                        cycle.mutate(this.state.anchorPosition, diffX, diffY, this.state.colors);
                     }
                 }
                 catch (e_7_1) { e_7 = { error: e_7_1 }; }
@@ -779,11 +767,10 @@ var Operator = /** @class */ (function () {
             case types_1.KeyEvent.ARROW_RIGHT:
             case types_1.KeyEvent.ARROW_LEFT:
                 e.preventDefault();
-                this.state.anchorPosition = types_1.AnchorPosition.Center;
                 try {
                     for (var _f = __values(this.selected().values()), _g = _f.next(); !_g.done; _g = _f.next()) {
                         var cycle = _g.value;
-                        cycle.mutate(direction[e.keyCode][0], direction[e.keyCode][1]);
+                        cycle.mutate(types_1.AnchorPosition.Center, direction[e.keyCode][0], direction[e.keyCode][1], this.state.colors);
                         cycle.prevPts = cycle.shape.pts;
                     }
                 }
@@ -794,7 +781,6 @@ var Operator = /** @class */ (function () {
                     }
                     finally { if (e_9) throw e_9.error; }
                 }
-                this.state.anchorPosition = null;
                 break;
         }
     };
@@ -863,7 +849,7 @@ exports["default"] = LayerDrawer;
 "use strict";
 exports.__esModule = true;
 var Lifecycle = /** @class */ (function () {
-    function Lifecycle(state) {
+    function Lifecycle() {
         /**
          * prevPts need to be updated anytime a series of mutations is complete. This
          * needs to be handled manually since there's not way to automatically know
@@ -874,7 +860,6 @@ var Lifecycle = /** @class */ (function () {
          * Determine whether or not the object is selected.
          */
         this.selected = true;
-        this.state = state;
     }
     return Lifecycle;
 }());
@@ -912,11 +897,16 @@ var LineLifecycle = /** @class */ (function (_super) {
             return this.tux.checkAllHitTests(p);
         }
     };
-    LineLifecycle.prototype.start = function (c) {
+    LineLifecycle.prototype.start = function (c, initialPts, colors) {
         this.shape = new line_1["default"]();
-        this.shape.ctx = c.ctx;
         this.tux = new line_tux_1["default"]();
         this.tux.ctx = c.ctx;
+        this.shape.ctx = c.ctx;
+        this.shape.colors = colors;
+        this.tux.colors = colors;
+        this.tux.pts = initialPts;
+        this.shape.pts = initialPts;
+        this.prevPts = initialPts;
         c.addShape(this.shape);
         c.addShape(this.tux);
     };
@@ -933,29 +923,33 @@ var LineLifecycle = /** @class */ (function (_super) {
             this.tux.stop();
         }
     };
-    LineLifecycle.prototype.mutate = function (diffX, diffY) {
-        this.shape.colors = this.state.colors;
-        this.tux.colors = this.state.colors;
-        if (this.state.anchorPosition === types_1.AnchorPosition.RightMiddle) {
+    LineLifecycle.prototype.mutate = function (anchorPosition, diffX, diffY, colors) {
+        this.shape.colors = colors;
+        this.tux.colors = colors;
+        if (anchorPosition === types_1.AnchorPosition.RightMiddle) {
             this.shape.pts = [
                 util.pt(this.prevPts[0][0], this.prevPts[0][1]),
                 util.pt(this.prevPts[1][0] + diffX, this.prevPts[1][1] + diffY)
             ];
         }
-        else if (this.state.anchorPosition === types_1.AnchorPosition.LeftMiddle) {
+        else if (anchorPosition === types_1.AnchorPosition.LeftMiddle) {
             this.shape.pts = [
                 util.pt(this.prevPts[0][0] + diffX, this.prevPts[0][1] + diffY),
                 util.pt(this.prevPts[1][0], this.prevPts[1][1])
             ];
         }
-        else if (this.state.anchorPosition === types_1.AnchorPosition.Center) {
+        else if (anchorPosition === types_1.AnchorPosition.Center) {
             this.shape.pts = [
                 util.pt(this.prevPts[0][0] + diffX, this.prevPts[0][1] + diffY),
                 util.pt(this.prevPts[1][0] + diffX, this.prevPts[1][1] + diffY)
             ];
         }
         else {
-            this.shape.pts = [this.state.pinnedCursorPoint, this.state.cursorPoint];
+            // this.shape.pts = [this.state.pinnedCursorPoint, this.state.cursorPoint];
+            this.shape.pts = [
+                util.pt(this.shape.pts[0][0], this.shape.pts[0][1]),
+                util.pt(this.prevPts[1][0] + diffX, this.prevPts[1][1] + diffY)
+            ];
         }
         this.tux.pts = this.shape.pts;
     };
@@ -1091,19 +1085,23 @@ var MarqueeLifecycle = /** @class */ (function (_super) {
     MarqueeLifecycle.prototype.hitTest = function (p) {
         return null;
     };
-    MarqueeLifecycle.prototype.start = function (c) {
+    MarqueeLifecycle.prototype.start = function (c, initialPts, colors) {
         this.shape = new marquee_1["default"]();
-        this.shape.pts = [this.state.pinnedCursorPoint, this.state.cursorPoint];
-        this.shape.colors = this.state.colors;
         this.shape.ctx = c.ctx;
-        this.prevPts = util.clone(this.shape.pts);
+        this.shape.colors = colors;
+        this.shape.pts = initialPts;
+        this.prevPts = initialPts;
         c.addShape(this.shape);
     };
     MarqueeLifecycle.prototype.remove = function (c) {
         c.removeShape(this.shape);
     };
-    MarqueeLifecycle.prototype.mutate = function (diffX, diffY) {
-        this.shape.pts = [this.state.pinnedCursorPoint, this.state.cursorPoint];
+    MarqueeLifecycle.prototype.mutate = function (anchorPosition, diffX, diffY, colors) {
+        this.shape.colors = colors;
+        this.shape.pts = [
+            util.pt(this.shape.pts[0][0], this.shape.pts[0][1]),
+            util.pt(this.prevPts[1][0] + diffX, this.prevPts[1][1] + diffY)
+        ];
     };
     MarqueeLifecycle.prototype.select = function (selected) {
         this.selected = selected;
@@ -1210,12 +1208,16 @@ var RectLifecycle = /** @class */ (function (_super) {
             return this.tux.checkAllHitTests(p);
         }
     };
-    RectLifecycle.prototype.start = function (c) {
+    RectLifecycle.prototype.start = function (c, initialPts, colors) {
         this.shape = new rect_1["default"]();
-        this.shape.ctx = c.ctx;
         this.tux = new rect_tux_1["default"]();
-        this.tux.pts = this.shape.pts;
+        this.shape.colors = colors;
+        this.tux.colors = colors;
+        this.shape.ctx = c.ctx;
         this.tux.ctx = c.ctx;
+        this.shape.pts = initialPts;
+        this.tux.pts = initialPts;
+        this.prevPts = initialPts;
         c.addShape(this.shape);
         c.addShape(this.tux);
     };
@@ -1232,59 +1234,59 @@ var RectLifecycle = /** @class */ (function (_super) {
             this.tux.stop();
         }
     };
-    RectLifecycle.prototype.mutate = function (diffX, diffY) {
-        if (this.prevPts.length < 2) {
-            return;
-        }
-        this.shape.colors = this.state.colors;
-        this.tux.colors = this.state.colors;
+    RectLifecycle.prototype.mutate = function (anchorPosition, diffX, diffY, colors) {
+        this.shape.colors = colors;
+        this.tux.colors = colors;
         this.shape.text = this.text;
-        if (this.state.anchorPosition === types_1.AnchorPosition.RightBottom) {
-            this.shape.pts = [this.prevPts[0], this.state.cursorPoint];
+        if (anchorPosition === types_1.AnchorPosition.RightBottom) {
+            this.shape.pts = [
+                util.pt(this.shape.pts[0][0], this.shape.pts[0][1]),
+                util.pt(this.prevPts[1][0] + diffX, this.prevPts[1][1] + diffY)
+            ];
         }
-        else if (this.state.anchorPosition === types_1.AnchorPosition.RightMiddle) {
+        else if (anchorPosition === types_1.AnchorPosition.RightMiddle) {
             this.shape.pts = [
                 this.shape.pts[0],
                 util.pt(diffX + this.prevPts[1][0], this.shape.pts[1][1])
             ];
         }
-        else if (this.state.anchorPosition === types_1.AnchorPosition.RightTop) {
+        else if (anchorPosition === types_1.AnchorPosition.RightTop) {
             this.shape.pts = [
                 util.pt(this.shape.pts[0][0], this.prevPts[0][1] + diffY),
                 util.pt(this.prevPts[1][0] + diffX, this.shape.pts[1][1])
             ];
         }
-        else if (this.state.anchorPosition === types_1.AnchorPosition.BottomMiddle) {
+        else if (anchorPosition === types_1.AnchorPosition.BottomMiddle) {
             this.shape.pts = [
                 this.shape.pts[0],
                 util.pt(this.shape.pts[1][0], this.prevPts[1][1] + diffY)
             ];
         }
-        else if (this.state.anchorPosition === types_1.AnchorPosition.LeftBottom) {
+        else if (anchorPosition === types_1.AnchorPosition.LeftBottom) {
             this.shape.pts = [
                 util.pt(this.prevPts[0][0] + diffX, this.shape.pts[0][1]),
                 util.pt(this.shape.pts[1][0], this.prevPts[1][1] + diffY)
             ];
         }
-        else if (this.state.anchorPosition === types_1.AnchorPosition.LeftMiddle) {
+        else if (anchorPosition === types_1.AnchorPosition.LeftMiddle) {
             this.shape.pts = [
                 util.pt(this.prevPts[0][0] + diffX, this.shape.pts[0][1]),
                 util.pt(this.shape.pts[1][0], this.shape.pts[1][1])
             ];
         }
-        else if (this.state.anchorPosition === types_1.AnchorPosition.LeftTop) {
+        else if (anchorPosition === types_1.AnchorPosition.LeftTop) {
             this.shape.pts = [
                 util.pt(this.prevPts[0][0] + diffX, this.prevPts[0][1] + diffY),
                 util.pt(this.shape.pts[1][0], this.shape.pts[1][1])
             ];
         }
-        else if (this.state.anchorPosition === types_1.AnchorPosition.TopMiddle) {
+        else if (anchorPosition === types_1.AnchorPosition.TopMiddle) {
             this.shape.pts = [
                 util.pt(this.shape.pts[0][0], this.prevPts[0][1] + diffY),
                 util.pt(this.shape.pts[1][0], this.shape.pts[1][1])
             ];
         }
-        else if (this.state.anchorPosition === types_1.AnchorPosition.Center) {
+        else if (anchorPosition === types_1.AnchorPosition.Center) {
             this.shape.pts = [
                 util.pt(this.prevPts[0][0] + diffX, this.prevPts[0][1] + diffY),
                 util.pt(this.prevPts[1][0] + diffX, this.prevPts[1][1] + diffY)
@@ -1444,6 +1446,8 @@ var State = /** @class */ (function () {
         // Mode represents the intended object to create. This is updated by the
         // toolbar.
         this.mode = types_1.Mode.Marquee;
+        // The anchorPosition which is being dragged on a given cycle.
+        this.anchorPosition = null;
         // All cycles in runtime/stage.
         this.cycles = new Set();
         this.colors = palettes.DEFAULT;

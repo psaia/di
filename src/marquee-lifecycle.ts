@@ -2,27 +2,38 @@ import Marquee from "./marquee";
 import Lifecycle from "./lifecycle";
 import Canvas from "./canvas";
 import * as util from "./util";
-import { Point } from "./types";
+import { ColorPalette, AnchorPosition, Point, Group } from "./types";
 
 export default class MarqueeLifecycle extends Lifecycle {
   shape: Marquee;
   hitTest(p: Point) {
     return null;
   }
-  start(c: Canvas) {
+  start(c: Canvas, initialPts: Group, colors: ColorPalette) {
     this.shape = new Marquee();
-    this.shape.pts = [this.state.pinnedCursorPoint, this.state.cursorPoint];
-    this.shape.colors = this.state.colors;
     this.shape.ctx = c.ctx;
-    this.prevPts = util.clone(this.shape.pts);
+
+    this.shape.colors = colors;
+
+    this.shape.pts = initialPts;
+    this.prevPts = initialPts;
 
     c.addShape(this.shape);
   }
   remove(c: Canvas) {
     c.removeShape(this.shape);
   }
-  mutate(diffX: number, diffY: number) {
-    this.shape.pts = [this.state.pinnedCursorPoint, this.state.cursorPoint];
+  mutate(
+    anchorPosition: AnchorPosition,
+    diffX: number,
+    diffY: number,
+    colors: ColorPalette
+  ) {
+    this.shape.colors = colors;
+    this.shape.pts = [
+      util.pt(this.shape.pts[0][0], this.shape.pts[0][1]),
+      util.pt(this.prevPts[1][0] + diffX, this.prevPts[1][1] + diffY)
+    ];
   }
   select(selected: boolean) {
     this.selected = selected;
