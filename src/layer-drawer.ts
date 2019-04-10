@@ -25,8 +25,7 @@ export default class LayerDrawer extends Component {
 
     const countHashMap = {
       [LayerType.Rect]: 0,
-      [LayerType.Line]: 0,
-      [LayerType.Text]: 0
+      [LayerType.Line]: 0
     };
 
     this.layers.forEach(l => {

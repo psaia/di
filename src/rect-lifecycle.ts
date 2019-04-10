@@ -8,6 +8,7 @@ import { Point, AnchorPosition } from "./types";
 export default class RectLifecycle extends Lifecycle {
   shape: Rect;
   tux: RectTux;
+  text: string = "";
   hitTest(p: Point) {
     if (this.tux) {
       return this.tux.checkAllHitTests(p);
@@ -42,6 +43,7 @@ export default class RectLifecycle extends Lifecycle {
     }
     this.shape.colors = this.state.colors;
     this.tux.colors = this.state.colors;
+    this.shape.text = this.text;
 
     if (this.state.anchorPosition === AnchorPosition.RightBottom) {
       this.shape.pts = [this.prevPts[0], this.state.cursorPoint];

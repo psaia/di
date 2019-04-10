@@ -25,15 +25,13 @@ export enum AnchorPosition {
 
 export enum LayerType {
   Rect = 0,
-  Line,
-  Text
+  Line
 }
 
 export enum Mode {
   Marquee = 0,
   Rectangle,
-  Line,
-  Text
+  Line
 }
 
 export interface HitTestResult {

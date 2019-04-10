@@ -17,12 +17,10 @@ export default class ToolbarDrawer extends Component {
     const marqueeButton = dom.button();
     const rectButton = dom.button();
     const lineButton = dom.button();
-    const textButton = dom.button();
 
     marqueeButton.innerHTML = "marquee";
     rectButton.innerHTML = "rect";
     lineButton.innerHTML = "line";
-    textButton.innerHTML = "text";
     // marqueeButton.style.backgroundImage = `url(${icons.marqueeLight})`;
     // rectButton.style.backgroundImage = `url(${icons.rectangleDark})`;
     // lineButton.style.backgroundImage = `url(${icons.lineDark})`;
@@ -36,12 +34,10 @@ export default class ToolbarDrawer extends Component {
     );
     rectButton.addEventListener("click", this.handleClickEvent(Mode.Rectangle));
     lineButton.addEventListener("click", this.handleClickEvent(Mode.Line));
-    textButton.addEventListener("click", this.handleClickEvent(Mode.Text));
 
     el.appendChild(marqueeButton);
     el.appendChild(rectButton);
     el.appendChild(lineButton);
-    el.appendChild(textButton);
 
     this.rendered(el);
   }

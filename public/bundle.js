@@ -607,7 +607,7 @@ var Operator = /** @class */ (function () {
                     if (this.selected().size === 1) {
                         this.deselectAll();
                     }
-                    cycle.prevPts = util.clone(cycle.shape.pts);
+                    cycle.prevPts = cycle.shape.pts;
                     this.select(cycle, true);
                     return;
                 }
@@ -845,7 +845,6 @@ var LayerDrawer = /** @class */ (function (_super) {
         var countHashMap = (_a = {},
             _a[types_1.LayerType.Rect] = 0,
             _a[types_1.LayerType.Line] = 0,
-            _a[types_1.LayerType.Text] = 0,
             _a);
         this.layers.forEach(function (l) {
             var li = dom.li("layer-list-item");
@@ -1202,7 +1201,9 @@ var types_1 = require("./types");
 var RectLifecycle = /** @class */ (function (_super) {
     __extends(RectLifecycle, _super);
     function RectLifecycle() {
-        return _super !== null && _super.apply(this, arguments) || this;
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.text = "";
+        return _this;
     }
     RectLifecycle.prototype.hitTest = function (p) {
         if (this.tux) {
@@ -1237,6 +1238,7 @@ var RectLifecycle = /** @class */ (function (_super) {
         }
         this.shape.colors = this.state.colors;
         this.tux.colors = this.state.colors;
+        this.shape.text = this.text;
         if (this.state.anchorPosition === types_1.AnchorPosition.RightBottom) {
             this.shape.pts = [this.prevPts[0], this.state.cursorPoint];
         }
@@ -1351,7 +1353,7 @@ var RectTux = /** @class */ (function (_super) {
 exports["default"] = RectTux;
 //# sourceMappingURL=rect-tux.js.map
 }
-  Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/rect.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2frect$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2frect$2ejs.deps = {"./shape":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fshape$2ejs}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2frect$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/rect.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2frect$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
+  Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/rect.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2frect$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2frect$2ejs.deps = {"./util":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2futil$2ejs,"./shape":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fshape$2ejs}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2frect$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/rect.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2frect$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -1368,10 +1370,13 @@ var __extends = (this && this.__extends) || (function () {
 })();
 exports.__esModule = true;
 var shape_1 = require("./shape");
+var util_1 = require("./util");
 var Rect = /** @class */ (function (_super) {
     __extends(Rect, _super);
     function Rect() {
-        return _super !== null && _super.apply(this, arguments) || this;
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.text = "";
+        return _this;
     }
     Rect.prototype.render = function () {
         if (!this.animating || this.pts.length < 2) {
@@ -1385,6 +1390,13 @@ var Rect = /** @class */ (function (_super) {
         this.ctx.lineTo(this.pts[0][0], this.pts[1][1]);
         this.ctx.lineTo(this.pts[1][0], this.pts[1][1]);
         this.ctx.lineTo(this.pts[1][0], this.pts[0][1]);
+        if (this.text) {
+            var center = util_1.centroid([this.pts[0], this.pts[1]]);
+            this.ctx.fillText(this.text, center[0], center[1]);
+            this.ctx.textAlign = "center";
+            this.ctx.textBaseline = "middle";
+            this.ctx.font = "14pt 'Helvetica Neue', Helvetica, Arial, sans-serif'";
+        }
         this.ctx.closePath();
         this.ctx.stroke();
     };
@@ -1477,11 +1489,9 @@ var ToolbarDrawer = /** @class */ (function (_super) {
         var marqueeButton = dom.button();
         var rectButton = dom.button();
         var lineButton = dom.button();
-        var textButton = dom.button();
         marqueeButton.innerHTML = "marquee";
         rectButton.innerHTML = "rect";
         lineButton.innerHTML = "line";
-        textButton.innerHTML = "text";
         // marqueeButton.style.backgroundImage = `url(${icons.marqueeLight})`;
         // rectButton.style.backgroundImage = `url(${icons.rectangleDark})`;
         // lineButton.style.backgroundImage = `url(${icons.lineDark})`;
@@ -1490,11 +1500,9 @@ var ToolbarDrawer = /** @class */ (function (_super) {
         marqueeButton.addEventListener("click", this.handleClickEvent(types_1.Mode.Marquee));
         rectButton.addEventListener("click", this.handleClickEvent(types_1.Mode.Rectangle));
         lineButton.addEventListener("click", this.handleClickEvent(types_1.Mode.Line));
-        textButton.addEventListener("click", this.handleClickEvent(types_1.Mode.Text));
         el.appendChild(marqueeButton);
         el.appendChild(rectButton);
         el.appendChild(lineButton);
-        el.appendChild(textButton);
         this.rendered(el);
     };
     return ToolbarDrawer;
@@ -1616,14 +1624,12 @@ var LayerType;
 (function (LayerType) {
     LayerType[LayerType["Rect"] = 0] = "Rect";
     LayerType[LayerType["Line"] = 1] = "Line";
-    LayerType[LayerType["Text"] = 2] = "Text";
 })(LayerType = exports.LayerType || (exports.LayerType = {}));
 var Mode;
 (function (Mode) {
     Mode[Mode["Marquee"] = 0] = "Marquee";
     Mode[Mode["Rectangle"] = 1] = "Rectangle";
     Mode[Mode["Line"] = 2] = "Line";
-    Mode[Mode["Text"] = 3] = "Text";
 })(Mode = exports.Mode || (exports.Mode = {}));
 var KeyEvent;
 (function (KeyEvent) {

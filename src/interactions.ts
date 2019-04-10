@@ -140,7 +140,7 @@ class Operator {
           this.deselectAll();
         }
 
-        cycle.prevPts = util.clone(cycle.shape.pts);
+        cycle.prevPts = cycle.shape.pts;
         this.select(cycle, true);
         return;
       }
