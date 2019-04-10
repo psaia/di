@@ -12,6 +12,7 @@ import { Mode, AnchorPosition, Group, KeyEvent } from "./types";
 interface OS {
   toolbar: Toolbar;
   canvas: Canvas;
+  canvasBackground: Canvas;
   layers: LayerDrawer;
   controldrawer: ControlDrawer;
 }

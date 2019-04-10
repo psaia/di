@@ -89,6 +89,10 @@ var Canvas = /** @class */ (function (_super) {
     __extends(Canvas, _super);
     function Canvas() {
         var _this = _super !== null && _super.apply(this, arguments) || this;
+        // If true, the grid won't actually be drawn on the canvas. Performance is
+        // much better when the grid is only drawn on a separate canvas while the
+        // shapes on a foreground canvas.
+        _this.renderGrid = true;
         _this.width = 0;
         _this.height = 0;
         _this.pixelScale = 1;
@@ -97,7 +101,9 @@ var Canvas = /** @class */ (function (_super) {
             if (time === void 0) { time = 0; }
             var e_1, _a;
             requestAnimationFrame(_this.play);
-            _this.ctx.clearRect(0, 0, _this.width, _this.height);
+            if (!_this.renderGrid) {
+                _this.ctx.clearRect(0, 0, _this.width, _this.height);
+            }
             _this.grid.render();
             try {
                 for (var _b = __values(_this.shapes.values()), _c = _b.next(); !_c.done; _c = _b.next()) {
@@ -180,18 +186,18 @@ var Canvas = /** @class */ (function (_super) {
         });
     };
     Canvas.prototype.render = function () {
-        var container = dom.section("app");
-        container.style.height = "100%";
-        container.style.width = "100%";
-        container.style.display = "relative";
+        var container = dom.section("canvas");
         container.style.overflow = "hidden";
-        container.style.background = this.colorPalette.stageBg;
+        if (this.renderGrid) {
+            container.style.background = this.colorPalette.stageBg;
+        }
         this.canvas = dom.canvas();
         this.ctx = this.canvas.getContext("2d");
         container.appendChild(this.canvas);
         this.pixelScale = window.devicePixelRatio;
         this.grid = new grid_1["default"](this.ctx);
         this.grid.setColor(this.colorPalette.gridColor);
+        this.grid.draw = this.renderGrid;
         this.registerListeners(container);
         this.rendered(container);
         this.play();
@@ -246,7 +252,7 @@ var ControlDrawer = /** @class */ (function (_super) {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     ControlDrawer.prototype.render = function () {
-        var section = dom.section("controldrawer");
+        var section = dom.section("control-drawer");
         section.style.background = this.colorPalette.controldrawerBg;
         section.style.color = this.colorPalette.controldrawerColor;
         this.rendered(section);
@@ -270,17 +276,22 @@ function di(parentSelector) {
     var controldrawer = new control_drawer_1["default"]();
     var toolbar = new toolbar_drawer_1["default"]();
     var layers = new layer_drawer_1["default"]();
-    var canvas = new canvas_1["default"]();
+    var canvasBackground = new canvas_1["default"]();
+    var canvasForeground = new canvas_1["default"]();
+    canvasForeground.renderGrid = false;
     controldrawer.onRender(dom.renderer(parent));
     layers.onRender(dom.renderer(parent));
     toolbar.onRender(dom.renderer(parent));
-    canvas.onRender(dom.renderer(parent));
+    canvasBackground.onRender(dom.renderer(parent));
+    canvasForeground.onRender(dom.renderer(parent));
     toolbar.render();
     layers.render();
     controldrawer.render();
-    canvas.render();
+    canvasBackground.render();
+    canvasForeground.render();
     interactions.configure({
-        canvas: canvas,
+        canvas: canvasForeground,
+        canvasBackground: canvasBackground,
         toolbar: toolbar,
         layers: layers,
         controldrawer: controldrawer
@@ -376,6 +387,7 @@ var util = require("./util");
 var Grid = /** @class */ (function () {
     function Grid(ctx) {
         this.density = 15;
+        this.draw = true;
         this.gridActiveColor = "white";
         this.gridColor = "white";
         this.size = {
@@ -403,23 +415,29 @@ var Grid = /** @class */ (function () {
         var rightTop = util.pt(center[0] - htSize, center[1] + htSize);
         var leftBottom = util.pt(center[0] + htSize, center[1] - htSize);
         var bounds = [rightTop, leftBottom];
-        this.ctx.beginPath();
-        // |
-        this.ctx.moveTo(center[0], center[1] - size);
-        this.ctx.lineTo(center[0], center[1] + size);
-        // --
-        this.ctx.moveTo(center[0] - size, center[1]);
-        this.ctx.lineTo(center[0] + size, center[1]);
+        if (this.draw) {
+            this.ctx.beginPath();
+            // |
+            this.ctx.moveTo(center[0], center[1] - size);
+            this.ctx.lineTo(center[0], center[1] + size);
+            // --
+            this.ctx.moveTo(center[0] - size, center[1]);
+            this.ctx.lineTo(center[0] + size, center[1]);
+        }
         if (util.withinBound(this.cursorPt, bounds)) {
             this.closestPt = center;
             // this.ctx.strokeStyle = this.gridActiveColor;
         }
         else {
-            this.ctx.strokeStyle = this.gridColor;
+            if (this.draw) {
+                this.ctx.strokeStyle = this.gridColor;
+            }
         }
-        this.ctx.setLineDash([0, 0]);
-        this.ctx.lineWidth = 1;
-        this.ctx.stroke();
+        if (this.draw) {
+            this.ctx.setLineDash([0, 0]);
+            this.ctx.lineWidth = 1;
+            this.ctx.stroke();
+        }
     };
     Grid.prototype.render = function () {
         var grid = [];
@@ -823,9 +841,8 @@ var LayerDrawer = /** @class */ (function (_super) {
     };
     LayerDrawer.prototype.render = function () {
         var _a;
-        var section = dom.section("layers");
+        var section = dom.section("layer-drawer");
         var ul = dom.ul("layer-list");
-        section.style.width = "165px";
         section.style.background = this.colorPalette.layersBg;
         section.style.color = this.colorPalette.layersColor;
         var countHashMap = (_a = {},
@@ -980,8 +997,39 @@ var types_1 = require("./types");
 var LineTux = /** @class */ (function (_super) {
     __extends(LineTux, _super);
     function LineTux() {
-        return _super !== null && _super.apply(this, arguments) || this;
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.peripheralRectCycles = new Set();
+        return _this;
     }
+    LineTux.prototype.peripheralAnchorBounds = function (p) {
+        var margin = 5;
+        var bottomLeft = util.pt(p[0] - margin, p[1] + margin);
+        var bottomRight = util.pt(p[0] + margin, p[1] + margin);
+        var topLeft = util.pt(p[0] - margin, p[1] - margin);
+        var topRight = util.pt(p[0] + margin, p[1] - margin);
+        return { topLeft: topLeft, topRight: topRight, bottomRight: bottomRight, bottomLeft: bottomLeft };
+    };
+    LineTux.prototype.configurePeripheralAnchor = function (position, bounds) {
+        this.ctx.beginPath();
+        this.ctx.setLineDash([]);
+        this.ctx.lineWidth = 1;
+        this.ctx.moveTo(bounds.topLeft[0], bounds.topLeft[1]);
+        this.ctx.lineTo(bounds.topRight[0], bounds.topRight[1]);
+        this.ctx.lineTo(bounds.bottomRight[0], bounds.bottomRight[1]);
+        this.ctx.lineTo(bounds.bottomLeft[0], bounds.bottomLeft[1]);
+        this.ctx.strokeStyle = this.colors.shapeColor;
+        this.ctx.fillStyle = this.colors.shapeColor;
+        this.ctx.fill();
+        this.ctx.closePath();
+        this.hitTestChecks.push(function (p) {
+            if (util.withinBound(p, [bounds.topLeft, bounds.bottomRight])) {
+                return {
+                    position: position,
+                    point: util.centroid([bounds.topLeft, bounds.bottomRight])
+                };
+            }
+        });
+    };
     LineTux.prototype.render = function () {
         var _this = this;
         if (this.pts.length < 2) {
@@ -991,6 +1039,20 @@ var LineTux = /** @class */ (function (_super) {
         this.hitTestChecks = [];
         this.configureAnchor(types_1.AnchorPosition.LeftMiddle, this.anchorBounds(this.pts[0]));
         this.configureAnchor(types_1.AnchorPosition.RightMiddle, this.anchorBounds(this.pts[1]));
+        // for (let cycle of this.peripheralRectCycles.values()) {
+        //   this.configureAnchor(
+        //     AnchorPosition.RightMiddle,
+        //     this.anchorBounds(cycle.shape.pts[1])
+        //   );
+        //   this.configureAnchor(
+        //     AnchorPosition.LeftMiddle,
+        //     this.anchorBounds(cycle.shape.pts[0])
+        //   );
+        //   this.configureAnchor(
+        //     AnchorPosition.TopMiddle,
+        //     this.anchorBounds(cycle.shape.pts[1])
+        //   );
+        // }
         // Lastly, setup a check for anywhere in the center of the shape.
         this.hitTestChecks.push(function (p) {
             if (util.withinBound(p, [_this.pts[0], _this.pts[1]])) {

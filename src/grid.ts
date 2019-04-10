@@ -5,6 +5,7 @@ export default class Grid {
   protected ctx: CanvasRenderingContext2D;
   public density = 15;
   public closestPt: Point;
+  public draw: boolean = true;
   public grid: Group;
   public gridActiveColor: string = "white";
   public gridColor: string = "white";
@@ -43,25 +44,31 @@ export default class Grid {
     const leftBottom = util.pt(center[0] + htSize, center[1] - htSize);
     const bounds = [rightTop, leftBottom];
 
-    this.ctx.beginPath();
+    if (this.draw) {
+      this.ctx.beginPath();
 
-    // |
-    this.ctx.moveTo(center[0], center[1] - size);
-    this.ctx.lineTo(center[0], center[1] + size);
-    // --
-    this.ctx.moveTo(center[0] - size, center[1]);
-    this.ctx.lineTo(center[0] + size, center[1]);
+      // |
+      this.ctx.moveTo(center[0], center[1] - size);
+      this.ctx.lineTo(center[0], center[1] + size);
+      // --
+      this.ctx.moveTo(center[0] - size, center[1]);
+      this.ctx.lineTo(center[0] + size, center[1]);
+    }
 
     if (util.withinBound(this.cursorPt, bounds)) {
       this.closestPt = center;
       // this.ctx.strokeStyle = this.gridActiveColor;
     } else {
-      this.ctx.strokeStyle = this.gridColor;
+      if (this.draw) {
+        this.ctx.strokeStyle = this.gridColor;
+      }
     }
-    this.ctx.setLineDash([0, 0]);
+    if (this.draw) {
+      this.ctx.setLineDash([0, 0]);
 
-    this.ctx.lineWidth = 1;
-    this.ctx.stroke();
+      this.ctx.lineWidth = 1;
+      this.ctx.stroke();
+    }
   }
 
   render() {

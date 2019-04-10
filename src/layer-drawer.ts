@@ -16,10 +16,9 @@ export default class LayerDrawer extends Component {
   }
 
   render() {
-    const section = dom.section("layers");
+    const section = dom.section("layer-drawer");
     const ul = dom.ul("layer-list");
 
-    section.style.width = "165px";
     section.style.background = this.colorPalette.layersBg;
     section.style.color = this.colorPalette.layersColor;
 

@@ -5,6 +5,10 @@ import Shape from "./shape";
 import Component from "./component";
 
 export default class Canvas extends Component {
+  // If true, the grid won't actually be drawn on the canvas. Performance is
+  // much better when the grid is only drawn on a separate canvas while the
+  // shapes on a foreground canvas.
+  public renderGrid: boolean = true;
   public width: number = 0;
   public height: number = 0;
   public ctx: CanvasRenderingContext2D;
@@ -48,7 +52,10 @@ export default class Canvas extends Component {
   private play = (time = 0) => {
     requestAnimationFrame(this.play);
 
-    this.ctx.clearRect(0, 0, this.width, this.height);
+    if (!this.renderGrid) {
+      this.ctx.clearRect(0, 0, this.width, this.height);
+    }
+
     this.grid.render();
 
     for (let s of this.shapes.values()) {
@@ -108,12 +115,11 @@ export default class Canvas extends Component {
   }
 
   render() {
-    const container = dom.section("app");
-    container.style.height = "100%";
-    container.style.width = "100%";
-    container.style.display = "relative";
+    const container = dom.section("canvas");
     container.style.overflow = "hidden";
-    container.style.background = this.colorPalette.stageBg;
+    if (this.renderGrid) {
+      container.style.background = this.colorPalette.stageBg;
+    }
 
     this.canvas = dom.canvas();
     this.ctx = this.canvas.getContext("2d");
@@ -123,6 +129,7 @@ export default class Canvas extends Component {
 
     this.grid = new Grid(this.ctx);
     this.grid.setColor(this.colorPalette.gridColor);
+    this.grid.draw = this.renderGrid;
 
     this.registerListeners(container);
     this.rendered(container);

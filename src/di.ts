@@ -10,20 +10,26 @@ function di(parentSelector: string) {
   const controldrawer = new ControlDrawer();
   const toolbar = new ToolbarDrawer();
   const layers = new LayerDrawer();
-  const canvas = new Canvas();
+  const canvasBackground = new Canvas();
+  const canvasForeground = new Canvas();
+
+  canvasForeground.renderGrid = false;
 
   controldrawer.onRender(dom.renderer(parent));
   layers.onRender(dom.renderer(parent));
   toolbar.onRender(dom.renderer(parent));
-  canvas.onRender(dom.renderer(parent));
+  canvasBackground.onRender(dom.renderer(parent));
+  canvasForeground.onRender(dom.renderer(parent));
 
   toolbar.render();
   layers.render();
   controldrawer.render();
-  canvas.render();
+  canvasBackground.render();
+  canvasForeground.render();
 
   interactions.configure({
-    canvas,
+    canvas: canvasForeground,
+    canvasBackground: canvasBackground,
     toolbar,
     layers,
     controldrawer
