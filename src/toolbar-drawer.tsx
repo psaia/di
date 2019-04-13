@@ -13,9 +13,8 @@ export default class ToolbarDrawer extends React.Component<ToolbarProps> {
   public state = {
     colorPalette: palettes.DEFAULT
   };
-  public onModeChange: (m: Mode) => void;
   componentDidMount() {
-    this.props.events.subscribe("globalStateUpdate", () => this.forceUpdate());
+    this.props.events.subscribe("stateChange", () => this.forceUpdate());
   }
   handleClickEvent(m: Mode) {
     return () => {
@@ -31,37 +30,70 @@ export default class ToolbarDrawer extends React.Component<ToolbarProps> {
           background: this.state.colorPalette.toolbarBg
         }}
       >
-        <button
-          className={
-            this.props.globalState.mode === Mode.Marquee ? "active" : ""
-          }
-          onClick={this.handleClickEvent(Mode.Marquee)}
+        <div
+          className="branding"
+          style={{
+            color: this.state.colorPalette.brandingColor,
+            background: this.state.colorPalette.brandingBg
+          }}
         >
-          <i
-            className="icon-near_me"
-            style={{ color: this.state.colorPalette.toolbarColor }}
-          />
-        </button>
-        <button
-          className={
-            this.props.globalState.mode === Mode.Rectangle ? "active" : ""
-          }
-          onClick={this.handleClickEvent(Mode.Rectangle)}
-        >
-          <i
-            className="icon-text-box"
-            style={{ color: this.state.colorPalette.toolbarColor }}
-          />
-        </button>
-        <button
-          className={this.props.globalState.mode === Mode.Line ? "active" : ""}
-          onClick={this.handleClickEvent(Mode.Line)}
-        >
-          <i
-            className="icon-subdirectory-right"
-            style={{ color: this.state.colorPalette.toolbarColor }}
-          />
-        </button>
+          <h1>txt.io | ASCII Studio</h1>
+        </div>
+        <div className="tools">
+          <button
+            className={
+              this.props.globalState.mode === Mode.Marquee ? "active" : ""
+            }
+            style={{
+              background:
+                this.props.globalState.mode === Mode.Marquee
+                  ? this.state.colorPalette.toolbarActiveBg
+                  : "transparent"
+            }}
+            onClick={this.handleClickEvent(Mode.Marquee)}
+          >
+            <i
+              className="icon-cursor"
+              style={{
+                color: this.state.colorPalette.toolbarColor
+              }}
+            />
+          </button>
+          <button
+            className={
+              this.props.globalState.mode === Mode.Rectangle ? "active" : ""
+            }
+            style={{
+              background:
+                this.props.globalState.mode === Mode.Rectangle
+                  ? this.state.colorPalette.toolbarActiveBg
+                  : "transparent"
+            }}
+            onClick={this.handleClickEvent(Mode.Rectangle)}
+          >
+            <i
+              className="icon-box"
+              style={{ color: this.state.colorPalette.toolbarColor }}
+            />
+          </button>
+          <button
+            style={{
+              background:
+                this.props.globalState.mode === Mode.Line
+                  ? this.state.colorPalette.toolbarActiveBg
+                  : "transparent"
+            }}
+            className={
+              this.props.globalState.mode === Mode.Line ? "active" : ""
+            }
+            onClick={this.handleClickEvent(Mode.Line)}
+          >
+            <i
+              className="icon-line"
+              style={{ color: this.state.colorPalette.toolbarColor }}
+            />
+          </button>
+        </div>
       </div>
     );
   }

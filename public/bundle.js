@@ -568,18 +568,14 @@ var Operator = /** @class */ (function () {
     Operator.prototype.select = function (cycle, selected) {
         if (selected === void 0) { selected = true; }
         cycle.select(selected);
-        if (selected) {
-            this.state.hotCycles.add(cycle);
-        }
-        else {
-            this.state.hotCycles["delete"](cycle);
-        }
+        // Even though a property didn't change directly, publish a state change so
+        // listeners can update after something is updated.
+        this.events.publish("stateChange", null);
     };
     /**
      * Delete a cycle from stage fully.
      */
     Operator.prototype.remove = function (cycle) {
-        this.state.hotCycles["delete"](cycle);
         this.state.cycles["delete"](cycle);
     };
     /**
@@ -598,7 +594,7 @@ var Operator = /** @class */ (function () {
                 // most absolute position is accounted for.
                 var o = cycle.hitTest(this.state.cursorPt);
                 if (o !== null) {
-                    this.state.anchorPosition = o.position;
+                    this.state.setStateProp(this.events, "anchorPosition", o.position);
                     if (this.state.selected().size === 1) {
                         this.deselectAll();
                     }
@@ -655,9 +651,9 @@ var Operator = /** @class */ (function () {
      */
     Operator.prototype.handleMouseUp = function (e) {
         var e_4, _a;
-        if (this.state.hotCycles.size) {
+        if (this.state.cycles.size) {
             try {
-                for (var _b = __values(this.state.hotCycles.values()), _c = _b.next(); !_c.done; _c = _b.next()) {
+                for (var _b = __values(this.state.cycles.values()), _c = _b.next(); !_c.done; _c = _b.next()) {
                     var cycle = _c.value;
                     // A marquee gets removed as soon as the cursor is released, always. Then
                     // selecty any shapes that the marquee overlapped.
@@ -668,8 +664,9 @@ var Operator = /** @class */ (function () {
                         this.selectWithinRect(marqueePts);
                     }
                     else {
+                        // We
                         cycle.prevPts = cycle.shape.pts;
-                        this.state.hotCycles["delete"](cycle);
+                        // this.state.cycles.delete(cycle);
                     }
                 }
             }
@@ -682,16 +679,11 @@ var Operator = /** @class */ (function () {
             }
         }
         // Reset the mode to be marquee, always.
-        this.state.mode = types_1.Mode.Marquee;
-        this.state.anchorPosition = null;
-        this.events.publish("modeChange", this.state.mode);
-        var selected = this.state.selected();
-        if (selected.size === 1) {
-            this.events.publish("singleRectSelected", null);
-        }
+        this.state.setStateProp(this.events, "mode", types_1.Mode.Marquee);
+        this.state.setStateProp(this.events, "anchorPosition", null);
     };
     /**
-     * When the mouse moves all hotCycles need to be mutated relative to the
+     * When the mouse moves all cycles need to be mutated relative to the
      * current state.
      */
     Operator.prototype.handleMouseMove = function (e) {
@@ -738,6 +730,12 @@ var Operator = /** @class */ (function () {
      */
     Operator.prototype.handleKeyDown = function (e) {
         var _a, e_6, _b, e_7, _c;
+        switch (e.target.nodeName) {
+            case "INPUT":
+            case "SELECT":
+            case "TEXTBOX":
+                return;
+        }
         var direction = (_a = {},
             _a[types_1.KeyEvent.ARROW_LEFT] = [-this.state.gridDensity, 0],
             _a[types_1.KeyEvent.ARROW_RIGHT] = [this.state.gridDensity, 0],
@@ -1205,7 +1203,7 @@ var Marquee = /** @class */ (function (_super) {
         this.ctx.lineTo(this.pts[0][0], this.pts[1][1]);
         this.ctx.lineTo(this.pts[1][0], this.pts[1][1]);
         this.ctx.lineTo(this.pts[1][0], this.pts[0][1]);
-        this.ctx.setLineDash([5, 5]);
+        this.ctx.setLineDash([1, 1]);
         this.ctx.lineWidth = 1;
         this.ctx.closePath();
         this.ctx.strokeStyle = this.colors.shapeColor;
@@ -1219,21 +1217,23 @@ exports["default"] = Marquee;
   Pax.files["/Users/petesaia/work/github.com/psaia/di/lib/palettes.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fpalettes$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fpalettes$2ejs.deps = {}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fpalettes$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/lib/palettes.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2flib$2fpalettes$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
 "use strict";
 exports.__esModule = true;
-// Default palette based on: https://colorhunt.co/palette/2763
 exports.DARK = {
-    stageBg: "#191718",
+    brandingBg: "#D9D9D9",
+    brandingColor: "#141A26",
+    stageBg: "#141A26",
     shapeColor: "#ffffff",
     stageColor: "#ffffff",
-    gridColor: "#262425",
+    gridColor: "#1e2738",
     // The primary toolbar at the top.
-    toolbarBg: "#535353",
-    toolbarColor: "#FFFFFF",
+    toolbarBg: "#365673",
+    toolbarActiveBg: "#222222",
+    toolbarColor: "#D9D9D9",
     // The layer palette.
-    layersBg: "#242424",
-    layersColor: "#FFFFFF",
+    layersBg: "#0D0D0D",
+    layersColor: "#D9D9D9",
     // The far left drawer.
-    utilityBg: "#282828",
-    utilityColor: "#FFFFFF"
+    utilityBg: "#0D0D0D",
+    utilityColor: "#D9D9D9"
 };
 exports.DEFAULT = exports.DARK;
 //# sourceMappingURL=palettes.js.map
@@ -1483,7 +1483,7 @@ var Rect = /** @class */ (function (_super) {
             this.ctx.fillText(this.options.text, center[0], center[1]);
             this.ctx.textAlign = "center";
             this.ctx.textBaseline = "middle";
-            this.ctx.font = "16pt 'Helvetica Neue', Helvetica, Arial, sans-serif'";
+            this.ctx.font = "18pt 'Helvetica Neue', Helvetica, Arial, sans-serif'";
         }
         this.ctx.closePath();
         this.ctx.stroke();
@@ -1541,9 +1541,8 @@ var State = /** @class */ (function () {
     function State() {
         this.cursorPt = util.pt(0, 0);
         this.cursorGridPt = util.pt(0, 0);
+        // The spacing within a grid cell.
         this.gridDensity = 12;
-        // The current selected objects.
-        this.hotCycles = new Set();
         // Mode represents the intended object to create. This is updated by the
         // toolbar.
         this.mode = types_1.Mode.Marquee;
@@ -1554,6 +1553,7 @@ var State = /** @class */ (function () {
         // The currently selected color palette.
         this.colors = palettes.DEFAULT;
     }
+    // All currently selected lifecycles.
     State.prototype.selected = function () {
         var e_1, _a;
         var s = new Set();
@@ -1574,6 +1574,7 @@ var State = /** @class */ (function () {
         }
         return s;
     };
+    // Update a property within this state and maybe publish an event about it.
     State.prototype.setStateProp = function (events, propName, value, broadcast) {
         if (broadcast === void 0) { broadcast = true; }
         this[propName] = value;
@@ -1617,7 +1618,7 @@ var ToolbarDrawer = /** @class */ (function (_super) {
     }
     ToolbarDrawer.prototype.componentDidMount = function () {
         var _this = this;
-        this.props.events.subscribe("globalStateUpdate", function () { return _this.forceUpdate(); });
+        this.props.events.subscribe("stateChange", function () { return _this.forceUpdate(); });
     };
     ToolbarDrawer.prototype.handleClickEvent = function (m) {
         var _this = this;
@@ -1630,12 +1631,32 @@ var ToolbarDrawer = /** @class */ (function (_super) {
                 color: this.state.colorPalette.toolbarColor,
                 background: this.state.colorPalette.toolbarBg
             } },
-            React.createElement("button", { className: this.props.globalState.mode === types_1.Mode.Marquee ? "active" : "", onClick: this.handleClickEvent(types_1.Mode.Marquee) },
-                React.createElement("i", { className: "icon-near_me", style: { color: this.state.colorPalette.toolbarColor } })),
-            React.createElement("button", { className: this.props.globalState.mode === types_1.Mode.Rectangle ? "active" : "", onClick: this.handleClickEvent(types_1.Mode.Rectangle) },
-                React.createElement("i", { className: "icon-text-box", style: { color: this.state.colorPalette.toolbarColor } })),
-            React.createElement("button", { className: this.props.globalState.mode === types_1.Mode.Line ? "active" : "", onClick: this.handleClickEvent(types_1.Mode.Line) },
-                React.createElement("i", { className: "icon-subdirectory-right", style: { color: this.state.colorPalette.toolbarColor } }))));
+            React.createElement("div", { className: "branding", style: {
+                    color: this.state.colorPalette.brandingColor,
+                    background: this.state.colorPalette.brandingBg
+                } },
+                React.createElement("h1", null, "txt.io | ASCII Studio")),
+            React.createElement("div", { className: "tools" },
+                React.createElement("button", { className: this.props.globalState.mode === types_1.Mode.Marquee ? "active" : "", style: {
+                        background: this.props.globalState.mode === types_1.Mode.Marquee
+                            ? this.state.colorPalette.toolbarActiveBg
+                            : "transparent"
+                    }, onClick: this.handleClickEvent(types_1.Mode.Marquee) },
+                    React.createElement("i", { className: "icon-cursor", style: {
+                            color: this.state.colorPalette.toolbarColor
+                        } })),
+                React.createElement("button", { className: this.props.globalState.mode === types_1.Mode.Rectangle ? "active" : "", style: {
+                        background: this.props.globalState.mode === types_1.Mode.Rectangle
+                            ? this.state.colorPalette.toolbarActiveBg
+                            : "transparent"
+                    }, onClick: this.handleClickEvent(types_1.Mode.Rectangle) },
+                    React.createElement("i", { className: "icon-box", style: { color: this.state.colorPalette.toolbarColor } })),
+                React.createElement("button", { style: {
+                        background: this.props.globalState.mode === types_1.Mode.Line
+                            ? this.state.colorPalette.toolbarActiveBg
+                            : "transparent"
+                    }, className: this.props.globalState.mode === types_1.Mode.Line ? "active" : "", onClick: this.handleClickEvent(types_1.Mode.Line) },
+                    React.createElement("i", { className: "icon-line", style: { color: this.state.colorPalette.toolbarColor } })))));
     };
     return ToolbarDrawer;
 }(React.Component));
@@ -1931,27 +1952,6 @@ var UtilityDrawer = /** @class */ (function (_super) {
         var _this = this;
         this.props.events.subscribe("stateChange", function () { return _this.forceUpdate(); });
     };
-    //
-    //   // subscribe("singleRectSelected", () => this.render());
-    //   subscribe("textChange", (t: string) => {
-    //     const selected = this.props.globalState
-    //       .selected()
-    //       .values()
-    //       .next().value;
-    //     console.log("text changing for ", t);
-    //     if (selected) selected.setOption("text", t);
-    //     this.render();
-    //   });
-    //
-    //   subscribe("borderChange", (b: BorderType) => {
-    //     const selected = this.state
-    //       .selected()
-    //       .values()
-    //       .next().value;
-    //     if (selected) selected.setOption("border", b);
-    //     this.render();
-    //   });
-    // }
     UtilityDrawer.prototype.singleSelectedItem = function () {
         var all = this.props.globalState.selected();
         // We only care about if there's exactly one selected for now.
@@ -1982,85 +1982,18 @@ var UtilityDrawer = /** @class */ (function (_super) {
                     };
                     return React.createElement("option", __assign({}, props), v.label);
                 })),
-                React.createElement("input", { type: "text", autoFocus: true, defaultValue: selected.shape.options.text, placeholder: "Inner Text", onChange: function (e) {
+                React.createElement("input", { type: "text", autoFocus: true, defaultValue: selected.shape.options.text, style: {
+                        background: "transparent",
+                        border: "none",
+                        color: this.props.globalState.colors.utilityColor,
+                        borderBottom: "1px solid " + this.props.globalState.colors.utilityColor
+                    }, placeholder: "Inner Text", onChange: function (e) {
                         selected.shape.options.text = e.target.value;
+                        e.stopPropagation();
+                        e.nativeEvent.stopImmediatePropagation();
                     } })));
         }
         return React.createElement("div", __assign({}, props, { className: "utility-drawer" }));
-        // // If there is exactly 1 thing selected, the options for it can be shown.
-        // const allSelected = this.state.selected();
-        // const selectedLifecycle =
-        //   allSelected.size === 1 ? allSelected.values().next().value : null;
-        // const name = selectedLifecycle ? selectedLifecycle.constructor.name : null;
-        //
-        // switch (name) {
-        //   case "RectLifecycle": {
-        //     const labelInput = dom.input("text") as HTMLInputElement;
-        //     labelInput.placeholder = "Label";
-        //
-        //     if (selectedLifecycle) {
-        //       labelInput.value = selectedLifecycle.shape.options.text;
-        //     }
-        //
-        //     const lineType = dom.dropdown(
-        //       "linetype",
-        //       [
-        //         {
-        //           value: BorderType.Light,
-        //           label: "Light"
-        //         },
-        //         {
-        //           value: BorderType.Heavy,
-        //           label: "Heavy"
-        //         },
-        //         {
-        //           value: BorderType.Double,
-        //           label: "Double"
-        //         },
-        //         {
-        //           value: BorderType.Dashed,
-        //           label: "Dashed"
-        //         },
-        //         {
-        //           value: BorderType.None,
-        //           label: "No Border"
-        //         }
-        //       ],
-        //       selectedLifecycle
-        //         ? selectedLifecycle.shape.options.border
-        //         : BorderType.Light
-        //     ) as HTMLSelectElement;
-        //
-        //     el.appendChild(lineType);
-        //     el.appendChild(labelInput);
-        //
-        //     lineType.addEventListener(
-        //       "change",
-        //       e => {
-        //         e.stopPropagation();
-        //         publish(
-        //           "borderChange",
-        //           lineType.options[lineType.selectedIndex].value
-        //         );
-        //       },
-        //       false
-        //     );
-        //
-        //     labelInput.addEventListener(
-        //       "input",
-        //       e => {
-        //         e.stopPropagation();
-        //         console.log("text change evt direct", labelInput.value);
-        //         publish("textChange", labelInput.value);
-        //         labelInput.focus();
-        //       },
-        //       false
-        //     );
-        //     break;
-        //   }
-        // }
-        //
-        // this.rendered(el);
     };
     return UtilityDrawer;
 }(React.Component));
@@ -4216,7 +4149,7 @@ if (process.env.NODE_ENV === 'production') {
   module.exports = require('./cjs/react.development.js');
 }
 }
-  Pax.files["/Users/petesaia/work/github.com/psaia/di/node_modules/react-dom/cjs/react-dom.development.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2fnode_modules$2freact$2ddom$2fcjs$2freact$2ddom$2edevelopment$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2fnode_modules$2freact$2ddom$2fcjs$2freact$2ddom$2edevelopment$2ejs.deps = {"scheduler/tracing":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2fnode_modules$2fscheduler$2ftracing$2ejs,"prop-types/checkPropTypes":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2fnode_modules$2fprop$2dtypes$2fcheckPropTypes$2ejs,"react":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2fnode_modules$2freact$2findex$2ejs,"object-assign":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2fnode_modules$2fobject$2dassign$2findex$2ejs,"scheduler":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2fnode_modules$2fscheduler$2findex$2ejs}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2fnode_modules$2freact$2ddom$2fcjs$2freact$2ddom$2edevelopment$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/node_modules/react-dom/cjs/react-dom.development.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2fnode_modules$2freact$2ddom$2fcjs$2freact$2ddom$2edevelopment$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
+  Pax.files["/Users/petesaia/work/github.com/psaia/di/node_modules/react-dom/cjs/react-dom.development.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2fnode_modules$2freact$2ddom$2fcjs$2freact$2ddom$2edevelopment$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2fnode_modules$2freact$2ddom$2fcjs$2freact$2ddom$2edevelopment$2ejs.deps = {"prop-types/checkPropTypes":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2fnode_modules$2fprop$2dtypes$2fcheckPropTypes$2ejs,"scheduler/tracing":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2fnode_modules$2fscheduler$2ftracing$2ejs,"react":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2fnode_modules$2freact$2findex$2ejs,"object-assign":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2fnode_modules$2fobject$2dassign$2findex$2ejs,"scheduler":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2fnode_modules$2fscheduler$2findex$2ejs}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2fnode_modules$2freact$2ddom$2fcjs$2freact$2ddom$2edevelopment$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/node_modules/react-dom/cjs/react-dom.development.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2fnode_modules$2freact$2ddom$2fcjs$2freact$2ddom$2edevelopment$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
 /** @license React v16.8.6
  * react-dom.development.js
  *
@@ -25496,7 +25429,7 @@ module.exports = reactDom;
   })();
 }
 }
-  Pax.files["/Users/petesaia/work/github.com/psaia/di/node_modules/react-dom/cjs/react-dom.production.min.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2fnode_modules$2freact$2ddom$2fcjs$2freact$2ddom$2eproduction$2emin$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2fnode_modules$2freact$2ddom$2fcjs$2freact$2ddom$2eproduction$2emin$2ejs.deps = {"object-assign":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2fnode_modules$2fobject$2dassign$2findex$2ejs,"react":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2fnode_modules$2freact$2findex$2ejs,"scheduler":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2fnode_modules$2fscheduler$2findex$2ejs}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2fnode_modules$2freact$2ddom$2fcjs$2freact$2ddom$2eproduction$2emin$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/node_modules/react-dom/cjs/react-dom.production.min.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2fnode_modules$2freact$2ddom$2fcjs$2freact$2ddom$2eproduction$2emin$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
+  Pax.files["/Users/petesaia/work/github.com/psaia/di/node_modules/react-dom/cjs/react-dom.production.min.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2fnode_modules$2freact$2ddom$2fcjs$2freact$2ddom$2eproduction$2emin$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2fnode_modules$2freact$2ddom$2fcjs$2freact$2ddom$2eproduction$2emin$2ejs.deps = {"react":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2fnode_modules$2freact$2findex$2ejs,"object-assign":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2fnode_modules$2fobject$2dassign$2findex$2ejs,"scheduler":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2fnode_modules$2fscheduler$2findex$2ejs}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2fnode_modules$2freact$2ddom$2fcjs$2freact$2ddom$2eproduction$2emin$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/node_modules/react-dom/cjs/react-dom.production.min.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2fnode_modules$2freact$2ddom$2fcjs$2freact$2ddom$2eproduction$2emin$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
 /** @license React v16.8.6
  * react-dom.production.min.js
  *

@@ -52,7 +52,7 @@ export default class Rect extends Shape {
       this.ctx.fillText(this.options.text, center[0], center[1]);
       this.ctx.textAlign = "center";
       this.ctx.textBaseline = "middle";
-      this.ctx.font = "16pt 'Helvetica Neue', Helvetica, Arial, sans-serif'";
+      this.ctx.font = "18pt 'Helvetica Neue', Helvetica, Arial, sans-serif'";
     }
 
     this.ctx.closePath();

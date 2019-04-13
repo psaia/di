@@ -83,9 +83,19 @@ export default class UtilityDrawer extends React.Component<UtilityProps> {
             type="text"
             autoFocus
             defaultValue={selected.shape.options.text}
+            style={{
+              background: "transparent",
+              border: "none",
+              color: this.props.globalState.colors.utilityColor,
+              borderBottom: `1px solid ${
+                this.props.globalState.colors.utilityColor
+              }`
+            }}
             placeholder="Inner Text"
             onChange={e => {
               selected.shape.options.text = e.target.value;
+              e.stopPropagation();
+              e.nativeEvent.stopImmediatePropagation();
             }}
           />
         </div>

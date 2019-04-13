@@ -17,10 +17,8 @@ export default class State {
   // Where the cursor clicked on the stage last.
   public pinnedCursorPt: Point;
 
+  // The spacing within a grid cell.
   public gridDensity: number = 12;
-
-  // The current selected objects.
-  public hotCycles: Set<Lifecycle> = new Set();
 
   // Mode represents the intended object to create. This is updated by the
   // toolbar.
@@ -38,6 +36,7 @@ export default class State {
   // DateTime of click.
   public downAt: number;
 
+  // All currently selected lifecycles.
   public selected(): Set<Lifecycle> {
     const s = new Set();
     for (let cycle of this.cycles.values()) {
@@ -48,6 +47,7 @@ export default class State {
     return s;
   }
 
+  // Update a property within this state and maybe publish an event about it.
   public setStateProp(
     events: Events,
     propName: string,

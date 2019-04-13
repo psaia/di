@@ -11,7 +11,7 @@ export default class Marquee extends Shape {
     this.ctx.lineTo(this.pts[0][0], this.pts[1][1]);
     this.ctx.lineTo(this.pts[1][0], this.pts[1][1]);
     this.ctx.lineTo(this.pts[1][0], this.pts[0][1]);
-    this.ctx.setLineDash([5, 5]);
+    this.ctx.setLineDash([1, 1]);
     this.ctx.lineWidth = 1;
     this.ctx.closePath();
     this.ctx.strokeStyle = this.colors.shapeColor;

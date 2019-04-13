@@ -3,6 +3,7 @@ import * as util from "./util";
 import MarqueeLifecycle from "./marquee-lifecycle";
 import RectLifecycle from "./rect-lifecycle";
 import LineLifecycle from "./line-lifecycle";
+import Lifecycle from "./lifecycle";
 import { Mode, AnchorPosition, Group, KeyEvent } from "./types";
 import Events from "./events";
 
@@ -64,21 +65,18 @@ class Operator {
    * Convienence method to select or deselect a cycle. This will also make it
    * hot or cold depending on if it's selected.
    */
-  public select(cycle, selected: boolean = true) {
+  public select(cycle: Lifecycle, selected: boolean = true) {
     cycle.select(selected);
 
-    if (selected) {
-      this.state.hotCycles.add(cycle);
-    } else {
-      this.state.hotCycles.delete(cycle);
-    }
+    // Even though a property didn't change directly, publish a state change so
+    // listeners can update after something is updated.
+    this.events.publish("stateChange", null);
   }
 
   /**
    * Delete a cycle from stage fully.
    */
   public remove(cycle) {
-    this.state.hotCycles.delete(cycle);
     this.state.cycles.delete(cycle);
   }
 
@@ -100,7 +98,7 @@ class Operator {
       // most absolute position is accounted for.
       const o = cycle.hitTest(this.state.cursorPt);
       if (o !== null) {
-        this.state.anchorPosition = o.position;
+        this.state.setStateProp(this.events, "anchorPosition", o.position);
 
         if (this.state.selected().size === 1) {
           this.deselectAll();
@@ -165,8 +163,8 @@ class Operator {
    * 3. Unset anchor position.
    */
   private handleMouseUp(e: MouseEvent) {
-    if (this.state.hotCycles.size) {
-      for (let cycle of this.state.hotCycles.values()) {
+    if (this.state.cycles.size) {
+      for (let cycle of this.state.cycles.values()) {
         // A marquee gets removed as soon as the cursor is released, always. Then
         // selecty any shapes that the marquee overlapped.
         if (cycle instanceof MarqueeLifecycle) {
@@ -175,26 +173,20 @@ class Operator {
           this.deselectAll();
           this.selectWithinRect(marqueePts);
         } else {
+          // We
           cycle.prevPts = cycle.shape.pts;
-          this.state.hotCycles.delete(cycle);
+          // this.state.cycles.delete(cycle);
         }
       }
     }
 
     // Reset the mode to be marquee, always.
-    this.state.mode = Mode.Marquee;
-    this.state.anchorPosition = null;
-    this.events.publish("modeChange", this.state.mode);
-
-    const selected = this.state.selected();
-
-    if (selected.size === 1) {
-      this.events.publish("singleRectSelected", null);
-    }
+    this.state.setStateProp(this.events, "mode", Mode.Marquee);
+    this.state.setStateProp(this.events, "anchorPosition", null);
   }
 
   /**
-   * When the mouse moves all hotCycles need to be mutated relative to the
+   * When the mouse moves all cycles need to be mutated relative to the
    * current state.
    */
   private handleMouseMove(e: MouseEvent) {
@@ -236,7 +228,14 @@ class Operator {
   /**
    * Handle anytime a key is pressed.
    */
-  private handleKeyDown(e: KeyboardEvent) {
+  private handleKeyDown(e: any) {
+    switch (e.target.nodeName) {
+      case "INPUT":
+      case "SELECT":
+      case "TEXTBOX":
+        return;
+    }
+
     const direction = {
       [KeyEvent.ARROW_LEFT]: [-this.state.gridDensity, 0],
       [KeyEvent.ARROW_RIGHT]: [this.state.gridDensity, 0],

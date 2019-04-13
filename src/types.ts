@@ -49,10 +49,13 @@ export interface Bounds {
 }
 
 export interface ColorPalette {
+  brandingBg: string;
+  brandingColor: string;
   utilityBg: string;
   utilityColor: string;
   toolbarBg: string;
   toolbarColor: string;
+  toolbarActiveBg: string;
   stageBg: string;
   stageColor: string;
   layersBg: string;

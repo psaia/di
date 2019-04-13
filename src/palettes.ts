@@ -1,23 +1,26 @@
 import { ColorPalette } from "./types";
 
-// Default palette based on: https://colorhunt.co/palette/2763
 export const DARK: ColorPalette = {
-  stageBg: "#191718",
+  brandingBg: "#D9D9D9",
+  brandingColor: "#141A26",
+
+  stageBg: "#141A26",
   shapeColor: "#ffffff",
   stageColor: "#ffffff",
-  gridColor: "#262425",
+  gridColor: "#1e2738",
 
   // The primary toolbar at the top.
-  toolbarBg: "#535353",
-  toolbarColor: "#FFFFFF",
+  toolbarBg: "#365673",
+  toolbarActiveBg: "#222222",
+  toolbarColor: "#D9D9D9",
 
   // The layer palette.
-  layersBg: "#242424",
-  layersColor: "#FFFFFF",
+  layersBg: "#0D0D0D",
+  layersColor: "#D9D9D9",
 
   // The far left drawer.
-  utilityBg: "#282828",
-  utilityColor: "#FFFFFF"
+  utilityBg: "#0D0D0D",
+  utilityColor: "#D9D9D9"
 };
 
 export const DEFAULT = DARK;
