@@ -1,36 +1,24 @@
-import Canvas from "./canvas";
-import LayerDrawer from "./layer-drawer";
-import Toolbar from "./toolbar-drawer";
-import ControlDrawer from "./control-drawer";
-import State, { LifecycleItem } from "./state";
+import State from "./state";
 import * as util from "./util";
 import MarqueeLifecycle from "./marquee-lifecycle";
 import RectLifecycle from "./rect-lifecycle";
 import LineLifecycle from "./line-lifecycle";
 import { Mode, AnchorPosition, Group, KeyEvent } from "./types";
+import Events from "./events";
 
-interface OS {
-  toolbar: Toolbar;
-  canvas: Canvas;
-  canvasBackground: Canvas;
-  layers: LayerDrawer;
-  controldrawer: ControlDrawer;
-}
-
-export function configure(os: OS): void {
-  const state = new State();
-  const op = new Operator(os, state);
+export function configure(state: State, events: Events): void {
+  const op = new Operator(state, events);
 
   op.dbind();
-  op.paint();
 }
 
 class Operator {
   private state: State;
-  private os: OS;
-  constructor(os: OS, state: State) {
+  private events: Events;
+
+  constructor(state: State, events: Events) {
     this.state = state;
-    this.os = os;
+    this.events = events;
   }
 
   /**
@@ -38,20 +26,17 @@ class Operator {
    * operator.
    */
   public dbind() {
-    this.os.canvas.onMouseDown(this.handleMouseDown.bind(this));
-    this.os.canvas.onMouseUp(this.handleMouseUp.bind(this));
-    this.os.canvas.onMouseMove(this.handleMouseMove.bind(this));
-    document.addEventListener("keydown", this.handleKeyDown.bind(this));
-    this.os.toolbar.onModeChange = this.handleChangeMode.bind(this);
-  }
+    this.events.subscribeFast(
+      "canvasMouseMove",
+      this.handleMouseMove.bind(this)
+    );
+    this.events.subscribeFast("canvasMouseUp", this.handleMouseUp.bind(this));
+    this.events.subscribeFast(
+      "canvasMouseDown",
+      this.handleMouseDown.bind(this)
+    );
 
-  /**
-   * Called to set/change the operating system with a different color scheme.
-   */
-  public paint() {
-    for (let k in this.os) {
-      this.os[k].setColorPalette(this.state.colors);
-    }
+    document.addEventListener("keydown", this.handleKeyDown.bind(this), false);
   }
 
   /**
@@ -90,32 +75,11 @@ class Operator {
   }
 
   /**
-   * Return all selected items on stage.
-   */
-  public selected(): Set<LifecycleItem> {
-    const s = new Set();
-    for (let cycle of this.state.cycles.values()) {
-      if (cycle.selected) {
-        s.add(cycle);
-      }
-    }
-    return s;
-  }
-
-  /**
    * Delete a cycle from stage fully.
    */
   public remove(cycle) {
     this.state.hotCycles.delete(cycle);
     this.state.cycles.delete(cycle);
-    cycle.remove(this.os.canvas);
-  }
-
-  /**
-   * Triggered when a mode changes from an external source. Likely, the toolbar.
-   */
-  private handleChangeMode(m: Mode) {
-    this.state.mode = m;
   }
 
   /**
@@ -123,21 +87,22 @@ class Operator {
    */
   private handleMouseDown(e: MouseEvent) {
     // Configure state based on this mousedown.
-    this.state.downAt = new Date().getTime();
-    this.state.pinnedCursorPoint = this.os.canvas.grid.closestPt;
-    this.state.cursorPoint = this.os.canvas.grid.closestPt;
-    this.state.anchorPosition = AnchorPosition.RightBottom;
+    this.state.setStateProp(
+      this.events,
+      "anchorPosition",
+      AnchorPosition.RightBottom
+    );
 
     // Loop through each cycle to see if the user clicked on something on the
     // stage.
     for (let cycle of this.state.cycles.values()) {
       // Note that the cursorPt is passed and not the closestPt. This is so the
       // most absolute position is accounted for.
-      const o = cycle.hitTest(this.os.canvas.grid.cursorPt);
+      const o = cycle.hitTest(this.state.cursorPt);
       if (o !== null) {
         this.state.anchorPosition = o.position;
 
-        if (this.selected().size === 1) {
+        if (this.state.selected().size === 1) {
           this.deselectAll();
         }
 
@@ -149,14 +114,15 @@ class Operator {
 
     // Deselect all shapes before creating a new one or selecting others.
     this.deselectAll();
+    const ctx = this.state.stageCtx;
 
     // Move on to creating a new shape w/ mgmt lifecycle.
     switch (this.state.mode) {
       case Mode.Marquee: {
         const cycle = new MarqueeLifecycle();
         cycle.start(
-          this.os.canvas,
-          [this.state.pinnedCursorPoint, this.state.pinnedCursorPoint],
+          ctx,
+          [this.state.pinnedCursorPt, this.state.pinnedCursorPt],
           this.state.colors
         );
         this.state.cycles.add(cycle);
@@ -166,8 +132,8 @@ class Operator {
       case Mode.Rectangle: {
         const cycle = new RectLifecycle();
         cycle.start(
-          this.os.canvas,
-          [this.state.pinnedCursorPoint, this.state.pinnedCursorPoint],
+          ctx,
+          [this.state.pinnedCursorPt, this.state.pinnedCursorPt],
           this.state.colors
         );
         this.state.cycles.add(cycle);
@@ -177,8 +143,8 @@ class Operator {
       case Mode.Line: {
         const cycle = new LineLifecycle();
         cycle.start(
-          this.os.canvas,
-          [this.state.pinnedCursorPoint, this.state.pinnedCursorPoint],
+          ctx,
+          [this.state.pinnedCursorPt, this.state.pinnedCursorPt],
           this.state.colors
         );
         this.state.cycles.add(cycle);
@@ -218,6 +184,13 @@ class Operator {
     // Reset the mode to be marquee, always.
     this.state.mode = Mode.Marquee;
     this.state.anchorPosition = null;
+    this.events.publish("modeChange", this.state.mode);
+
+    const selected = this.state.selected();
+
+    if (selected.size === 1) {
+      this.events.publish("singleRectSelected", null);
+    }
   }
 
   /**
@@ -225,31 +198,38 @@ class Operator {
    * current state.
    */
   private handleMouseMove(e: MouseEvent) {
-    this.state.cursorPoint = this.os.canvas.grid.closestPt;
-
     if (this.state.anchorPosition !== null) {
-      const diffX = this.state.cursorPoint[0] - this.state.pinnedCursorPoint[0];
-      const diffY = this.state.cursorPoint[1] - this.state.pinnedCursorPoint[1];
+      const diffX = this.state.cursorGridPt[0] - this.state.pinnedCursorPt[0];
+      const diffY = this.state.cursorGridPt[1] - this.state.pinnedCursorPt[1];
+
+      for (let cycle of this.state.selected().values()) {
+        cycle.mutate(
+          this.state.anchorPosition,
+          diffX,
+          diffY,
+          this.state.colors
+        );
+      }
 
       // Only mutate what's hot unless we're moving things around. Then we can
       // mutate all of the selected items at once.
-      if (this.state.anchorPosition === AnchorPosition.Center) {
-        for (let cycle of this.selected().values())
-          cycle.mutate(
-            this.state.anchorPosition,
-            diffX,
-            diffY,
-            this.state.colors
-          );
-      } else {
-        for (let cycle of this.state.hotCycles.values())
-          cycle.mutate(
-            this.state.anchorPosition,
-            diffX,
-            diffY,
-            this.state.colors
-          );
-      }
+      // if (this.state.anchorPosition === AnchorPosition.Center) {
+      //   for (let cycle of this.state.selected().values())
+      //     cycle.mutate(
+      //       this.state.anchorPosition,
+      //       diffX,
+      //       diffY,
+      //       this.state.colors
+      //     );
+      // } else {
+      //   for (let cycle of this.state.hotCycles.values())
+      //     cycle.mutate(
+      //       this.state.anchorPosition,
+      //       diffX,
+      //       diffY,
+      //       this.state.colors
+      //     );
+      // }
     }
   }
 
@@ -258,15 +238,15 @@ class Operator {
    */
   private handleKeyDown(e: KeyboardEvent) {
     const direction = {
-      [KeyEvent.ARROW_LEFT]: [-this.os.canvas.grid.density, 0],
-      [KeyEvent.ARROW_RIGHT]: [this.os.canvas.grid.density, 0],
-      [KeyEvent.ARROW_UP]: [0, -this.os.canvas.grid.density],
-      [KeyEvent.ARROW_DOWN]: [0, this.os.canvas.grid.density]
+      [KeyEvent.ARROW_LEFT]: [-this.state.gridDensity, 0],
+      [KeyEvent.ARROW_RIGHT]: [this.state.gridDensity, 0],
+      [KeyEvent.ARROW_UP]: [0, -this.state.gridDensity],
+      [KeyEvent.ARROW_DOWN]: [0, this.state.gridDensity]
     };
     switch (e.keyCode) {
       case KeyEvent.BACKSPACE: {
         e.preventDefault();
-        for (let cycle of this.selected().values()) this.remove(cycle);
+        for (let cycle of this.state.selected().values()) this.remove(cycle);
         break;
       }
       case KeyEvent.ARROW_UP:
@@ -274,7 +254,7 @@ class Operator {
       case KeyEvent.ARROW_RIGHT:
       case KeyEvent.ARROW_LEFT:
         e.preventDefault();
-        for (let cycle of this.selected().values()) {
+        for (let cycle of this.state.selected().values()) {
           cycle.mutate(
             AnchorPosition.Center,
             direction[e.keyCode][0],

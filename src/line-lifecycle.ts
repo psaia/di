@@ -1,6 +1,5 @@
 import Line from "./line";
 import Lifecycle from "./lifecycle";
-import Canvas from "./canvas";
 import LineTux from "./line-tux";
 import RectLineConnection from "./rect-line-connection";
 import * as util from "./util";
@@ -15,12 +14,12 @@ export default class LineLifecycle extends Lifecycle {
       return this.tux.checkAllHitTests(p);
     }
   }
-  start(c: Canvas, initialPts: Group, colors: ColorPalette) {
+  start(c: CanvasRenderingContext2D, initialPts: Group, colors: ColorPalette) {
     this.shape = new Line();
     this.tux = new LineTux();
 
-    this.tux.ctx = c.ctx;
-    this.shape.ctx = c.ctx;
+    this.tux.ctx = c;
+    this.shape.ctx = c;
 
     this.shape.colors = colors;
     this.tux.colors = colors;
@@ -28,13 +27,6 @@ export default class LineLifecycle extends Lifecycle {
     this.tux.pts = initialPts;
     this.shape.pts = initialPts;
     this.prevPts = initialPts;
-
-    c.addShape(this.shape);
-    c.addShape(this.tux);
-  }
-  remove(c: Canvas) {
-    c.removeShape(this.shape);
-    c.removeShape(this.tux);
   }
   select(selected: boolean) {
     this.selected = selected;

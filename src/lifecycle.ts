@@ -1,4 +1,3 @@
-import Canvas from "./canvas";
 import {
   ColorPalette,
   AnchorPosition,
@@ -6,8 +5,12 @@ import {
   Point,
   Group
 } from "./types";
+import Shape from "./shape";
+import Tux from "./tux";
 
 export default abstract class Lifecycle {
+  public shape: Shape;
+  public tux: Tux;
   /**
    * prevPts need to be updated anytime a series of mutations is complete. This
    * needs to be handled manually since there's not way to automatically know
@@ -34,7 +37,11 @@ export default abstract class Lifecycle {
   /**
    * Instantiate the shapes on this canvas, including any tuxes.
    */
-  abstract start(c: Canvas, initialPts: Group, colors: ColorPalette);
+  abstract start(
+    ctx: CanvasRenderingContext2D,
+    initialPts: Group,
+    colors: ColorPalette
+  );
 
   /**
    * Mutate is called on every interactive tick and will mutate the relative
@@ -48,7 +55,9 @@ export default abstract class Lifecycle {
   );
 
   /**
-   * Remove all shapes that this lifecycle manages from the canvas.
+   * Add an option to the nested shape within this lifecycle.
    */
-  abstract remove(c: Canvas);
+  setOption(name: string, value: number | string) {
+    this.shape.options[name] = value;
+  }
 }

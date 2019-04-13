@@ -1,6 +1,5 @@
 import Marquee from "./marquee";
 import Lifecycle from "./lifecycle";
-import Canvas from "./canvas";
 import * as util from "./util";
 import { ColorPalette, AnchorPosition, Point, Group } from "./types";
 
@@ -9,19 +8,17 @@ export default class MarqueeLifecycle extends Lifecycle {
   hitTest(p: Point) {
     return null;
   }
-  start(c: Canvas, initialPts: Group, colors: ColorPalette) {
+  start(
+    ctx: CanvasRenderingContext2D,
+    initialPts: Group,
+    colors: ColorPalette
+  ) {
     this.shape = new Marquee();
-    this.shape.ctx = c.ctx;
+    this.shape.ctx = ctx;
 
     this.shape.colors = colors;
-
     this.shape.pts = initialPts;
     this.prevPts = initialPts;
-
-    c.addShape(this.shape);
-  }
-  remove(c: Canvas) {
-    c.removeShape(this.shape);
   }
   mutate(
     anchorPosition: AnchorPosition,

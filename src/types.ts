@@ -49,8 +49,8 @@ export interface Bounds {
 }
 
 export interface ColorPalette {
-  controldrawerBg: string;
-  controldrawerColor: string;
+  utilityBg: string;
+  utilityColor: string;
   toolbarBg: string;
   toolbarColor: string;
   stageBg: string;
@@ -72,4 +72,27 @@ export enum KeyEvent {
   ARROW_RIGHT = 39,
   ARROW_UP = 38,
   ARROW_DOWN = 40
+}
+
+export enum BorderType {
+  Light = "light",
+  Heavy = "heavy",
+  Double = "double",
+  Dashed = "dashed",
+  None = "no-border"
+}
+
+export enum OptionType {
+  Bool = 1,
+  Text,
+  Choice
+}
+
+export interface Option {
+  fieldType: string;
+}
+
+export interface PubSubEvent {
+  name: string;
+  fn: (any) => any;
 }

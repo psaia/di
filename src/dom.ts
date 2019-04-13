@@ -51,10 +51,41 @@ export function ul(className: string = ""): HTMLElement {
   return ul;
 }
 
+interface Option {
+  value: string;
+  label: string;
+}
+
+export function dropdown(
+  className: string = "",
+  options: Option[],
+  selected?: string
+): HTMLElement {
+  const el = document.createElement("select");
+  el.className = prefix + className;
+
+  options.forEach(opt => {
+    const option = document.createElement("option");
+    option.value = opt.value;
+    option.innerHTML = opt.label;
+    el.appendChild(option);
+  });
+
+  el.value = selected;
+
+  return el;
+}
+
 export function li(className: string = ""): HTMLElement {
   const li = document.createElement("li");
   li.className = prefix + className;
   return li;
+}
+
+export function input(className: string = ""): HTMLElement {
+  const el = document.createElement("input");
+  el.className = prefix + className;
+  return el;
 }
 
 export function button(className: string = ""): HTMLElement {
@@ -74,3 +105,9 @@ export function canvas(className: string = ""): HTMLCanvasElement {
   canvas.className = prefix + className;
   return canvas;
 }
+
+// abstract class ReactiveElement {
+//   build() {
+//
+//   }
+// }

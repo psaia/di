@@ -79,3 +79,16 @@ export function dot(...pts): number {
   const init = new Float32Array([0, 0]);
   return pts.reduce((acc, p) => multiply(acc, p), init);
 }
+
+export function createGrid(d: number, w: number, h: number): Group {
+  const padding = 20;
+  const margin = d;
+  const grid = [];
+
+  for (let x = padding; x < w - padding; x += margin) {
+    for (let y = padding; y < h - padding; y += margin) {
+      grid.push(pt(x, y));
+    }
+  }
+  return grid;
+}

@@ -8,6 +8,7 @@ export default abstract class Shape {
   public pts: Group = [];
   public colors: ColorPalette;
   public animating: boolean = true;
+  public options: any = {};
 
   abstract render(): void;
 
