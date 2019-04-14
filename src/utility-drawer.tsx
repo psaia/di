@@ -36,8 +36,12 @@ export default class UtilityDrawer extends React.Component<UtilityProps> {
   state = {
     component: React.Component
   };
+  textInput = React.createRef<HTMLInputElement>();
   componentWillMount() {
     this.props.events.subscribe("stateChange", () => this.forceUpdate());
+    this.props.events.subscribe("rect.focus-text", () => {
+      this.textInput.current.focus();
+    });
   }
   singleSelectedItem(): Lifecycle | null {
     const all = this.props.globalState.selected();
@@ -63,12 +67,13 @@ export default class UtilityDrawer extends React.Component<UtilityProps> {
       return (
         <div {...props} className="utility-drawer">
           <select
-            defaultValue={selected.shape.options.border}
+            value={selected.shape.options.border}
             onChange={e => {
               const border = lineTypes.filter(
                 t => t.value === e.target.value
               )[0].value;
               selected.shape.options.border = border;
+              this.forceUpdate();
             }}
           >
             {lineTypes.map(v => {
@@ -82,7 +87,8 @@ export default class UtilityDrawer extends React.Component<UtilityProps> {
           <input
             type="text"
             autoFocus
-            defaultValue={selected.shape.options.text}
+            ref={this.textInput}
+            value={selected.shape.options.text}
             style={{
               background: "transparent",
               border: "none",
@@ -91,11 +97,12 @@ export default class UtilityDrawer extends React.Component<UtilityProps> {
                 this.props.globalState.colors.utilityColor
               }`
             }}
-            placeholder="Inner Text"
+            placeholder="Start typing..."
             onChange={e => {
               selected.shape.options.text = e.target.value;
               e.stopPropagation();
               e.nativeEvent.stopImmediatePropagation();
+              this.forceUpdate();
             }}
           />
         </div>

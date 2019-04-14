@@ -173,9 +173,7 @@ class Operator {
           this.deselectAll();
           this.selectWithinRect(marqueePts);
         } else {
-          // We
           cycle.prevPts = cycle.shape.pts;
-          // this.state.cycles.delete(cycle);
         }
       }
     }
@@ -183,6 +181,15 @@ class Operator {
     // Reset the mode to be marquee, always.
     this.state.setStateProp(this.events, "mode", Mode.Marquee);
     this.state.setStateProp(this.events, "anchorPosition", null);
+
+    const selected = this.state.selected();
+
+    if (
+      selected.size === 1 &&
+      selected.values().next().value instanceof RectLifecycle
+    ) {
+      this.events.publish("rect.focus-text", null);
+    }
   }
 
   /**

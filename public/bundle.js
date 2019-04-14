@@ -664,9 +664,7 @@ var Operator = /** @class */ (function () {
                         this.selectWithinRect(marqueePts);
                     }
                     else {
-                        // We
                         cycle.prevPts = cycle.shape.pts;
-                        // this.state.cycles.delete(cycle);
                     }
                 }
             }
@@ -681,6 +679,11 @@ var Operator = /** @class */ (function () {
         // Reset the mode to be marquee, always.
         this.state.setStateProp(this.events, "mode", types_1.Mode.Marquee);
         this.state.setStateProp(this.events, "anchorPosition", null);
+        var selected = this.state.selected();
+        if (selected.size === 1 &&
+            selected.values().next().value instanceof rect_lifecycle_1["default"]) {
+            this.events.publish("rect.focus-text", null);
+        }
     };
     /**
      * When the mouse moves all cycles need to be mutated relative to the
@@ -1946,11 +1949,15 @@ var UtilityDrawer = /** @class */ (function (_super) {
         _this.state = {
             component: React.Component
         };
+        _this.textInput = React.createRef();
         return _this;
     }
     UtilityDrawer.prototype.componentWillMount = function () {
         var _this = this;
         this.props.events.subscribe("stateChange", function () { return _this.forceUpdate(); });
+        this.props.events.subscribe("rect.focus-text", function () {
+            _this.textInput.current.focus();
+        });
     };
     UtilityDrawer.prototype.singleSelectedItem = function () {
         var all = this.props.globalState.selected();
@@ -1961,6 +1968,7 @@ var UtilityDrawer = /** @class */ (function (_super) {
         return all.values().next().value;
     };
     UtilityDrawer.prototype.render = function () {
+        var _this = this;
         var selected = this.singleSelectedItem();
         var props = {
             style: {
@@ -1972,9 +1980,10 @@ var UtilityDrawer = /** @class */ (function (_super) {
         }
         else if (selected instanceof rect_lifecycle_1["default"]) {
             return (React.createElement("div", __assign({}, props, { className: "utility-drawer" }),
-                React.createElement("select", { defaultValue: selected.shape.options.border, onChange: function (e) {
+                React.createElement("select", { value: selected.shape.options.border, onChange: function (e) {
                         var border = lineTypes.filter(function (t) { return t.value === e.target.value; })[0].value;
                         selected.shape.options.border = border;
+                        _this.forceUpdate();
                     } }, lineTypes.map(function (v) {
                     var props = {
                         key: v.value,
@@ -1982,15 +1991,16 @@ var UtilityDrawer = /** @class */ (function (_super) {
                     };
                     return React.createElement("option", __assign({}, props), v.label);
                 })),
-                React.createElement("input", { type: "text", autoFocus: true, defaultValue: selected.shape.options.text, style: {
+                React.createElement("input", { type: "text", autoFocus: true, ref: this.textInput, value: selected.shape.options.text, style: {
                         background: "transparent",
                         border: "none",
                         color: this.props.globalState.colors.utilityColor,
                         borderBottom: "1px solid " + this.props.globalState.colors.utilityColor
-                    }, placeholder: "Inner Text", onChange: function (e) {
+                    }, placeholder: "Start typing...", onChange: function (e) {
                         selected.shape.options.text = e.target.value;
                         e.stopPropagation();
                         e.nativeEvent.stopImmediatePropagation();
+                        _this.forceUpdate();
                     } })));
         }
         return React.createElement("div", __assign({}, props, { className: "utility-drawer" }));
@@ -4149,7 +4159,7 @@ if (process.env.NODE_ENV === 'production') {
   module.exports = require('./cjs/react.development.js');
 }
 }
-  Pax.files["/Users/petesaia/work/github.com/psaia/di/node_modules/react-dom/cjs/react-dom.development.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2fnode_modules$2freact$2ddom$2fcjs$2freact$2ddom$2edevelopment$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2fnode_modules$2freact$2ddom$2fcjs$2freact$2ddom$2edevelopment$2ejs.deps = {"prop-types/checkPropTypes":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2fnode_modules$2fprop$2dtypes$2fcheckPropTypes$2ejs,"scheduler/tracing":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2fnode_modules$2fscheduler$2ftracing$2ejs,"react":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2fnode_modules$2freact$2findex$2ejs,"object-assign":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2fnode_modules$2fobject$2dassign$2findex$2ejs,"scheduler":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2fnode_modules$2fscheduler$2findex$2ejs}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2fnode_modules$2freact$2ddom$2fcjs$2freact$2ddom$2edevelopment$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/node_modules/react-dom/cjs/react-dom.development.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2fnode_modules$2freact$2ddom$2fcjs$2freact$2ddom$2edevelopment$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
+  Pax.files["/Users/petesaia/work/github.com/psaia/di/node_modules/react-dom/cjs/react-dom.development.js"] = file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2fnode_modules$2freact$2ddom$2fcjs$2freact$2ddom$2edevelopment$2ejs; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2fnode_modules$2freact$2ddom$2fcjs$2freact$2ddom$2edevelopment$2ejs.deps = {"scheduler/tracing":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2fnode_modules$2fscheduler$2ftracing$2ejs,"prop-types/checkPropTypes":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2fnode_modules$2fprop$2dtypes$2fcheckPropTypes$2ejs,"react":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2fnode_modules$2freact$2findex$2ejs,"object-assign":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2fnode_modules$2fobject$2dassign$2findex$2ejs,"scheduler":file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2fnode_modules$2fscheduler$2findex$2ejs}; file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2fnode_modules$2freact$2ddom$2fcjs$2freact$2ddom$2edevelopment$2ejs.filename = "/Users/petesaia/work/github.com/psaia/di/node_modules/react-dom/cjs/react-dom.development.js"; function file_$2fUsers$2fpetesaia$2fwork$2fgithub$2ecom$2fpsaia$2fdi$2fnode_modules$2freact$2ddom$2fcjs$2freact$2ddom$2edevelopment$2ejs(module, exports, require, __filename, __dirname, __import_meta) {
 /** @license React v16.8.6
  * react-dom.development.js
  *
